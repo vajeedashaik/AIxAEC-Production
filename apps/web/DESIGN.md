@@ -108,3 +108,22 @@ Every data view ships loading (skeleton matching the final layout), empty (one s
 ## 11. References
 
 `docs/design/references/`: Linear for chrome and density, Figma and Miro for canvas interaction, Vercel and Raycast for type and contrast. Borrow principles, never brand identity.
+
+## 12. Decisions log (P5)
+
+| Date | Decision | Why |
+|---|---|---|
+| 2026-11-01 | **Token values tuned for AA** (names unchanged): `--p-gray-7` 0.56→0.51, `--p-gray-6` 0.72→0.74, status `-8` steps darkened; dark `--primary` uses cobalt-8 | Every text/surface pair was checked with a script. Muted text, status text and white-on-cobalt now pass 4.5:1 in both themes. |
+| 2026-11-01 | **New token `--link`** (cobalt-8 light, cobalt-5 dark), utility `text-link` | Dark cobalt-8 suits filled buttons but is too dark as text on graphite. Links and selected toggles use `--link`. |
+| 2026-11-01 | **`--row-gap`** and **`.density-compact`** | Density is one class on `<html>`, set by Settings and applied before paint by an inline script. It retunes `--control-h-*`, `--topbar-h`, `--sidebar-w`, `--inspector-w`, `--command-bar-h` and `--row-gap`. P6: size with these tokens and density works for free. |
+| 2026-11-01 | **Focus**: one solid 2 px `--ring` everywhere; shadcn's translucent 3 px ring removed from all primitives | §10. |
+| 2026-11-01 | **Primitives**: controls `rounded-md` at `--control-h-*`, labels `text-ui`, colour-only transitions; a selected toggle shows a cobalt border and tint | Stock shadcn read soft and generic, and the selected toggle was invisible against `--muted`. |
+| 2026-11-01 | **Landing direction: "the product performs"** (design-taste-frontend draw, palette and type kept from this file) | The proof is watching an edit apply, so the hero *is* a working fragment: a tiny real plan in mm. Its command previews a ghost, asks which wall when ambiguous, rejects impossible moves, and versions and undoes. Every area is computed and adds up. |
+| 2026-11-01 | The hero opens **already showing the preview** instead of autoplaying | Autoplay made the demo's text the LCP element at 3.0 s; a static first state brought LCP to 143 ms. Walls still draw in; typing animates only on click. |
+| 2026-11-01 | Marketing sections are whole fields of tone (sunken / accent / ink), not cards | Separation by ground, not borders. No eyebrows, no icon-card grids. |
+| 2026-11-01 | **Dashboard KPIs are type, not tiles**, and show only totals the API supports | "Edits this week" has no endpoint, so it is omitted. The floor-plan total is dropped, not shown partial, once projects exceed one 100-item page. |
+| 2026-11-01 | Status = icon + word ("Queued", "Processing", "Ready", "Failed") on a 10% tint | Never colour alone (§4). |
+| 2026-11-01 | Processing timeline: 8 bars in one strip, true durations in mono | Reads as one pipeline. The active stage pulses, except under reduced motion. |
+| 2026-11-01 | Dates are absolute (`1 Nov 2026`), never "3 days ago" | People cross-check versions against drawings. |
+| 2026-11-01 | Auth: split layout whose brand panel draws the same plan on `--canvas-*`; Clerk themed through CSS variables | Clerk follows light and dark because its `appearance.variables` point at these tokens. |
+| 2026-11-01 | The sidebar collapses to a remembered 48 px rail, is forced to the rail on the workspace route, and becomes a sheet below `md` | §6: the canvas takes every remaining pixel. |
