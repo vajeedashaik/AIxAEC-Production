@@ -12,7 +12,7 @@ from aec_contracts.lexicon import ROOM_SYNONYMS
 from aec_contracts.model import Opening
 
 from .errors import ClarificationNeeded, ResolutionError
-from .geom import midpoint, wall_axis
+from .geom import midpoint, room_polygons, rooms_by_side, wall_axis
 
 SAME_EDGE_PX = 2.0
 _SIDE = {"north": Direction.UP, "top": Direction.UP, "upper": Direction.UP,
@@ -116,6 +116,16 @@ def _walls_for(model: FloorPlanModel, q: _Query) -> list[Wall]:
         shared = [w for a in first for b in second if a.id != b.id for w in _walls_of(model, a) if w.id in b.wall_ids]
         if not shared:
             raise ResolutionError("Those rooms don't share a wall.")
+        # Vision merges collinear walls, so a long exterior wall can be linked to both rooms without separating them.
+        # Prefer walls with one room on each side; if none, keep them all and let the user pick.
+        polygons = room_polygons(model)
+        a_ids, b_ids = {r.id for r in first}, {r.id for r in second}
+
+        def separates(w: Wall) -> bool:
+            one, other = ({r.id for r in side} for side in rooms_by_side(model, w, polygons))
+            return bool((one & a_ids and other & b_ids) or (one & b_ids and other & a_ids))
+
+        shared = [w for w in shared if separates(w)] or shared
         walls = _in_model_order(_narrow(shared, q.side), model)
         if not walls:
             raise ResolutionError("Those rooms don't share a wall on that side.")
@@ -135,7 +145,8 @@ def _walls_for(model: FloorPlanModel, q: _Query) -> list[Wall]:
         walls = [w for w in model.walls if sum(w.id in r.wall_ids for r in model.rooms) >= 2]
         if not walls:
             raise ResolutionError("No wall is shared by two rooms.")
-        return walls
+        polygons = room_polygons(model)
+        return [w for w in walls if all(rooms_by_side(model, w, polygons))] or walls  # rooms on both sides
     walls = _narrow(model.walls, q.side)
     if not walls:
         raise ResolutionError("There is no wall on that side of the plan.")

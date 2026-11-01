@@ -77,8 +77,15 @@ def test_between_unknown_room(apartment: FloorPlanModel) -> None:
     assert "garage" in rejected(apartment, "entity_resolution", **SCALE, target_query="wall between garage and bath")
 
 
-def test_between_several_shared_walls_clarifies(apartment: FloorPlanModel) -> None:
+def test_between_prefers_the_wall_that_separates_them(apartment: FloorPlanModel) -> None:
+    # Linked to both rooms (as vision does for merged collinear walls), but only 260db342 has one room on each side.
     room(apartment, "LIVING").wall_ids.append(wid(apartment, "19dadcef"))
+    assert target(apartment, SCALE, target_query="wall between kitchen and living") == wid(apartment, "260db342")
+
+
+def test_between_several_shared_walls_none_separating_clarifies(apartment: FloorPlanModel) -> None:
+    room(apartment, "LIVING").wall_ids += [wid(apartment, "19dadcef"), wid(apartment, "f1d5effe")]
+    room(apartment, "KITCHEN").wall_ids.remove(wid(apartment, "260db342"))
     assert len(clarified(apartment, **SCALE, target_query="wall between kitchen and living").candidates) == 2
 
 
@@ -131,6 +138,12 @@ def test_no_walls_at_all(two_room: FloorPlanModel) -> None:
 
 def test_shared_wall(two_room: FloorPlanModel, apartment: FloorPlanModel) -> None:
     assert str(target(two_room, SCALE, target_query="shared wall")).startswith("5b0e4ca9")
+    # A merged exterior wall linked to both rooms is still not the one they share.
+    outer = next(w.id for w in two_room.walls if not str(w.id).startswith("5b0e4ca9"))
+    for r in two_room.rooms:
+        r.wall_ids.append(outer)
+    assert str(target(two_room, SCALE, target_query="shared wall")).startswith("5b0e4ca9")
+    two_room.rooms[0].wall_ids.remove(outer)
     assert len(clarified(apartment, **SCALE, target_query="shared wall").candidates) == 6
     two_room.rooms = []
     assert "share" in rejected(two_room, "entity_resolution", **SCALE, target_query="shared wall")

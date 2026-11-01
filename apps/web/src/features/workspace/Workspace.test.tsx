@@ -143,6 +143,16 @@ describe("Workspace", () => {
     expect(alert).toHaveTextContent(`Detail for ${stage}.`);
   });
 
+  it("titles a language outage as offline, not as a misunderstanding", async () => {
+    const detail = "The command assistant is unavailable right now. Your plan was not changed.";
+    server.use(http.post(`${V1}/commands/interpret`, () => HttpResponse.json({ ...EMPTY, status: "REJECTED", version: 1, stage: "parse", detail })));
+    const { user, input } = await ready();
+    await user.type(input, "rename the kitchen{Enter}");
+    const alert = await screen.findByTestId("rejection");
+    expect(alert).toHaveTextContent("The command assistant is offline");
+    expect(alert).not.toHaveTextContent(REJECT_TITLES.parse);
+  });
+
   it("offers Set scale when a rejection needs one, and opens the flow", async () => {
     server.use(
       http.get(`${V1}/model`, async () => {

@@ -1,0 +1,1 @@
+{"name":"aec-e2e","private":true,"type":"module","scripts":{"test":"playwright test"},"devDependencies":{"@clerk/backend":"^3.26.5","@clerk/testing":"^2.2.53","@playwright/test":"^1.64.1","@types/node":"^26.6.6","typescript":"^7.0.2"}}

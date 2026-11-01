@@ -35,6 +35,9 @@ def test_mm_needs_a_scale(unscaled: FloorPlanModel) -> None:
                                direction="LEFT", distance=distance, mode="EXPAND")
     assert message in rejected(unscaled, "semantic_validation", operation="ADD_DOOR", target_id=wall, width=distance)
     assert message in rejected(unscaled, "semantic_validation", operation="ADD_WINDOW", target_id=wall, width=distance)
+    # An ambiguous target is refused for the scale first, not answered with "which wall?".
+    assert message in rejected(unscaled, "semantic_validation", operation="MOVE_WALL", target_query="kitchen wall",
+                               direction="LEFT", distance=distance)
 
 
 def test_px_still_works_without_a_scale(unscaled: FloorPlanModel) -> None:

@@ -17,6 +17,7 @@ from pydantic import ValidationError
 from .changes import build_changes
 from .constraints import validate_model
 from .errors import ClarificationNeeded, ConstraintViolation, EngineError, SchemaError
+from .geom import to_px
 from .operations import apply_operation
 from .resolve import resolve_target
 from .semantic import check_semantics
@@ -58,6 +59,9 @@ def _revalidate(candidate: FloorPlanModel) -> FloorPlanModel:
 
 def _run(model: FloorPlanModel, raw: dict[str, Any]) -> ExecuteApplied:
     command = _parse_command(raw)
+    for field in ("distance", "width"):  # mm on an unscaled plan fails before we ask "which wall?"
+        if (value := getattr(command, field, None)) is not None:
+            to_px(value, model.coordinate_system)
     if not isinstance(command, AddWall):
         target = resolve_target(model, command, command.operation)
         command = command.model_copy(update={"target_id": target, "target_query": None})

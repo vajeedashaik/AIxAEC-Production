@@ -215,7 +215,8 @@ export function CommandBar({ flow, text, onTextChange, disabled, history, hasSca
           <div className="flex items-start gap-2 border-b p-3" data-testid="rejection" role="alert" data-stage={flow.stage}>
             <CircleAlert className="mt-0.5 size-4 shrink-0 text-danger" strokeWidth={1.5} aria-hidden />
             <div className="min-w-0 flex-1">
-              <p className="text-ui font-medium">{REJECT_TITLES[flow.stage]}</p>
+              {/* "parse" also covers a language-service outage (services/api PARSE_UNAVAILABLE): don't blame the wording. */}
+              <p className="text-ui font-medium">{flow.stage === "parse" && /unavailable/i.test(flow.detail) ? "The command assistant is offline" : REJECT_TITLES[flow.stage]}</p>
               <p className="text-ui text-muted-foreground">{flow.detail}</p>
             </div>
             {!hasScale && /scale|millimet|\bmm\b/i.test(flow.detail) && (

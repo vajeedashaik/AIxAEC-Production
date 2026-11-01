@@ -1,0 +1,137 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      e2e:
+        description: Run the e2e suite (needs Clerk dev keys as repo secrets)
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: ${{ matrix.path }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        path: [packages/contracts, services/vision, services/geometry, services/language, services/api]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      # Only services/api uses it; each test run creates and drops its own database.
+      TEST_DATABASE_URL: postgresql+psycopg://postgres:postgres@127.0.0.1:5432/postgres
+    defaults:
+      run:
+        working-directory: ${{ matrix.path }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - if: matrix.path == 'services/vision'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run mypy ${{ matrix.path == 'packages/contracts' && 'src' || 'app' }}
+      - run: uv run pytest -q
+      - name: pip-audit
+        run: uv export --frozen --no-dev --no-hashes --no-emit-project -o "$RUNNER_TEMP/req.txt" && uvx pip-audit -r "$RUNNER_TEMP/req.txt" --no-deps --disable-pip
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - name: Generated TS contracts are up to date
+        run: npm run gen:contracts:check
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm test
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_API_MOCKING: "off"
+      - run: npm audit --omit=dev --audit-level=high
+
+  migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply every migration in order on a fresh Postgres 16
+        run: |
+          for f in $(ls services/api/supabase/migrations/*.sql | sort); do
+            echo "== $f"
+            psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -U postgres -d postgres -f "$f"
+          done
+          psql -h 127.0.0.1 -U postgres -d postgres -c '\dt public.*'
+
+  e2e:
+    if: github.event_name == 'workflow_dispatch' && inputs.e2e
+    needs: [python, web]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      CLERK_ISSUER: ${{ secrets.CLERK_ISSUER }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Local Supabase
+        working-directory: services/api
+        run: supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime,mailpit && supabase db reset
+      - name: Compose stack
+        run: |
+          printf 'SUPABASE_SERVICE_ROLE_KEY=%s\nCLERK_ISSUER=%s\nCLERK_SECRET_KEY=%s\nNEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=%s\n' \
+            "$(cd services/api && supabase status -o env | sed -n 's/^SERVICE_ROLE_KEY="\(.*\)"/\1/p')" \
+            "$CLERK_ISSUER" "$CLERK_SECRET_KEY" "$CLERK_PUBLISHABLE_KEY" > .env
+          docker compose up -d --build --wait vision geometry language api worker web
+      - working-directory: e2e
+        run: npm ci && npx playwright install --with-deps chromium && npx playwright test
+        env:
+          E2E_BASE_URL: http://localhost:3000
+          E2E_API_URL: http://localhost:8000
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: e2e/playwright-report
