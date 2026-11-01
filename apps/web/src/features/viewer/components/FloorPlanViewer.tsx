@@ -368,7 +368,7 @@ export function FloorPlanViewer({ model, selection, onSelectionChange, overlay, 
       </div>
 
       {/* Bottom-left: scale bar + coordinates */}
-      <div className="pointer-events-none absolute bottom-3 left-3 flex items-end gap-3">
+      <div className="pointer-events-none absolute bottom-3 left-3 flex flex-col-reverse items-start gap-1">
         <div className="flex flex-col gap-1 rounded-md border bg-card px-2 py-1 shadow-sm">
           <div className="flex items-center gap-2">
             <span ref={barLabel} data-testid="scale-label" className="numeric text-micro">

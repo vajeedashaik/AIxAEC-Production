@@ -4,15 +4,17 @@ import { boundsOf, elementOutline, indexElements, type ModelElement } from "./ge
 import type { CanvasToken, ChangeClass, OverlayPrimitive, Pt } from "./types";
 
 function ghost(entry: ModelElement, points: Pt[], change: ChangeClass, token: CanvasToken): OverlayPrimitive {
+  // Rooms ghost as outlines only, so a tinted room never hides the wall that actually moved.
   const before = change === "modified-before";
+  const outlineOnly = before || entry.kind === "room";
   return {
     type: "polygon",
     elementId: entry.element.id,
     kind: entry.kind,
     layer: entry.kind === "room" ? "rooms" : "walls",
     points,
-    fill: before ? null : token,
-    opacity: before ? undefined : 0.22,
+    fill: outlineOnly ? null : token,
+    opacity: outlineOnly ? undefined : 0.22,
     stroke: token,
     strokeWidth: 1.5,
     dashed: before || change === "removed",

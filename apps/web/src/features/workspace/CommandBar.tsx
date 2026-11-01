@@ -242,6 +242,13 @@ export function CommandBar({ flow, text, onTextChange, disabled, history, hasSca
           </p>
         )}
 
+        {recording && (
+          <p className="flex items-center gap-2 px-3 pt-2 text-micro text-muted-foreground" role="status" data-testid="recording">
+            <span className="size-2 rounded-full bg-danger motion-safe:animate-pulse" aria-hidden />
+            Listening. Release <span className="numeric">V</span> or press stop when you&apos;re done (60 s max).
+          </p>
+        )}
+
         {heard && !res && clean && (
           <p className="px-3 pt-2 text-micro text-muted-foreground" data-testid="heard">
             Heard: edit if needed, then press Enter to preview.
