@@ -10,7 +10,11 @@ services:
         required: false
     environment:
       INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-dev-internal-token-change-me}
+      LLM_BASE_URL: http://omniroute:20128/v1
+    volumes:
+      - whisper-models:/home/app/.cache/huggingface  # the first transcription downloads the model; keep it
     networks: [aec]
+    # No depends_on omniroute: the service must start and serve rules + STT without it.
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8003/healthz')"]
       interval: 15s
@@ -18,6 +22,22 @@ services:
       retries: 3
       start_period: 10s
     restart: unless-stopped
+
+  # Internal only. To reach the dashboard, see docs/OMNIROUTE.md.
+  omniroute:
+    image: diegosouzapw/omniroute:3.8.52
+    environment:
+      DATA_DIR: /app/data
+      REQUIRE_API_KEY: "true"
+    volumes:
+      - omniroute-data:/app/data
+    networks: [aec]
+    stop_grace_period: 40s
+    restart: unless-stopped
+
+volumes:
+  whisper-models:
+  omniroute-data:
 
 networks:
   aec:
