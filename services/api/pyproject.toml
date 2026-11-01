@@ -10,10 +10,21 @@ dependencies = [
     "pydantic-settings>=2.6",
     "httpx>=0.28",
     "python-multipart>=0.0.18",
+    "sqlalchemy>=2.0.36",
+    "psycopg[binary]>=3.2",
+    "supabase>=2.10",
+    "pyjwt[crypto]>=2.10",
+    "pillow>=11",
+    "pymupdf>=1.25",
 ]
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.8", "mypy>=1.13"]
+dev = [
+    "pytest>=8",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "respx>=0.22",
+]
 
 [tool.uv]
 package = false
@@ -38,3 +49,9 @@ split-on-trailing-comma = false
 python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["pymupdf.*"]
+follow_untyped_imports = false
+ignore_missing_imports = true
+follow_imports = "skip"
