@@ -1,7 +1,7 @@
-import { Placeholder } from "@/components/placeholder";
+import { DashboardView } from "@/features/dashboard/dashboard-view";
 
 export const metadata = { title: "Dashboard" };
 
 export default function DashboardPage() {
-  return <Placeholder title="Dashboard" owner="P5" />;
+  return <DashboardView />;
 }

@@ -44,3 +44,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# design-taste-frontend working files
+/.taste-skill/
+!/qa/p5/*.png

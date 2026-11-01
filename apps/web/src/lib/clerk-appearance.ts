@@ -1,0 +1,30 @@
+// Clerk components read the same CSS variables as the rest of the app, so light and dark follow next-themes.
+export const clerkAppearance = {
+  variables: {
+    colorPrimary: "var(--primary)",
+    colorPrimaryForeground: "var(--primary-foreground)",
+    colorBackground: "var(--card)",
+    colorForeground: "var(--foreground)",
+    colorMuted: "var(--muted)",
+    colorMutedForeground: "var(--muted-foreground)",
+    colorInput: "var(--background)",
+    colorInputForeground: "var(--foreground)",
+    colorBorder: "var(--border-strong)",
+    colorRing: "var(--ring)",
+    colorDanger: "var(--danger)",
+    colorSuccess: "var(--success)",
+    colorWarning: "var(--warning)",
+    colorNeutral: "var(--foreground)",
+    colorShadow: "transparent",
+    fontFamily: "var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif",
+    fontFamilyButtons: "var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif",
+    fontSize: "0.8125rem",
+    borderRadius: "0.375rem",
+  },
+  elements: {
+    footerAction: { fontSize: "0.8125rem" },
+    formButtonPrimary: { boxShadow: "none" },
+    card: { boxShadow: "none" },
+    rootBox: { maxWidth: "100%" },
+  },
+};

@@ -1,23 +1,19 @@
 import { SignIn } from "@clerk/nextjs";
 import { Suspense } from "react";
 
-import { Placeholder } from "@/components/placeholder";
 import { CLERK_ENABLED } from "@/lib/clerk";
 
+import { ClerkNotConfigured } from "../../not-configured";
+
+export const metadata = { title: "Sign in" };
+
 export default function SignInPage() {
-  if (!CLERK_ENABLED)
-    return (
-      <Placeholder title="Clerk isn't configured" owner="P0">
-        Run <code className="numeric">npx clerk@latest init --accountless</code> in <code className="numeric">apps/web</code> for
-        temporary dev keys, or add your keys to <code className="numeric">.env.local</code> (see .env.example).
-      </Placeholder>
-    );
+  if (!CLERK_ENABLED) return <ClerkNotConfigured />;
   return (
-    <main className="grid min-h-screen place-items-center p-6">
-      {/* Clerk reads the URL at runtime; Cache Components requires that under Suspense. */}
-      <Suspense>
-        <SignIn />
-      </Suspense>
-    </main>
+    // Clerk reads the URL at runtime; Cache Components requires that under Suspense.
+    // ?redirect_url (set by the 401 redirect) takes priority over the fallback.
+    <Suspense>
+      <SignIn fallbackRedirectUrl="/dashboard" signUpFallbackRedirectUrl="/dashboard" signUpUrl="/sign-up" />
+    </Suspense>
   );
 }

@@ -1,13 +1,14 @@
-import { Placeholder } from "@/components/placeholder";
+import { Suspense } from "react";
 
-import { ProjectsProbe } from "./projects-probe";
+import { SkeletonList } from "@/components/composites";
+import { ProjectsView } from "@/features/projects/projects-view";
 
 export const metadata = { title: "Projects" };
 
 export default function ProjectsPage() {
   return (
-    <Placeholder title="Projects" owner="P5">
-      <ProjectsProbe />
-    </Placeholder>
+    <Suspense fallback={<SkeletonList rows={5} label="Loading projects" className="p-6" />}>
+      <ProjectsView />
+    </Suspense>
   );
 }
