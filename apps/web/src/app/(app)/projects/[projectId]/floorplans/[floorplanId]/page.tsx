@@ -1,8 +1,20 @@
-import { Placeholder } from "@/components/placeholder";
+import { Suspense } from "react";
+
+import { CanvasSkeleton } from "@/features/workspace/Workspace";
+import { WorkspaceRoute } from "@/features/workspace/WorkspaceRoute";
 
 export const metadata = { title: "Floor plan" };
 
-/** P6 owns this route: the floor-plan workspace (viewer, command bar, history, insights). */
 export default function FloorplanWorkspacePage() {
-  return <Placeholder title="Floor-plan workspace" owner="P6" />;
+  return (
+    <Suspense
+      fallback={
+        <div className="h-[calc(100dvh-var(--topbar-h))]">
+          <CanvasSkeleton />
+        </div>
+      }
+    >
+      <WorkspaceRoute />
+    </Suspense>
+  );
 }
