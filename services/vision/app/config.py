@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     yolo_weights_path: str | None = None
     image_max_dimension: int = 2400
     max_image_pixels: int = 64_000_000
+    max_upload_bytes: int = 26_214_400
 
     @model_validator(mode="after")
     def _production_guards(self) -> Self:

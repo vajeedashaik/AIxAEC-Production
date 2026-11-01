@@ -15,15 +15,24 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .config import Settings, get_settings
 from .errors import ServiceError
+from .ocr.factory import get_ocr, tesseract_available
 from .v1 import router as v1_router
 
 request_id_var: ContextVar[str] = ContextVar("request_id", default="-")
 log = logging.getLogger("vision")
 
-STATUS_CODES = {401: ErrorCode.UNAUTHORIZED, 403: ErrorCode.FORBIDDEN, 404: ErrorCode.NOT_FOUND,
-                409: ErrorCode.CONFLICT, 413: ErrorCode.PAYLOAD_TOO_LARGE, 415: ErrorCode.UNSUPPORTED_MEDIA_TYPE,
-                422: ErrorCode.VALIDATION_ERROR, 429: ErrorCode.RATE_LIMITED, 502: ErrorCode.UPSTREAM_UNAVAILABLE,
-                503: ErrorCode.UPSTREAM_UNAVAILABLE}
+STATUS_CODES = {
+    401: ErrorCode.UNAUTHORIZED,
+    403: ErrorCode.FORBIDDEN,
+    404: ErrorCode.NOT_FOUND,
+    409: ErrorCode.CONFLICT,
+    413: ErrorCode.PAYLOAD_TOO_LARGE,
+    415: ErrorCode.UNSUPPORTED_MEDIA_TYPE,
+    422: ErrorCode.VALIDATION_ERROR,
+    429: ErrorCode.RATE_LIMITED,
+    502: ErrorCode.UPSTREAM_UNAVAILABLE,
+    503: ErrorCode.UPSTREAM_UNAVAILABLE,
+}
 
 
 class JsonFormatter(logging.Formatter):
@@ -34,8 +43,11 @@ class JsonFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         out: dict[str, Any] = {
             "ts": self.formatTime(record, "%Y-%m-%dT%H:%M:%S") + f".{int(record.msecs):03d}Z",
-            "level": record.levelname, "service": self.service, "logger": record.name,
-            "request_id": request_id_var.get(), "msg": record.getMessage(),
+            "level": record.levelname,
+            "service": self.service,
+            "logger": record.name,
+            "request_id": request_id_var.get(),
+            "msg": record.getMessage(),
         }
         out.update(getattr(record, "fields", {}))
         if record.exc_info:
@@ -74,9 +86,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         finally:
             request_id_var.reset(token)
         response.headers["X-Request-ID"] = rid[:128]
-        log.info("request", extra={"fields": {"method": request.method, "path": request.url.path,
-                                               "status": response.status_code, "request_id": rid[:128],
-                                               "duration_ms": round((time.perf_counter() - start) * 1000, 1)}})
+        log.info(
+            "request",
+            extra={
+                "fields": {
+                    "method": request.method,
+                    "path": request.url.path,
+                    "status": response.status_code,
+                    "request_id": rid[:128],
+                    "duration_ms": round((time.perf_counter() - start) * 1000, 1),
+                }
+            },
+        )
         return response
 
     @app.exception_handler(ServiceError)
@@ -104,8 +125,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/readyz")
     def readyz() -> dict[str, str]:
-        # P1: check real dependencies here.
-        return {"status": "ok"}
+        # `auto` degrades to the stub without Tesseract; an explicit `tesseract` means it was required.
+        if settings.ocr_provider == "tesseract" and not tesseract_available(settings.tesseract_cmd):
+            raise ServiceError(503, ErrorCode.UPSTREAM_UNAVAILABLE, "Tesseract is not installed.")
+        return {"status": "ok", "ocr": get_ocr(settings.ocr_provider, settings.tesseract_cmd).name}
 
     app.include_router(v1_router)
     return app
