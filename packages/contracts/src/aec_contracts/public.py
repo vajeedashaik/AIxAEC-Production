@@ -75,7 +75,7 @@ class CommandResponse(Strict):
     version: int | None = None             # HEAD after the call (APPLIED) or base version (PREVIEW)
     model: FloorPlanModel | None = None    # APPLIED: new HEAD; PREVIEW: candidate (not persisted)
     changes: ChangeSet | None = None
-    command: Command | None = None         # resolved command
+    command: Command | None = None         # resolved command; on CLARIFICATION the parsed one (target_query set)
     summary: str | None = None
     question: str | None = None
     candidates: list[Candidate] = []

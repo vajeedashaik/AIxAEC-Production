@@ -1,0 +1,17 @@
+# Every image builds from the repo root. Per-Dockerfile *.dockerignore files take precedence under BuildKit.
+**/.venv
+**/node_modules
+**/__pycache__
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+**/.env
+**/.env.local
+apps/web/.next
+apps/web/qa
+services/api/supabase/.temp
+.git
+.claude
+.playwright
+e2e/test-results
+e2e/playwright-report

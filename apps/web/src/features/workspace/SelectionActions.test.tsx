@@ -8,7 +8,7 @@ import apartmentJson from "@/mocks/fixtures/apartment.model.json";
 
 import { indexElements } from "../viewer/render/geometry";
 import { installDomStubs } from "../viewer/test-env";
-import { commandFromInstruction, perpendicularDirections, withTarget } from "./commands";
+import { perpendicularDirections, withTarget } from "./commands";
 import { SelectionActions } from "./SelectionActions";
 
 const m = apartmentJson as unknown as FloorPlanModel;
@@ -131,14 +131,5 @@ describe("command helpers", () => {
 
   it("withTarget replaces target_query with target_id", () => {
     expect(withTarget({ operation: "DELETE_DOOR", target_query: "the door" }, "d1")).toEqual({ operation: "DELETE_DOOR", target_id: "d1" });
-  });
-
-  it("rebuilds only explicit commands from words", () => {
-    const wall = { id: "w1", kind: "wall" as const };
-    expect(commandFromInstruction("move the kitchen wall 300 mm left", wall)).toEqual({ operation: "MOVE_WALL", target_id: "w1", direction: "LEFT", distance: { value: 300, unit: "mm" } });
-    expect(commandFromInstruction("delete the door", { id: "d1", kind: "door" })).toEqual({ operation: "DELETE_DOOR", target_id: "d1" });
-    expect(commandFromInstruction("move the kitchen wall a bit", wall)).toBeNull();
-    expect(commandFromInstruction("move the wall 3 m left", wall)).toBeNull();
-    expect(commandFromInstruction("delete the door", wall)).toBeNull();
   });
 });

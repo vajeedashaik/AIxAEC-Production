@@ -13,7 +13,9 @@ from aec_contracts import (
     FloorPlanModel,
     Me,
 )
+from aec_contracts.commands import COMMAND_ADAPTER
 from aec_contracts.errors import ErrorCode
+from pydantic import ValidationError
 
 from .container import Container
 from .errors import ServiceError, not_found, stale_model
@@ -139,5 +141,11 @@ def _clarify(c: Container, user: Me, floorplan_id: UUID, persist: bool, base: in
         clarification = {"question": result.question, "candidates": [x.model_dump(mode="json") for x in candidates]}
         edit_id = _audit(c, user, floorplan_id, "CLARIFICATION", base=base, instruction=instruction, command=command,
                          clarification=clarification)
+    # The unresolved command comes back so the client can re-send it with the picked target_id.
+    # Geometry passed its schema stage, so this validates; if it somehow doesn't, the client asks to rephrase.
+    try:
+        parsed = COMMAND_ADAPTER.validate_python(command)
+    except ValidationError:
+        parsed = None
     return CommandResponse(status="CLARIFICATION", version=base, question=result.question, candidates=candidates,
-                           transcript=transcript, edit_id=edit_id)
+                           command=parsed, transcript=transcript, edit_id=edit_id)

@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from "react";
 import type { Candidate, CommandInput, CommandRequest, CommandResponse, RejectStage } from "@/contracts";
 import { ApiError, type ApiClient } from "@/lib/api";
 
-import { commandFromInstruction, withTarget } from "./commands";
+import { withTarget } from "./commands";
 
 /** What the user asked for: words or a structured command. Exactly one, like CommandRequest. */
 export type CommandSource = { instruction: string } | { command: CommandInput };
@@ -105,14 +105,9 @@ export function useCommandFlow({ api, floorplanId, headVersion, onApplied, onSta
     (candidate: Candidate) => {
       if (flow.state !== "clarification") return;
       const { source, response } = flow;
-      const command =
-        "command" in source
-          ? withTarget(source.command as unknown as Record<string, unknown>, candidate.id)
-          : response.command
-            ? withTarget(response.command as unknown as Record<string, unknown>, candidate.id)
-            : commandFromInstruction(source.instruction, candidate);
-      if (!command) return setFlow({ state: "error", message: "I can't finish that from the words alone. Select the element and use its actions, or rephrase naming it." });
-      return send({ command }, false);
+      const base = "command" in source ? source.command : response.command;
+      if (!base) return setFlow({ state: "error", message: "I can't finish that from the words alone. Select the element and use its actions, or rephrase naming it." });
+      return send({ command: withTarget(base as unknown as Record<string, unknown>, candidate.id) }, false);
     },
     [flow, send],
   );

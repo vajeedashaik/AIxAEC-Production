@@ -73,6 +73,14 @@ export function boundsOf(points: readonly Pt[]): Bounds | null {
 export const wallLength = (w: Pick<Wall, "start" | "end">) => Math.hypot(w.end.x - w.start.x, w.end.y - w.start.y);
 export const isVerticalWall = (w: Pick<Wall, "start" | "end">) => Math.abs(w.end.x - w.start.x) < Math.abs(w.end.y - w.start.y);
 
+/** Distance from p to the wall's centre-line segment. */
+export function distanceToWall(p: Point, w: Pick<Wall, "start" | "end">): number {
+  const dx = w.end.x - w.start.x, dy = w.end.y - w.start.y;
+  const len2 = dx * dx + dy * dy;
+  const t = len2 ? Math.max(0, Math.min(1, ((p.x - w.start.x) * dx + (p.y - w.start.y) * dy) / len2)) : 0;
+  return Math.hypot(p.x - (w.start.x + t * dx), p.y - (w.start.y + t * dy));
+}
+
 /** The wall's footprint from centre-line + thickness, with square caps so corners close. */
 export function wallPolygon(w: Pick<Wall, "start" | "end" | "thickness_px">): Pt[] {
   const t = (w.thickness_px ?? DEFAULT_WALL_THICKNESS_PX) / 2;

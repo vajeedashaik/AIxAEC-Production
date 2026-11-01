@@ -171,7 +171,8 @@ def main() -> None:
                            "command": resolved, "summary": summary_text, "question": None, "candidates": [],
                            "stage": None, "detail": None, "transcript": None, "edit_id": EDIT_ID},
         "commands.clarification": {
-            "status": "CLARIFICATION", "version": 1, "model": None, "changes": None, "command": None,
+            "status": "CLARIFICATION", "version": 1, "model": None, "changes": None,
+            "command": {**resolved, "target_id": None, "target_query": "kitchen wall"},  # unresolved, for re-send
             "summary": None, "question": "Which kitchen wall do you mean?",
             "candidates": [
                 {"id": living_kitchen["id"], "kind": "wall", "label": "vertical wall, 450 px long, kitchen | living",

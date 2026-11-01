@@ -224,7 +224,7 @@ function openingOnWall(w: Wall, position: number, widthPx: number, kind: "door" 
 
 type Outcome =
   | { status: "APPLIED"; model: FloorPlanModel; changes: ChangeSet; command: CommandInput; summary: string }
-  | { status: "CLARIFICATION"; question: string; candidates: Candidate[] }
+  | { status: "CLARIFICATION"; question: string; candidates: Candidate[]; command?: CommandInput }
   | { status: "REJECTED"; stage: RejectStage; detail: string };
 
 const reject = (stage: RejectStage, detail: string): Outcome => ({ status: "REJECTED", stage, detail });
@@ -277,6 +277,7 @@ function parseInstruction(text: string, m: FloorPlanModel): CommandInput | Outco
     return {
       status: "CLARIFICATION",
       question: `Which ${kind} do you mean?`,
+      command: { operation: kind === "door" ? "DELETE_DOOR" : "DELETE_WINDOW", target_query: kind } as CommandInput,
       candidates: found.map((o) => ({
         id: o.id,
         kind,
@@ -294,21 +295,18 @@ function parseInstruction(text: string, m: FloorPlanModel): CommandInput | Outco
     if (/\bbetween\b/.test(t) && rooms.length >= 2) {
       wall = m.walls.find((w) => rooms[0].wall_ids.includes(w.id) && rooms[1].wall_ids.includes(w.id));
     }
-    if (!wall) {
-      const pool = rooms.length ? m.walls.filter((w) => rooms[0].wall_ids.includes(w.id)) : m.walls;
-      return { status: "CLARIFICATION", question: "Which wall do you mean?", candidates: pool.slice(0, 4).map((w) => wallCandidate(w)) };
-    }
     if (!dist || !dir) return reject("parse", "Say how far and which way, e.g. “300 mm left”.");
     const value = Number(dist[1]);
     if (!(value > 0)) return reject("schema", "The distance must be greater than zero.");
     const unit = dist[2];
     const mm = unit.startsWith("c") ? value * 10 : unit === "m" || unit.startsWith("met") ? value * 1000 : value;
-    return {
-      operation: "MOVE_WALL",
-      target_id: wall.id,
-      direction: DIRS[dir],
-      distance: unit.startsWith("p") ? { value, unit: "px" } : { value: mm, unit: "mm" },
-    };
+    const move = { operation: "MOVE_WALL", direction: DIRS[dir], distance: unit.startsWith("p") ? { value, unit: "px" as const } : { value: mm, unit: "mm" as const } } as const;
+    if (!wall) {
+      const pool = rooms.length ? m.walls.filter((w) => rooms[0].wall_ids.includes(w.id)) : m.walls;
+      // Like the real API: the parsed command comes back unresolved, so the UI re-sends it with the picked id.
+      return { status: "CLARIFICATION", question: "Which wall do you mean?", candidates: pool.slice(0, 4).map((w) => wallCandidate(w)), command: { ...move, target_query: "wall" } as CommandInput };
+    }
+    return { ...move, target_id: wall.id };
   }
   return reject("parse", "I couldn't turn that into an edit. Try “move the wall between the kitchen and the living room 300 mm left”.");
 }
@@ -525,7 +523,7 @@ export const mockApi = {
     if (out.status === "APPLIED") {
       res = { ...empty, status: persist ? "APPLIED" : "PREVIEW", version: base.version, model: out.model, changes: out.changes, command: out.command as CommandResponse["command"], summary: out.summary };
     } else if (out.status === "CLARIFICATION") {
-      res = { ...empty, status: "CLARIFICATION", version: base.version, question: out.question, candidates: out.candidates };
+      res = { ...empty, status: "CLARIFICATION", version: base.version, question: out.question, candidates: out.candidates, command: (out.command ?? null) as CommandResponse["command"] };
     } else {
       res = { ...empty, status: "REJECTED", version: base.version, stage: out.stage, detail: out.detail };
     }

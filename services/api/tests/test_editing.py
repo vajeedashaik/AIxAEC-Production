@@ -149,6 +149,7 @@ def test_clarification_is_audited(api: Api, upstream: respx.MockRouter, transact
     upstream["execute"].mock(side_effect=None, return_value=httpx.Response(200, json=CLARIFY))
     body = CommandResponse.model_validate(api.edit(floorplan_id).json())
     assert (body.status, body.question, len(body.candidates)) == ("CLARIFICATION", CLARIFY["question"], 2)
+    assert body.command is not None and body.command.operation == "MOVE_WALL"  # re-sent with the picked target_id
     with transactional() as session:
         edit = session.scalars(select(EditRow)).one()
     assert edit.status == "CLARIFICATION"

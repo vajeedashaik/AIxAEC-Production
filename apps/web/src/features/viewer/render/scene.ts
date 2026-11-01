@@ -1,6 +1,6 @@
 import { roomFillVar, type BBox, type Door, type FloorPlanModel, type RoomType, type Stair } from "@/contracts";
 
-import { bboxPolygon, boundsOf, polygonArea, polygonCentroid, round2, validBBox, validRoom, validWall, wallPolygon } from "./geometry";
+import { bboxPolygon, boundsOf, distanceToWall, isVerticalWall, polygonArea, polygonCentroid, round2, validBBox, validRoom, validWall, wallPolygon } from "./geometry";
 import type { CanvasToken, LayerId, Primitive, Pt, Scene } from "./types";
 import { formatArea } from "./units";
 
@@ -158,14 +158,14 @@ export function buildScene(model: FloorPlanModel | null | undefined, options: Bu
   for (const s of stairs) out.push(...stairPrimitives(s));
   for (const f of furniture) out.push({ type: "polygon", elementId: f.id, kind: "furniture", layer: "objects", points: bboxPolygon(f.bbox), fill: null, stroke: "canvas-furniture", strokeWidth: 1.5 });
 
-  const wallBounds = boundsOf(walls.flatMap((w) => [[w.start.x, w.start.y] as Pt, [w.end.x, w.end.y] as Pt]));
   for (const d of dimensions) {
     const { x, y } = d.position!;
     const base = { elementId: d.id, kind: "dimension", layer: "dimensions", fill: null, strokeWidth: 1 } as const;
     out.push({ ...base, type: "text", at: [round2(x), round2(y)], text: d.text, size: small, mono: true, stroke: null, fill: "canvas-dimension" });
     if (!d.span_px) continue;
-    // CONTRACT-GAP: Dimension has no orientation. Beside the wall extent = vertical run; otherwise horizontal.
-    const vertical = !!wallBounds && (x < wallBounds.minX || x > wallBounds.maxX);
+    // Vision measures span_px along the wall nearest the label, so that wall gives the orientation.
+    const nearest = walls.reduce<(typeof walls)[number] | null>((best, w) => (!best || distanceToWall(d.position!, w) < distanceToWall(d.position!, best) ? w : best), null);
+    const vertical = nearest ? isVerticalWall(nearest) : false;
     const half = d.span_px / 2;
     const tick = small / 3;
     const c = vertical ? x + small * 1.7 : y + small * 0.5;

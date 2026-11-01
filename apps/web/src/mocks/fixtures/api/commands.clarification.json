@@ -3,7 +3,16 @@
   "version": 1,
   "model": null,
   "changes": null,
-  "command": null,
+  "command": {
+    "operation": "MOVE_WALL",
+    "target_id": null,
+    "target_query": "kitchen wall",
+    "direction": "LEFT",
+    "distance": {
+      "value": 300,
+      "unit": "mm"
+    }
+  },
   "summary": null,
   "question": "Which kitchen wall do you mean?",
   "candidates": [
