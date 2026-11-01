@@ -67,7 +67,7 @@ function ProjectItem({ project, view, onAfterDelete }: { project: Project; view:
     <li className={view === "grid" ? "group relative flex flex-col overflow-hidden rounded-lg border bg-card transition-colors duration-(--duration-fast) hover:border-border-strong" : "flex items-center gap-3 py-(--row-gap)"}>
       {view === "grid" ? (
         <>
-          <PlanThumb src={project.thumbnail_url} label={`Latest floor plan in ${project.name}`} className="aspect-[3/2] w-full rounded-none border-0 border-b" />
+          <PlanThumb src={project.thumbnail_url} label={`Latest floor plan in ${project.name}`} className="aspect-[5/2] w-full rounded-none border-0 border-b sm:aspect-[3/2]" />
           <div className="flex items-start gap-2 p-3">
             <div className="min-w-0 flex-1">
               <h2 className="truncate text-sm font-medium">

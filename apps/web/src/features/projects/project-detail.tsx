@@ -70,7 +70,7 @@ function InlineEdit({
         {value || placeholder}
       </button>
     );
-    return Tag === "h1" ? <h1 className={displayClassName}>{button}</h1> : button;
+    return Tag === "h1" ? <h1 className={cn("w-full", displayClassName)}>{button}</h1> : button;
   }
   const Field = multiline ? Textarea : Input;
   return (

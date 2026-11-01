@@ -1,6 +1,6 @@
 "use client";
 
-import { UserProfile } from "@clerk/nextjs";
+import { useAuth, UserProfile } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { useSyncExternalStore, type ReactNode } from "react";
 
@@ -65,12 +65,19 @@ export function SettingsView() {
           options={[{ value: "metric", label: "mm and m²" }, { value: "px", label: "Pixels" }]}
         />
       </Section>
-      {CLERK_ENABLED && (
-        <Section title="Account">
-          {/* Hash routing: /settings isn't a catch-all route. */}
-          <UserProfile routing="hash" appearance={{ ...clerkAppearance, elements: { ...clerkAppearance.elements, cardBox: { boxShadow: "none", width: "100%", border: "1px solid var(--border)" }, rootBox: { width: "100%" } } }} />
-        </Section>
-      )}
+      {CLERK_ENABLED && <AccountSection />}
     </div>
+  );
+}
+
+/** Only inside <ClerkProvider>. Hidden when signed out (e.g. the dev mock bypass), where <UserProfile/> can't render. */
+function AccountSection() {
+  const { isSignedIn } = useAuth();
+  if (!isSignedIn) return null;
+  return (
+    <Section title="Account">
+      {/* Hash routing: /settings isn't a catch-all route. */}
+      <UserProfile routing="hash" appearance={{ ...clerkAppearance, elements: { ...clerkAppearance.elements, cardBox: { boxShadow: "none", width: "100%", border: "1px solid var(--border)" }, rootBox: { width: "100%" } } }} />
+    </Section>
   );
 }

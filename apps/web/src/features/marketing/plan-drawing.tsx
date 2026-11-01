@@ -4,7 +4,7 @@ import { areaLabel, INITIAL_PLAN, PLAN_H, PLAN_W, planRooms, SPLIT_Y, type Movab
 
 const EXTERIOR = 140;
 const INTERIOR = 90;
-const MARGIN = 420;
+const MARGIN = 420; // the viewBox adds 160 more on top, for the dimension label
 
 const wall = (delay: number, width = INTERIOR) => ({
   pathLength: 1,
@@ -36,7 +36,7 @@ export function PlanDrawing({
 
   return (
     <svg
-      viewBox={`${-MARGIN} ${-MARGIN} ${PLAN_W + MARGIN * 2} ${PLAN_H + MARGIN * 2}`}
+      viewBox={`${-MARGIN} ${-MARGIN - 160} ${PLAN_W + MARGIN * 2} ${PLAN_H + MARGIN * 2 + 160}`}
       role="img"
       aria-label="Floor plan of a two-bedroom apartment: living room, kitchen, hall, bath and two bedrooms."
       className={cn("h-auto w-full select-none", className)}

@@ -26,13 +26,17 @@ const CANDIDATES: { wall: MovableWall; label: string }[] = [
   { wall: "bath", label: "Between bath and bedroom 2" },
 ];
 const TYPE_MS = 28;
-const AUTOPLAY_DELAY_MS = 1500;
 
 /** The hero's working fragment: the same outcomes as the real pipeline (preview, clarification, rejection, undo), on a tiny real calculation. */
 export function HeroDemo() {
   const [versions, setVersions] = useState<PlanState[]>([INITIAL_PLAN]);
   const [typed, setTyped] = useState(COMMANDS[0].text);
-  const [outcome, setOutcome] = useState<Outcome>({ kind: "idle" });
+  // Opens on the first command's preview, rendered on the server: the product moment is there from the first paint
+  // (a delayed autoplay made its own text the LCP element at 3 s).
+  const [outcome, setOutcome] = useState<Outcome>(() => {
+    const first = moveWallLeft(INITIAL_PLAN, COMMANDS[0].wall!, COMMANDS[0].mm);
+    return first.ok ? { kind: "preview", ghost: first.plan, summary: first.summary } : { kind: "idle" };
+  });
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const plan = versions.at(-1)!;
 
@@ -65,15 +69,7 @@ export function HeroDemo() {
     [interpret],
   );
 
-  // Plays once after the walls draw in, then waits for the visitor. Static text already reads correctly before this runs.
-  useEffect(() => {
-    const t = setTimeout(() => run(COMMANDS[0]), AUTOPLAY_DELAY_MS);
-    return () => {
-      clearTimeout(t);
-      clearTimers();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, on mount
-  }, []);
+  useEffect(() => clearTimers, []);
 
   const apply = (ghost: PlanState, summary: string) => {
     setVersions((v) => [...v, ghost]);

@@ -14,7 +14,7 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
         <PlanDrawing plan={INITIAL_PLAN} className="mx-auto w-full max-w-xl" />
         <p className="max-w-[44ch] text-base">The AI reads your instruction. The geometry engine moves the wall, and every edit is a version you can undo.</p>
       </aside>
-      <main className="flex flex-col items-center justify-center gap-6 p-6">
+      <main className="flex min-w-0 flex-col items-center justify-center gap-6 overflow-x-clip p-4 sm:p-6">
         <Link href="/" aria-label="AEC Studio home" className="lg:hidden">
           <Logo className="text-base" />
         </Link>
