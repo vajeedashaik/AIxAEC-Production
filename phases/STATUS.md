@@ -49,10 +49,28 @@ First step in each worktree: `py -m uv sync` in its service (P1–P4) or `npm in
 
 | Phase | Status |
 |---|---|
-| P1 Vision | NOT_STARTED |
-| P2 Geometry | NOT_STARTED |
-| P3 Core API | NOT_STARTED |
-| P4 Language | NOT_STARTED |
-| P5 Web shell | NOT_STARTED |
-| P6 Workspace | NOT_STARTED |
-| P7 Integration | NOT_STARTED |
+| P1 Vision | TESTED (merged; e2e on the real stack) |
+| P2 Geometry | TESTED (merged; e2e on the real stack) |
+| P3 Core API | TESTED (merged; e2e on the real stack) |
+| P4 Language | TESTED (merged; rules + Whisper on the real stack; OmniRoute LLM path not run) |
+| P5 Web shell | TESTED (merged; e2e on the real stack) |
+| P6 Workspace | TESTED (merged; e2e on the real stack) |
+| P7 Integration | TESTED, see below |
+
+## P7 Integration, E2E & Hardening (2026-11-01)
+
+Nothing is VERIFIED (a human check on the real stack is still to do). Details: [docs/FEATURE_STATUS.md](../docs/FEATURE_STATUS.md).
+
+| Deliverable | Status | Notes |
+|---|---|---|
+| Merge P1–P6 (`--no-ff`, one at a time, suites after each) | TESTED | No conflicts, so no ownership violations. P6 had left its HANDOFF and 3 small fixes uncommitted; committed on its branch first. |
+| Contract gaps | TESTED | P6 #1 accepted with no schema change (CLARIFICATION returns the parsed command; workaround removed). P6 #2 resolved without a contract change (orientation from the nearest wall). P5's 3 requests deferred as features. See decisions D7–D11. |
+| Cross-phase requests | TESTED | Root `.dockerignore` (P3). P5's `FetchXhr` duplicate and P6's full-bleed workspace header **not done**. |
+| Real stack | TESTED | Local Supabase (migrations applied, private buckets), compose backend (vision, geometry, language, api, worker), `next start` web, Clerk dev instance. OmniRoute not configured (no key), so language runs rules + Whisper. `services/api/.env` points at a hosted Supabase project; e2e used local Supabase through a compose override and never touched the hosted project. |
+| e2e suite (`e2e/`, 10 tests, all 12 flows) | TESTED | 10/10 green, zero CSP violations. Outage tests need `E2E_COMPOSE=1`. |
+| Fixes found end to end | TESTED | Geometry: "wall between X and Y" / "shared wall" asked "which wall?" because vision merges collinear walls (now prefers walls with a room on each side); mm on an unscaled plan asked "which wall?" before refusing (now refused first). Web: no security headers or CSP (added, including Clerk Protect origins); a language outage was titled "I didn't understand that" (now "offline"). |
+| Hardening | PARTIAL | Done: IDOR (e2e + P3), internal ports, secrets-in-logs scan, CSP/headers, pip-audit + npm audit, worker-crash recovery, outages, vision 2.5 s, geometry ≤ 23 ms p95. Not done: Supabase MCP advisors (MCP not authenticated), Lighthouse performance score (LCP 213 ms / CLS 0 measured instead), OmniRoute-down and whisper-missing on the real stack, the formal `/security-review`, impeccable/hallmark audits, `/token-optimizer` audit. |
+| CI (`.github/workflows/ci.yml`) | IMPLEMENTED | Not run on GitHub (not pushed). |
+| Docs (`docs/ARCHITECTURE.md`, `RUNBOOK.md`, `FEATURE_STATUS.md`, `DEMO_SCRIPT.md`, `SECURITY.md`), README | IMPLEMENTED | |
+
+Suites on `main`: contracts 154, vision 113 (+1 skipped), geometry 200, api 151 (+1 skipped), language 276 (+1 skipped), web 209, e2e 10 (final run 10/10, 3.3 min). Vision and the workspace vitest file are timing-sensitive under heavy load (OneDrive sync + the running stack); the workspace file now sets a 15 s per-test timeout.

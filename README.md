@@ -42,26 +42,49 @@ Free stack only: Clerk (auth), Supabase (Postgres + Storage), OmniRoute (free LL
 | `apps/web` | Next.js 16 app (Tailwind 4, shadcn/ui, Clerk, TanStack Query, MSW) |
 | `phases/` | The build plan: one prompt per Claude session, shared architecture, contracts, ownership, tooling |
 
+## Screenshots
+
+| Preview an edit before applying it | Ask instead of guessing | History with a discarded branch |
+|---|---|---|
+| ![Preview ghost](apps/web/qa/p7/04-preview-ghost.png) | ![Clarification](apps/web/qa/p7/05-clarification.png) | ![History](apps/web/qa/p7/08-history-discarded.png) |
+
+All screenshots in [apps/web/qa/p7](apps/web/qa/p7) come from the e2e suite running against the real stack.
+
+## Tech
+
+| Layer | Choice |
+|---|---|
+| Web | Next.js 16, React 19, Tailwind 4, shadcn/ui, TanStack Query, Clerk |
+| API + worker | FastAPI, SQLAlchemy 2, Postgres job queue (`SKIP LOCKED`) |
+| Vision | OpenCV, Tesseract, PyMuPDF |
+| Geometry | Shapely 2, deterministic, Hypothesis-fuzzed |
+| Language | Rules + OmniRoute (OpenAI-compatible, free LLMs), faster-whisper |
+| Data | Supabase Postgres + private Storage (local `supabase start` or free tier) |
+| Auth | Clerk (JWT via JWKS) |
+| Contracts | Pydantic → JSON Schema → TypeScript |
+| Tests | pytest, vitest, Playwright e2e (`e2e/`), GitHub Actions (`.github/workflows/ci.yml`) |
+
 ## Quick start (Windows PowerShell)
 
-Prerequisites: Python launcher `py` (uv via `py -m uv`), Node 22+, Docker Desktop (for Supabase / compose), Supabase CLI.
+Prerequisites: Docker Desktop, Supabase CLI, Python 3.12 (`py -m uv`), Node 22+, a free Clerk application. Full setup and troubleshooting: [docs/RUNBOOK.md](docs/RUNBOOK.md).
 
 ```powershell
-# contracts
-cd packages/contracts; py -m uv sync; py -m uv run pytest; cd ../..
-
-# any service (vision 8001, geometry 8002, language 8003, api 8000)
-cd services/geometry; py -m uv sync; py -m uv run uvicorn app.main:app --port 8002
-
-# web against mocks (no backend needed)
-cd apps/web; npm install; copy .env.example .env.local   # set NEXT_PUBLIC_API_MOCKING=on
-npm run dev
-
-# everything in Docker (after copying .env.example to .env)
-docker compose up --build
+# 1. env files: copy every .env.example (apps/web/.env.example -> .env.local); add Clerk keys
+# 2. database + storage
+cd services/api; supabase start; supabase db reset; cd ../..   # put SERVICE_ROLE_KEY from `supabase status -o env` in .env
+# 3. backend
+docker compose up -d --build --wait vision geometry language api worker
+# 4. web
+cd apps/web; npm ci; npm run build; npx next start -p 3000      # http://localhost:3000
+# 5. e2e (optional)
+cd ../../e2e; npm ci; npx playwright install chromium; npx playwright test
 ```
 
-Regenerate contracts after a change (P7 only): `cd packages/contracts; py -m uv run python scripts/export_schema.py`, then `cd apps/web; npm run gen:contracts`.
+Without a backend: `cd apps/web; $env:NEXT_PUBLIC_API_MOCKING="on"; npm run dev` runs the whole UI on MSW fixtures.
+
+## Docs
+
+[Architecture + decisions](docs/ARCHITECTURE.md) · [Runbook](docs/RUNBOOK.md) · [Feature status](docs/FEATURE_STATUS.md) · [Security](docs/SECURITY.md) · [Demo script](docs/DEMO_SCRIPT.md)
 
 ## Build plan
 

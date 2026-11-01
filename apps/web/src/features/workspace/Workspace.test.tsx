@@ -21,6 +21,9 @@ const MOVE = "move the wall between the kitchen and the living room 300 mm left"
 const EMPTY = { model: null, changes: null, command: null, summary: null, question: null, candidates: [], stage: null, detail: null, transcript: null, edit_id: null };
 
 // jsdom has no layout: the real panels hit-test every pointer at (0,0) as a separator drag.
+// These tests type full instructions key by key and walk several screens: ~4–5 s each, too close to vitest's 5 s default.
+vi.setConfig({ testTimeout: 15_000 });
+
 vi.mock("@/components/ui/resizable", () => ({
   ResizablePanelGroup: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   ResizablePanel: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
