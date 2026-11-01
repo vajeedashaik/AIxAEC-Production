@@ -1,0 +1,80 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "detail": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "default": {},
+      "title": "Detail",
+      "type": "object"
+    },
+    "duration_ms": {
+      "minimum": 0,
+      "title": "Duration Ms",
+      "type": "integer"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "maxLength": 500,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error"
+    },
+    "name": {
+      "enum": [
+        "preprocess",
+        "wall_detection",
+        "ocr",
+        "object_detection",
+        "room_detection",
+        "calibration",
+        "semantic_assembly",
+        "artifacts"
+      ],
+      "title": "Name",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "degraded",
+        "failed",
+        "skipped"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "status",
+    "duration_ms",
+    "error",
+    "detail"
+  ],
+  "title": "StageReport",
+  "type": "object"
+}

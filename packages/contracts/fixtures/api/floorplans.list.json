@@ -1,0 +1,102 @@
+[
+  {
+    "id": "c0d50567-abaa-43fd-ba84-0b9e05790fa7",
+    "project_id": "a3e1b2c4-d5f6-4a7b-8c9d-e0f1a2b3c4d5",
+    "version": 1,
+    "original_filename": "apartment.png",
+    "content_type": "image/png",
+    "size_bytes": 48213,
+    "status": "COMPLETED",
+    "current_model_version": 1,
+    "download_url": "http://127.0.0.1:54321/storage/v1/object/sign/floorplans/a3e1b2c4-d5f6-4a7b-8c9d-e0f1a2b3c4d5/c0d50567-abaa-43fd-ba84-0b9e05790fa7/source.png?token=example",
+    "latest_job": {
+      "id": "c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7",
+      "floorplan_id": "c0d50567-abaa-43fd-ba84-0b9e05790fa7",
+      "status": "COMPLETED",
+      "attempts": 1,
+      "stages": [
+        {
+          "name": "preprocess",
+          "status": "ok",
+          "duration_ms": 120,
+          "error": null,
+          "detail": {
+            "deskew_deg": 0.0,
+            "width": 1600,
+            "height": 1200
+          }
+        },
+        {
+          "name": "wall_detection",
+          "status": "ok",
+          "duration_ms": 157,
+          "error": null,
+          "detail": {
+            "walls": 17
+          }
+        },
+        {
+          "name": "ocr",
+          "status": "ok",
+          "duration_ms": 194,
+          "error": null,
+          "detail": {
+            "texts": 6
+          }
+        },
+        {
+          "name": "object_detection",
+          "status": "ok",
+          "duration_ms": 231,
+          "error": null,
+          "detail": {
+            "doors": 4,
+            "windows": 3
+          }
+        },
+        {
+          "name": "room_detection",
+          "status": "ok",
+          "duration_ms": 268,
+          "error": null,
+          "detail": {
+            "rooms": 5
+          }
+        },
+        {
+          "name": "calibration",
+          "status": "ok",
+          "duration_ms": 305,
+          "error": null,
+          "detail": {
+            "mm_per_pixel": 10.0
+          }
+        },
+        {
+          "name": "semantic_assembly",
+          "status": "ok",
+          "duration_ms": 342,
+          "error": null,
+          "detail": {
+            "elements": 34
+          }
+        },
+        {
+          "name": "artifacts",
+          "status": "ok",
+          "duration_ms": 379,
+          "error": null,
+          "detail": {
+            "count": 4
+          }
+        }
+      ],
+      "error_message": null,
+      "created_at": "2026-11-01T10:00:00.000Z",
+      "started_at": "2026-11-01T10:00:02.000Z",
+      "finished_at": "2026-11-01T10:00:08.412Z"
+    },
+    "warnings": [],
+    "created_at": "2026-11-01T10:00:00.000Z"
+  }
+]

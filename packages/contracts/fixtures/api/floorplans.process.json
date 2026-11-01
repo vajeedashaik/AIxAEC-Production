@@ -1,0 +1,11 @@
+{
+  "id": "c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7",
+  "floorplan_id": "c0d50567-abaa-43fd-ba84-0b9e05790fa7",
+  "status": "PENDING",
+  "attempts": 0,
+  "stages": [],
+  "error_message": null,
+  "created_at": "2026-11-01T10:00:00.000Z",
+  "started_at": null,
+  "finished_at": null
+}

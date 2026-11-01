@@ -1,0 +1,226 @@
+{
+  "$defs": {
+    "EditLogEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "instruction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Instruction"
+        },
+        "operation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Operation"
+        },
+        "parent_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parent Version"
+        },
+        "result_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Result Version"
+        },
+        "stage": {
+          "anyOf": [
+            {
+              "enum": [
+                "parse",
+                "schema",
+                "entity_resolution",
+                "semantic_validation",
+                "geometry",
+                "constraints"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stage"
+        },
+        "status": {
+          "enum": [
+            "APPLIED",
+            "REJECTED",
+            "CLARIFICATION",
+            "UNDO",
+            "REDO"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "instruction",
+        "operation",
+        "status",
+        "stage",
+        "error",
+        "parent_version",
+        "result_version",
+        "created_at"
+      ],
+      "title": "EditLogEntry",
+      "type": "object"
+    },
+    "VersionInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "discarded": {
+          "title": "Discarded",
+          "type": "boolean"
+        },
+        "edit_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Edit Id"
+        },
+        "is_head": {
+          "title": "Is Head",
+          "type": "boolean"
+        },
+        "origin": {
+          "enum": [
+            "PROCESSING",
+            "EDIT"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "parent_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parent Version"
+        },
+        "version": {
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "version",
+        "origin",
+        "parent_version",
+        "discarded",
+        "is_head",
+        "created_at",
+        "edit_id"
+      ],
+      "title": "VersionInfo",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "can_redo": {
+      "title": "Can Redo",
+      "type": "boolean"
+    },
+    "can_undo": {
+      "title": "Can Undo",
+      "type": "boolean"
+    },
+    "edits": {
+      "items": {
+        "$ref": "#/$defs/EditLogEntry"
+      },
+      "title": "Edits",
+      "type": "array"
+    },
+    "head_version": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Head Version"
+    },
+    "versions": {
+      "items": {
+        "$ref": "#/$defs/VersionInfo"
+      },
+      "title": "Versions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "head_version",
+    "can_undo",
+    "can_redo",
+    "versions",
+    "edits"
+  ],
+  "title": "History",
+  "type": "object"
+}

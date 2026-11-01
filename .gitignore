@@ -1,0 +1,38 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
+node_modules/
+.next/
+out/
+
+# Env files (keep the examples)
+.env
+.env.*
+!.env.example
+
+# Supabase
+supabase/.temp/
+**/supabase/.temp/
+**/supabase/.branches/
+
+# QA screenshots (folders are kept with .gitkeep)
+apps/web/qa/**/*.png
+
+# Playwright CLI / MCP output (may contain credentials)
+.playwright-cli/
+.playwright-mcp/
+.playwright/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/

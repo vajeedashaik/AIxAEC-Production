@@ -1,0 +1,1487 @@
+{
+  "$defs": {
+    "AddDoor": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "ADD_DOOR",
+          "title": "Operation",
+          "type": "string"
+        },
+        "position": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Position",
+          "type": "number"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        },
+        "width": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Distance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "position",
+        "width"
+      ],
+      "title": "AddDoor",
+      "type": "object"
+    },
+    "AddWall": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/Point"
+        },
+        "operation": {
+          "const": "ADD_WALL",
+          "title": "Operation",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/Point"
+        },
+        "thickness_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thickness Px"
+        }
+      },
+      "required": [
+        "operation",
+        "start",
+        "end",
+        "thickness_px"
+      ],
+      "title": "AddWall",
+      "type": "object"
+    },
+    "AddWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "ADD_WINDOW",
+          "title": "Operation",
+          "type": "string"
+        },
+        "position": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Position",
+          "type": "number"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        },
+        "width": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Distance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "position",
+        "width"
+      ],
+      "title": "AddWindow",
+      "type": "object"
+    },
+    "BBox": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "exclusiveMinimum": 0,
+          "title": "Height",
+          "type": "number"
+        },
+        "width": {
+          "exclusiveMinimum": 0,
+          "title": "Width",
+          "type": "number"
+        },
+        "x": {
+          "minimum": 0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "minimum": 0,
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "title": "BBox",
+      "type": "object"
+    },
+    "CalibrationSource": {
+      "enum": [
+        "UNKNOWN",
+        "ASSUMED_DEFAULT",
+        "DIMENSION_OCR",
+        "MANUAL"
+      ],
+      "title": "CalibrationSource",
+      "type": "string"
+    },
+    "ChangeSet": {
+      "additionalProperties": false,
+      "properties": {
+        "added": {
+          "default": [],
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": "Added",
+          "type": "array"
+        },
+        "modified": {
+          "default": [],
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": "Modified",
+          "type": "array"
+        },
+        "removed": {
+          "default": [],
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": "Removed",
+          "type": "array"
+        }
+      },
+      "required": [
+        "added",
+        "modified",
+        "removed"
+      ],
+      "title": "ChangeSet",
+      "type": "object"
+    },
+    "Column": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox"
+      ],
+      "title": "Column",
+      "type": "object"
+    },
+    "CoordinateSystem": {
+      "additionalProperties": false,
+      "properties": {
+        "calibration_confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Calibration Confidence"
+        },
+        "calibration_source": {
+          "$ref": "#/$defs/CalibrationSource",
+          "default": "UNKNOWN"
+        },
+        "image_height": {
+          "exclusiveMinimum": 0,
+          "title": "Image Height",
+          "type": "integer"
+        },
+        "image_width": {
+          "exclusiveMinimum": 0,
+          "title": "Image Width",
+          "type": "integer"
+        },
+        "mm_per_pixel": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mm Per Pixel"
+        }
+      },
+      "required": [
+        "image_width",
+        "image_height",
+        "mm_per_pixel",
+        "calibration_source",
+        "calibration_confidence"
+      ],
+      "title": "CoordinateSystem",
+      "type": "object"
+    },
+    "DeleteDoor": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "DELETE_DOOR",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation"
+      ],
+      "title": "DeleteDoor",
+      "type": "object"
+    },
+    "DeleteWall": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "DELETE_WALL",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation"
+      ],
+      "title": "DeleteWall",
+      "type": "object"
+    },
+    "DeleteWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "DELETE_WINDOW",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation"
+      ],
+      "title": "DeleteWindow",
+      "type": "object"
+    },
+    "Dimension": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Point"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "span_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Span Px"
+        },
+        "text": {
+          "maxLength": 80,
+          "title": "Text",
+          "type": "string"
+        },
+        "value_mm": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Mm"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "text",
+        "value_mm",
+        "span_px",
+        "position"
+      ],
+      "title": "Dimension",
+      "type": "object"
+    },
+    "Direction": {
+      "enum": [
+        "LEFT",
+        "RIGHT",
+        "UP",
+        "DOWN"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "Distance": {
+      "additionalProperties": false,
+      "properties": {
+        "unit": {
+          "enum": [
+            "mm",
+            "px"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "exclusiveMinimum": 0,
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "unit"
+      ],
+      "title": "Distance",
+      "type": "object"
+    },
+    "Door": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "swing": {
+          "anyOf": [
+            {
+              "enum": [
+                "LEFT",
+                "RIGHT",
+                "DOUBLE",
+                "SLIDING"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Swing"
+        },
+        "wall_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wall Id"
+        },
+        "width_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Width Px"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox",
+        "wall_id",
+        "width_px",
+        "swing"
+      ],
+      "title": "Door",
+      "type": "object"
+    },
+    "FloorPlanModel": {
+      "additionalProperties": false,
+      "properties": {
+        "columns": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Column"
+          },
+          "title": "Columns",
+          "type": "array"
+        },
+        "coordinate_system": {
+          "$ref": "#/$defs/CoordinateSystem"
+        },
+        "dimensions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Dimension"
+          },
+          "title": "Dimensions",
+          "type": "array"
+        },
+        "doors": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Door"
+          },
+          "title": "Doors",
+          "type": "array"
+        },
+        "floorplan_id": {
+          "format": "uuid",
+          "title": "Floorplan Id",
+          "type": "string"
+        },
+        "furniture": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Furniture"
+          },
+          "title": "Furniture",
+          "type": "array"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "rooms": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Room"
+          },
+          "title": "Rooms",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "stairs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Stair"
+          },
+          "title": "Stairs",
+          "type": "array"
+        },
+        "walls": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Wall"
+          },
+          "title": "Walls",
+          "type": "array"
+        },
+        "windows": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Window"
+          },
+          "title": "Windows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "floorplan_id",
+        "coordinate_system",
+        "walls",
+        "doors",
+        "windows",
+        "columns",
+        "stairs",
+        "furniture",
+        "dimensions",
+        "rooms"
+      ],
+      "title": "FloorPlanModel",
+      "type": "object"
+    },
+    "Furniture": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "category": {
+          "anyOf": [
+            {
+              "maxLength": 60,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Category"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox",
+        "category"
+      ],
+      "title": "Furniture",
+      "type": "object"
+    },
+    "MoveWall": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "distance": {
+          "$ref": "#/$defs/Distance"
+        },
+        "operation": {
+          "const": "MOVE_WALL",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "direction",
+        "distance"
+      ],
+      "title": "MoveWall",
+      "type": "object"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "minimum": 0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "minimum": 0,
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "RenameRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "operation": {
+          "const": "RENAME_ROOM",
+          "title": "Operation",
+          "type": "string"
+        },
+        "room_type": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoomType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "name",
+        "room_type"
+      ],
+      "title": "RenameRoom",
+      "type": "object"
+    },
+    "ResizeMode": {
+      "enum": [
+        "EXPAND",
+        "CONTRACT"
+      ],
+      "title": "ResizeMode",
+      "type": "string"
+    },
+    "ResizeRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "distance": {
+          "$ref": "#/$defs/Distance"
+        },
+        "mode": {
+          "$ref": "#/$defs/ResizeMode"
+        },
+        "operation": {
+          "const": "RESIZE_ROOM",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "direction",
+        "distance",
+        "mode"
+      ],
+      "title": "ResizeRoom",
+      "type": "object"
+    },
+    "Room": {
+      "additionalProperties": false,
+      "properties": {
+        "area_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Area Px"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "label_text": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label Text"
+        },
+        "polygon": {
+          "items": {
+            "$ref": "#/$defs/Point"
+          },
+          "minItems": 3,
+          "title": "Polygon",
+          "type": "array"
+        },
+        "room_type": {
+          "$ref": "#/$defs/RoomType",
+          "default": "UNKNOWN"
+        },
+        "room_type_confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Room Type Confidence"
+        },
+        "room_type_source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Source"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "wall_ids": {
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": "Wall Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "polygon",
+        "wall_ids",
+        "label_text",
+        "room_type",
+        "room_type_source",
+        "room_type_confidence",
+        "area_px"
+      ],
+      "title": "Room",
+      "type": "object"
+    },
+    "RoomType": {
+      "enum": [
+        "UNKNOWN",
+        "BEDROOM",
+        "MASTER_BEDROOM",
+        "BATHROOM",
+        "KITCHEN",
+        "LIVING_ROOM",
+        "DINING_ROOM",
+        "HALLWAY",
+        "CLOSET",
+        "GARAGE",
+        "OFFICE",
+        "LAUNDRY",
+        "BALCONY",
+        "STORAGE",
+        "STAIRWELL",
+        "UTILITY",
+        "OTHER"
+      ],
+      "title": "RoomType",
+      "type": "string"
+    },
+    "SetScale": {
+      "additionalProperties": false,
+      "properties": {
+        "length_mm": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Length Mm",
+          "type": "number"
+        },
+        "operation": {
+          "const": "SET_SCALE",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "length_mm"
+      ],
+      "title": "SetScale",
+      "type": "object"
+    },
+    "Source": {
+      "enum": [
+        "DETECTED",
+        "INFERRED",
+        "USER_CONFIRMED"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "Stair": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "polygon": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Point"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Polygon"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox",
+        "polygon"
+      ],
+      "title": "Stair",
+      "type": "object"
+    },
+    "Wall": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "end": {
+          "$ref": "#/$defs/Point"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "start": {
+          "$ref": "#/$defs/Point"
+        },
+        "thickness_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thickness Px"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "start",
+        "end",
+        "thickness_px"
+      ],
+      "title": "Wall",
+      "type": "object"
+    },
+    "Window": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "wall_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wall Id"
+        },
+        "width_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Width Px"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox",
+        "wall_id",
+        "width_px"
+      ],
+      "title": "Window",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "changes": {
+      "$ref": "#/$defs/ChangeSet"
+    },
+    "command": {
+      "discriminator": {
+        "mapping": {
+          "ADD_DOOR": "#/$defs/AddDoor",
+          "ADD_WALL": "#/$defs/AddWall",
+          "ADD_WINDOW": "#/$defs/AddWindow",
+          "DELETE_DOOR": "#/$defs/DeleteDoor",
+          "DELETE_WALL": "#/$defs/DeleteWall",
+          "DELETE_WINDOW": "#/$defs/DeleteWindow",
+          "MOVE_WALL": "#/$defs/MoveWall",
+          "RENAME_ROOM": "#/$defs/RenameRoom",
+          "RESIZE_ROOM": "#/$defs/ResizeRoom",
+          "SET_SCALE": "#/$defs/SetScale"
+        },
+        "propertyName": "operation"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/MoveWall"
+        },
+        {
+          "$ref": "#/$defs/AddWall"
+        },
+        {
+          "$ref": "#/$defs/DeleteWall"
+        },
+        {
+          "$ref": "#/$defs/ResizeRoom"
+        },
+        {
+          "$ref": "#/$defs/AddDoor"
+        },
+        {
+          "$ref": "#/$defs/AddWindow"
+        },
+        {
+          "$ref": "#/$defs/DeleteDoor"
+        },
+        {
+          "$ref": "#/$defs/DeleteWindow"
+        },
+        {
+          "$ref": "#/$defs/RenameRoom"
+        },
+        {
+          "$ref": "#/$defs/SetScale"
+        }
+      ],
+      "title": "Command"
+    },
+    "model": {
+      "$ref": "#/$defs/FloorPlanModel"
+    },
+    "status": {
+      "const": "APPLIED",
+      "title": "Status",
+      "type": "string"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "command",
+    "model",
+    "changes",
+    "summary"
+  ],
+  "title": "ExecuteApplied",
+  "type": "object"
+}

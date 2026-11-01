@@ -1,0 +1,18 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "labels": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 200,
+      "title": "Labels",
+      "type": "array"
+    }
+  },
+  "required": [
+    "labels"
+  ],
+  "title": "ClassifyRoomsRequest",
+  "type": "object"
+}

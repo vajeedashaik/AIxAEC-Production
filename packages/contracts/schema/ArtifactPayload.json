@@ -1,0 +1,34 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "content_type": {
+      "enum": [
+        "image/png",
+        "application/json"
+      ],
+      "title": "Content Type",
+      "type": "string"
+    },
+    "data_base64": {
+      "title": "Data Base64",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "preprocessed",
+        "walls_overlay",
+        "detected_elements",
+        "semantic_model"
+      ],
+      "title": "Kind",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "content_type",
+    "data_base64"
+  ],
+  "title": "ArtifactPayload",
+  "type": "object"
+}

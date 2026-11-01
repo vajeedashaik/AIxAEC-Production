@@ -1,0 +1,34 @@
+[
+  {
+    "id": "f8d6a7b9-c0e1-4f2a-9b4c-d5e6f7a8b9c0",
+    "job_id": "c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7",
+    "kind": "preprocessed",
+    "content_type": "image/png",
+    "size_bytes": 20480,
+    "url": "http://127.0.0.1:54321/storage/v1/object/sign/artifacts/a3e1b2c4-d5f6-4a7b-8c9d-e0f1a2b3c4d5/c0d50567-abaa-43fd-ba84-0b9e05790fa7/c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7/preprocessed.png?token=example"
+  },
+  {
+    "id": "09e7b8c0-d1f2-4a3b-8c5d-e6f7a8b9c0d1",
+    "job_id": "c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7",
+    "kind": "walls_overlay",
+    "content_type": "image/png",
+    "size_bytes": 21504,
+    "url": "http://127.0.0.1:54321/storage/v1/object/sign/artifacts/a3e1b2c4-d5f6-4a7b-8c9d-e0f1a2b3c4d5/c0d50567-abaa-43fd-ba84-0b9e05790fa7/c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7/walls_overlay.png?token=example"
+  },
+  {
+    "id": "1af8c9d1-e2a3-4b4c-9d6e-f7a8b9c0d1e2",
+    "job_id": "c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7",
+    "kind": "detected_elements",
+    "content_type": "application/json",
+    "size_bytes": 22528,
+    "url": "http://127.0.0.1:54321/storage/v1/object/sign/artifacts/a3e1b2c4-d5f6-4a7b-8c9d-e0f1a2b3c4d5/c0d50567-abaa-43fd-ba84-0b9e05790fa7/c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7/detected_elements.json?token=example"
+  },
+  {
+    "id": "2ba9d0e2-f3b4-4c5d-8e7f-a8b9c0d1e2f3",
+    "job_id": "c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7",
+    "kind": "semantic_model",
+    "content_type": "application/json",
+    "size_bytes": 23552,
+    "url": "http://127.0.0.1:54321/storage/v1/object/sign/artifacts/a3e1b2c4-d5f6-4a7b-8c9d-e0f1a2b3c4d5/c0d50567-abaa-43fd-ba84-0b9e05790fa7/c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7/semantic_model.json?token=example"
+  }
+]

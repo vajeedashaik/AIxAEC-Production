@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "added": {
+      "default": [],
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Added",
+      "type": "array"
+    },
+    "modified": {
+      "default": [],
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Modified",
+      "type": "array"
+    },
+    "removed": {
+      "default": [],
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Removed",
+      "type": "array"
+    }
+  },
+  "required": [
+    "added",
+    "modified",
+    "removed"
+  ],
+  "title": "ChangeSet",
+  "type": "object"
+}

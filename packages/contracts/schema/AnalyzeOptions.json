@@ -1,0 +1,25 @@
+{
+  "additionalProperties": false,
+  "description": "The optional `options` JSON form field of POST /v1/analyze.",
+  "properties": {
+    "max_dimension": {
+      "default": 2400,
+      "exclusiveMinimum": 0,
+      "maximum": 10000,
+      "title": "Max Dimension",
+      "type": "integer"
+    },
+    "object_detection": {
+      "default": true,
+      "title": "Object Detection",
+      "type": "boolean"
+    },
+    "ocr": {
+      "default": true,
+      "title": "Ocr",
+      "type": "boolean"
+    }
+  },
+  "title": "AnalyzeOptions",
+  "type": "object"
+}

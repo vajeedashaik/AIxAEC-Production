@@ -1,0 +1,14 @@
+{
+  "status": "REJECTED",
+  "version": 1,
+  "model": null,
+  "changes": null,
+  "command": null,
+  "summary": null,
+  "question": null,
+  "candidates": [],
+  "stage": "semantic_validation",
+  "detail": "Set a scale first to use millimetres.",
+  "transcript": null,
+  "edit_id": null
+}

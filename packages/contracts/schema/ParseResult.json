@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "command": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Command"
+    },
+    "detail": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Detail"
+    },
+    "model": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model"
+    },
+    "provider": {
+      "enum": [
+        "rules",
+        "llm"
+      ],
+      "title": "Provider",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PARSED",
+        "UNKNOWN",
+        "ERROR"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "command",
+    "provider",
+    "model",
+    "detail"
+  ],
+  "title": "ParseResult",
+  "type": "object"
+}

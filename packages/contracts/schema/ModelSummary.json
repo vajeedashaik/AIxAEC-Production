@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "columns": {
+      "title": "Columns",
+      "type": "integer"
+    },
+    "dimensions": {
+      "title": "Dimensions",
+      "type": "integer"
+    },
+    "doors": {
+      "title": "Doors",
+      "type": "integer"
+    },
+    "furniture": {
+      "title": "Furniture",
+      "type": "integer"
+    },
+    "rooms": {
+      "title": "Rooms",
+      "type": "integer"
+    },
+    "stairs": {
+      "title": "Stairs",
+      "type": "integer"
+    },
+    "walls": {
+      "title": "Walls",
+      "type": "integer"
+    },
+    "windows": {
+      "title": "Windows",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "walls",
+    "doors",
+    "windows",
+    "columns",
+    "stairs",
+    "furniture",
+    "dimensions",
+    "rooms"
+  ],
+  "title": "ModelSummary",
+  "type": "object"
+}

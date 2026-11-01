@@ -1,0 +1,222 @@
+{
+  "$defs": {
+    "MetricInsights": {
+      "additionalProperties": false,
+      "properties": {
+        "average_room_area_m2": {
+          "title": "Average Room Area M2",
+          "type": "number"
+        },
+        "exterior_wall_length_m": {
+          "title": "Exterior Wall Length M",
+          "type": "number"
+        },
+        "interior_wall_length_m": {
+          "title": "Interior Wall Length M",
+          "type": "number"
+        },
+        "total_area_m2": {
+          "title": "Total Area M2",
+          "type": "number"
+        },
+        "total_wall_length_m": {
+          "title": "Total Wall Length M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "total_area_m2",
+        "average_room_area_m2",
+        "total_wall_length_m",
+        "exterior_wall_length_m",
+        "interior_wall_length_m"
+      ],
+      "title": "MetricInsights",
+      "type": "object"
+    },
+    "ModelSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "columns": {
+          "title": "Columns",
+          "type": "integer"
+        },
+        "dimensions": {
+          "title": "Dimensions",
+          "type": "integer"
+        },
+        "doors": {
+          "title": "Doors",
+          "type": "integer"
+        },
+        "furniture": {
+          "title": "Furniture",
+          "type": "integer"
+        },
+        "rooms": {
+          "title": "Rooms",
+          "type": "integer"
+        },
+        "stairs": {
+          "title": "Stairs",
+          "type": "integer"
+        },
+        "walls": {
+          "title": "Walls",
+          "type": "integer"
+        },
+        "windows": {
+          "title": "Windows",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "walls",
+        "doors",
+        "windows",
+        "columns",
+        "stairs",
+        "furniture",
+        "dimensions",
+        "rooms"
+      ],
+      "title": "ModelSummary",
+      "type": "object"
+    },
+    "RoomRef": {
+      "additionalProperties": false,
+      "properties": {
+        "area_px": {
+          "title": "Area Px",
+          "type": "number"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Label"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "area_px"
+      ],
+      "title": "RoomRef",
+      "type": "object"
+    },
+    "RoomType": {
+      "enum": [
+        "UNKNOWN",
+        "BEDROOM",
+        "MASTER_BEDROOM",
+        "BATHROOM",
+        "KITCHEN",
+        "LIVING_ROOM",
+        "DINING_ROOM",
+        "HALLWAY",
+        "CLOSET",
+        "GARAGE",
+        "OFFICE",
+        "LAUNDRY",
+        "BALCONY",
+        "STORAGE",
+        "STAIRWELL",
+        "UTILITY",
+        "OTHER"
+      ],
+      "title": "RoomType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "average_room_area_px": {
+      "title": "Average Room Area Px",
+      "type": "number"
+    },
+    "counts": {
+      "$ref": "#/$defs/ModelSummary"
+    },
+    "exterior_wall_length_px": {
+      "title": "Exterior Wall Length Px",
+      "type": "number"
+    },
+    "interior_wall_length_px": {
+      "title": "Interior Wall Length Px",
+      "type": "number"
+    },
+    "largest_room": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RoomRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "metric": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MetricInsights"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rooms_by_type": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/RoomType"
+      },
+      "title": "Rooms By Type",
+      "type": "object"
+    },
+    "smallest_room": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RoomRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "total_area_px": {
+      "title": "Total Area Px",
+      "type": "number"
+    },
+    "total_wall_length_px": {
+      "title": "Total Wall Length Px",
+      "type": "number"
+    }
+  },
+  "required": [
+    "counts",
+    "total_area_px",
+    "average_room_area_px",
+    "largest_room",
+    "smallest_room",
+    "total_wall_length_px",
+    "exterior_wall_length_px",
+    "interior_wall_length_px",
+    "rooms_by_type",
+    "metric"
+  ],
+  "title": "Insights",
+  "type": "object"
+}

@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "stale_model",
+    "message": "The plan changed since you loaded it.",
+    "details": {
+      "head_version": 2
+    }
+  }
+}

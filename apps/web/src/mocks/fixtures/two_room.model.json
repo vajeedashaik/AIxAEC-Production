@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "id": "84c56d0f-83e1-47dd-9b79-3d5b5da3dae5",
+  "floorplan_id": "b6fc3bd9-65af-4eed-9ece-fb7793008474",
+  "coordinate_system": {
+    "image_width": 1000,
+    "image_height": 600,
+    "mm_per_pixel": 10.0,
+    "calibration_source": "MANUAL",
+    "calibration_confidence": 1.0
+  },
+  "walls": [
+    {
+      "id": "52d65a1b-8012-434e-801b-19e6ba3cdc0e",
+      "confidence": 0.97,
+      "source": "DETECTED",
+      "start": {
+        "x": 100,
+        "y": 100
+      },
+      "end": {
+        "x": 500,
+        "y": 100
+      },
+      "thickness_px": 20.0
+    },
+    {
+      "id": "1d04bc6f-9066-4e59-a411-2626c70a70ef",
+      "confidence": 0.97,
+      "source": "DETECTED",
+      "start": {
+        "x": 500,
+        "y": 100
+      },
+      "end": {
+        "x": 900,
+        "y": 100
+      },
+      "thickness_px": 20.0
+    },
+    {
+      "id": "4b80ebe4-e287-4adf-8046-a6bce168ef40",
+      "confidence": 0.97,
+      "source": "DETECTED",
+      "start": {
+        "x": 900,
+        "y": 100
+      },
+      "end": {
+        "x": 900,
+        "y": 500
+      },
+      "thickness_px": 20.0
+    },
+    {
+      "id": "1ccce7b9-006e-4a9f-8096-eb17992e8cdc",
+      "confidence": 0.97,
+      "source": "DETECTED",
+      "start": {
+        "x": 900,
+        "y": 500
+      },
+      "end": {
+        "x": 500,
+        "y": 500
+      },
+      "thickness_px": 20.0
+    },
+    {
+      "id": "4ee323b0-8336-4dd5-bbe8-f3654468a80b",
+      "confidence": 0.97,
+      "source": "DETECTED",
+      "start": {
+        "x": 500,
+        "y": 500
+      },
+      "end": {
+        "x": 100,
+        "y": 500
+      },
+      "thickness_px": 20.0
+    },
+    {
+      "id": "57546619-0d69-4ca8-936d-1e64fe5b83ef",
+      "confidence": 0.97,
+      "source": "DETECTED",
+      "start": {
+        "x": 100,
+        "y": 500
+      },
+      "end": {
+        "x": 100,
+        "y": 100
+      },
+      "thickness_px": 20.0
+    },
+    {
+      "id": "5b0e4ca9-e095-4f8c-9cec-48b5c602dc85",
+      "confidence": 0.97,
+      "source": "DETECTED",
+      "start": {
+        "x": 500,
+        "y": 100
+      },
+      "end": {
+        "x": 500,
+        "y": 500
+      },
+      "thickness_px": 10.0
+    }
+  ],
+  "doors": [],
+  "windows": [],
+  "columns": [],
+  "stairs": [],
+  "furniture": [],
+  "dimensions": [],
+  "rooms": [
+    {
+      "id": "f2247d39-03e8-4267-b8b1-155406d50c90",
+      "confidence": 0.93,
+      "source": "DETECTED",
+      "polygon": [
+        {
+          "x": 100,
+          "y": 100
+        },
+        {
+          "x": 500,
+          "y": 100
+        },
+        {
+          "x": 500,
+          "y": 500
+        },
+        {
+          "x": 100,
+          "y": 500
+        }
+      ],
+      "wall_ids": [
+        "52d65a1b-8012-434e-801b-19e6ba3cdc0e",
+        "5b0e4ca9-e095-4f8c-9cec-48b5c602dc85",
+        "4ee323b0-8336-4dd5-bbe8-f3654468a80b",
+        "57546619-0d69-4ca8-936d-1e64fe5b83ef"
+      ],
+      "label_text": "BEDROOM",
+      "room_type": "BEDROOM",
+      "room_type_source": "INFERRED",
+      "room_type_confidence": 0.95,
+      "area_px": 160000
+    },
+    {
+      "id": "c793844d-6594-4521-98f7-5e5a2cc54b4f",
+      "confidence": 0.93,
+      "source": "DETECTED",
+      "polygon": [
+        {
+          "x": 500,
+          "y": 100
+        },
+        {
+          "x": 900,
+          "y": 100
+        },
+        {
+          "x": 900,
+          "y": 500
+        },
+        {
+          "x": 500,
+          "y": 500
+        }
+      ],
+      "wall_ids": [
+        "1d04bc6f-9066-4e59-a411-2626c70a70ef",
+        "4b80ebe4-e287-4adf-8046-a6bce168ef40",
+        "1ccce7b9-006e-4a9f-8096-eb17992e8cdc",
+        "5b0e4ca9-e095-4f8c-9cec-48b5c602dc85"
+      ],
+      "label_text": "OFFICE",
+      "room_type": "OFFICE",
+      "room_type_source": "INFERRED",
+      "room_type_confidence": 0.95,
+      "area_px": 160000
+    }
+  ]
+}

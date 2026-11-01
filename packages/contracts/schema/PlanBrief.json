@@ -1,0 +1,141 @@
+{
+  "$defs": {
+    "ModelSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "columns": {
+          "title": "Columns",
+          "type": "integer"
+        },
+        "dimensions": {
+          "title": "Dimensions",
+          "type": "integer"
+        },
+        "doors": {
+          "title": "Doors",
+          "type": "integer"
+        },
+        "furniture": {
+          "title": "Furniture",
+          "type": "integer"
+        },
+        "rooms": {
+          "title": "Rooms",
+          "type": "integer"
+        },
+        "stairs": {
+          "title": "Stairs",
+          "type": "integer"
+        },
+        "walls": {
+          "title": "Walls",
+          "type": "integer"
+        },
+        "windows": {
+          "title": "Windows",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "walls",
+        "doors",
+        "windows",
+        "columns",
+        "stairs",
+        "furniture",
+        "dimensions",
+        "rooms"
+      ],
+      "title": "ModelSummary",
+      "type": "object"
+    },
+    "RoomBrief": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Label"
+        },
+        "room_type": {
+          "$ref": "#/$defs/RoomType"
+        },
+        "wall_count": {
+          "title": "Wall Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "label",
+        "room_type",
+        "wall_count"
+      ],
+      "title": "RoomBrief",
+      "type": "object"
+    },
+    "RoomType": {
+      "enum": [
+        "UNKNOWN",
+        "BEDROOM",
+        "MASTER_BEDROOM",
+        "BATHROOM",
+        "KITCHEN",
+        "LIVING_ROOM",
+        "DINING_ROOM",
+        "HALLWAY",
+        "CLOSET",
+        "GARAGE",
+        "OFFICE",
+        "LAUNDRY",
+        "BALCONY",
+        "STORAGE",
+        "STAIRWELL",
+        "UTILITY",
+        "OTHER"
+      ],
+      "title": "RoomType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "No coordinates and no ids: the only plan context an LLM ever sees.",
+  "properties": {
+    "counts": {
+      "$ref": "#/$defs/ModelSummary"
+    },
+    "has_scale": {
+      "title": "Has Scale",
+      "type": "boolean"
+    },
+    "image_height": {
+      "title": "Image Height",
+      "type": "integer"
+    },
+    "image_width": {
+      "title": "Image Width",
+      "type": "integer"
+    },
+    "rooms": {
+      "items": {
+        "$ref": "#/$defs/RoomBrief"
+      },
+      "title": "Rooms",
+      "type": "array"
+    }
+  },
+  "required": [
+    "rooms",
+    "counts",
+    "has_scale",
+    "image_width",
+    "image_height"
+  ],
+  "title": "PlanBrief",
+  "type": "object"
+}

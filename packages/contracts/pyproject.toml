@@ -1,0 +1,45 @@
+[project]
+name = "aec-contracts"
+version = "1.0.0"
+description = "Frozen cross-boundary shapes for the AEC AI Platform (Building Model, commands, service DTOs, public API DTOs, lexicon)."
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2.11,<3"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    # fixtures/synthetic_plan.py
+    "numpy>=2",
+    "opencv-python-headless>=4.10",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aec_contracts"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+# CONTRACTS.md lays several fields on one line; keep the shape readable side by side with the spec.
+"src/aec_contracts/*.py" = ["E701", "E702"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false

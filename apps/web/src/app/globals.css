@@ -1,0 +1,370 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * Design tokens: see apps/web/DESIGN.md (law).
+ * Three layers: primitive (--p-*) → semantic (shadcn names + status) → component / canvas.
+ * Token NAMES are frozen after P0. P5 may tune VALUES. P6 consumes --canvas-* names.
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── 1. Primitives (never used directly by components) ─────────────────────────────── */
+:root {
+  /* Graphite: neutral with a faint cool cast (hue 255). Step 0 = white, 12 = near black. */
+  --p-gray-0: oklch(1 0 0);
+  --p-gray-1: oklch(0.985 0.002 255);
+  --p-gray-2: oklch(0.967 0.003 255);
+  --p-gray-3: oklch(0.94 0.004 255);
+  --p-gray-4: oklch(0.905 0.005 255);
+  --p-gray-5: oklch(0.85 0.006 255);
+  --p-gray-6: oklch(0.72 0.008 255);
+  --p-gray-7: oklch(0.56 0.01 255);
+  --p-gray-8: oklch(0.44 0.01 255);
+  --p-gray-9: oklch(0.32 0.009 255);
+  --p-gray-10: oklch(0.24 0.008 255);
+  --p-gray-11: oklch(0.19 0.007 255);
+  --p-gray-12: oklch(0.155 0.006 255);
+  --p-gray-13: oklch(0.13 0.005 255);
+
+  /* Cobalt: the ONE accent. */
+  --p-cobalt-3: oklch(0.93 0.04 258);
+  --p-cobalt-5: oklch(0.78 0.11 258);
+  --p-cobalt-7: oklch(0.6 0.17 258);
+  --p-cobalt-8: oklch(0.53 0.19 258);
+  --p-cobalt-9: oklch(0.46 0.18 258);
+
+  /* Status hues (semantic use only). */
+  --p-green-6: oklch(0.72 0.15 155);
+  --p-green-8: oklch(0.52 0.13 155);
+  --p-amber-6: oklch(0.8 0.15 75);
+  --p-amber-8: oklch(0.6 0.14 65);
+  --p-red-6: oklch(0.7 0.18 25);
+  --p-red-8: oklch(0.55 0.2 27);
+  --p-sky-6: oklch(0.75 0.11 230);
+  --p-sky-8: oklch(0.55 0.12 235);
+}
+
+/* ── 2. Semantic: light ───────────────────────────────────────────────────────────── */
+:root {
+  --background: var(--p-gray-1);
+  --foreground: var(--p-gray-12);
+  --card: var(--p-gray-0);
+  --card-foreground: var(--p-gray-12);
+  --popover: var(--p-gray-0);
+  --popover-foreground: var(--p-gray-12);
+  --primary: var(--p-cobalt-8);
+  --primary-foreground: var(--p-gray-0);
+  --secondary: var(--p-gray-3);
+  --secondary-foreground: var(--p-gray-11);
+  --muted: var(--p-gray-2);
+  --muted-foreground: var(--p-gray-7);
+  --accent: var(--p-gray-3);
+  --accent-foreground: var(--p-gray-12);
+  --destructive: var(--p-red-8);
+  --border: var(--p-gray-4);
+  --border-strong: var(--p-gray-5);
+  --input: var(--p-gray-4);
+  --ring: var(--p-cobalt-7);
+
+  --surface-sunken: var(--p-gray-2);
+  --surface-raised: var(--p-gray-0);
+
+  --success: var(--p-green-8);
+  --success-foreground: var(--p-gray-0);
+  --warning: var(--p-amber-8);
+  --warning-foreground: var(--p-gray-0);
+  --danger: var(--p-red-8);
+  --danger-foreground: var(--p-gray-0);
+  --info: var(--p-sky-8);
+  --info-foreground: var(--p-gray-0);
+
+  --chart-1: var(--p-cobalt-7);
+  --chart-2: var(--p-gray-7);
+  --chart-3: var(--p-sky-6);
+  --chart-4: var(--p-green-6);
+  --chart-5: var(--p-amber-6);
+
+  --sidebar: var(--p-gray-1);
+  --sidebar-foreground: var(--p-gray-11);
+  --sidebar-primary: var(--p-cobalt-8);
+  --sidebar-primary-foreground: var(--p-gray-0);
+  --sidebar-accent: var(--p-gray-3);
+  --sidebar-accent-foreground: var(--p-gray-12);
+  --sidebar-border: var(--p-gray-4);
+  --sidebar-ring: var(--p-cobalt-7);
+
+  /* Shape, elevation, motion */
+  --radius: 0.375rem; /* 6px: precise, not pill-soft */
+  --shadow-1: 0 1px 2px oklch(0.2 0.01 255 / 6%);
+  --shadow-2: 0 2px 6px oklch(0.2 0.01 255 / 8%), 0 1px 2px oklch(0.2 0.01 255 / 6%);
+  --shadow-3: 0 8px 24px oklch(0.2 0.01 255 / 12%), 0 2px 6px oklch(0.2 0.01 255 / 8%);
+  --duration-instant: 80ms;
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 280ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ── 3a. Component tokens ── */
+  --control-h-sm: 1.75rem; /* 28px */
+  --control-h-md: 2rem; /* 32px: default density */
+  --control-h-lg: 2.5rem; /* 40px: marketing / touch */
+  --topbar-h: 2.75rem; /* 44px */
+  --sidebar-w: 15rem; /* 240px */
+  --inspector-w: 18.75rem; /* 300px */
+  --command-bar-h: 3rem; /* 48px */
+  --focus-ring-width: 2px;
+  --icon-stroke: 1.5;
+
+  /* ── 3b. Canvas palette (floor-plan renderer). Names frozen: --canvas-* ── */
+  --canvas-paper: var(--p-gray-0);
+  --canvas-grid: oklch(0.94 0.004 255);
+  --canvas-grid-major: oklch(0.89 0.006 255);
+  --canvas-wall: oklch(0.2 0.008 255);
+  --canvas-wall-exterior: oklch(0.14 0.006 255);
+  --canvas-door: oklch(0.42 0.01 255);
+  --canvas-door-swing: oklch(0.62 0.01 255);
+  --canvas-window: oklch(0.55 0.1 230);
+  --canvas-column: oklch(0.3 0.008 255);
+  --canvas-stair: oklch(0.45 0.01 255);
+  --canvas-furniture: oklch(0.7 0.008 255);
+  --canvas-dimension: oklch(0.5 0.01 255);
+  --canvas-room-label: oklch(0.3 0.008 255);
+  --canvas-room-area: oklch(0.52 0.01 255);
+  --canvas-room-stroke: oklch(0.86 0.006 255);
+  /* Room fills by RoomType (low chroma so walls and selection stay dominant) */
+  --canvas-room-unknown: oklch(0.965 0.003 255);
+  --canvas-room-bedroom: oklch(0.95 0.025 280);
+  --canvas-room-master-bedroom: oklch(0.935 0.035 285);
+  --canvas-room-bathroom: oklch(0.95 0.03 215);
+  --canvas-room-kitchen: oklch(0.955 0.04 80);
+  --canvas-room-living-room: oklch(0.955 0.03 145);
+  --canvas-room-dining-room: oklch(0.955 0.035 60);
+  --canvas-room-hallway: oklch(0.96 0.006 255);
+  --canvas-room-closet: oklch(0.945 0.012 300);
+  --canvas-room-garage: oklch(0.93 0.008 255);
+  --canvas-room-office: oklch(0.95 0.03 190);
+  --canvas-room-laundry: oklch(0.95 0.025 235);
+  --canvas-room-balcony: oklch(0.955 0.035 120);
+  --canvas-room-storage: oklch(0.945 0.015 70);
+  --canvas-room-stairwell: oklch(0.94 0.01 255);
+  --canvas-room-utility: oklch(0.945 0.015 40);
+  --canvas-room-other: oklch(0.955 0.01 255);
+  /* Interaction overlays */
+  --canvas-hover: oklch(0.6 0.17 258 / 45%);
+  --canvas-selection: var(--p-cobalt-8);
+  --canvas-selection-fill: oklch(0.53 0.19 258 / 10%);
+  --canvas-handle: var(--p-gray-0);
+  --canvas-preview-add: oklch(0.55 0.14 155);
+  --canvas-preview-modify: oklch(0.62 0.15 70);
+  --canvas-preview-remove: oklch(0.56 0.2 27);
+}
+
+/* ── 2. Semantic: dark ────────────────────────────────────────────────────────────── */
+.dark {
+  --background: var(--p-gray-13);
+  --foreground: var(--p-gray-2);
+  --card: var(--p-gray-12);
+  --card-foreground: var(--p-gray-2);
+  --popover: var(--p-gray-11);
+  --popover-foreground: var(--p-gray-2);
+  --primary: var(--p-cobalt-7);
+  --primary-foreground: var(--p-gray-0);
+  --secondary: var(--p-gray-10);
+  --secondary-foreground: var(--p-gray-3);
+  --muted: var(--p-gray-11);
+  --muted-foreground: var(--p-gray-6);
+  --accent: var(--p-gray-10);
+  --accent-foreground: var(--p-gray-1);
+  --destructive: var(--p-red-6);
+  --border: oklch(1 0 0 / 9%);
+  --border-strong: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: var(--p-cobalt-5);
+
+  --surface-sunken: oklch(0.11 0.005 255);
+  --surface-raised: var(--p-gray-11);
+
+  --success: var(--p-green-6);
+  --success-foreground: var(--p-gray-13);
+  --warning: var(--p-amber-6);
+  --warning-foreground: var(--p-gray-13);
+  --danger: var(--p-red-6);
+  --danger-foreground: var(--p-gray-13);
+  --info: var(--p-sky-6);
+  --info-foreground: var(--p-gray-13);
+
+  --chart-1: var(--p-cobalt-5);
+  --chart-2: var(--p-gray-6);
+  --chart-3: var(--p-sky-6);
+  --chart-4: var(--p-green-6);
+  --chart-5: var(--p-amber-6);
+
+  --sidebar: var(--p-gray-13);
+  --sidebar-foreground: var(--p-gray-4);
+  --sidebar-primary: var(--p-cobalt-7);
+  --sidebar-primary-foreground: var(--p-gray-0);
+  --sidebar-accent: var(--p-gray-10);
+  --sidebar-accent-foreground: var(--p-gray-1);
+  --sidebar-border: oklch(1 0 0 / 9%);
+  --sidebar-ring: var(--p-cobalt-5);
+
+  --shadow-1: 0 1px 2px oklch(0 0 0 / 30%);
+  --shadow-2: 0 2px 8px oklch(0 0 0 / 40%);
+  --shadow-3: 0 12px 32px oklch(0 0 0 / 50%), 0 0 0 1px oklch(1 0 0 / 6%);
+
+  /* Canvas: "blueprint at night" — dark paper, light ink. */
+  --canvas-paper: oklch(0.17 0.008 255);
+  --canvas-grid: oklch(0.21 0.008 255);
+  --canvas-grid-major: oklch(0.25 0.01 255);
+  --canvas-wall: oklch(0.88 0.006 255);
+  --canvas-wall-exterior: oklch(0.95 0.004 255);
+  --canvas-door: oklch(0.75 0.01 255);
+  --canvas-door-swing: oklch(0.55 0.01 255);
+  --canvas-window: oklch(0.72 0.1 225);
+  --canvas-column: oklch(0.8 0.008 255);
+  --canvas-stair: oklch(0.68 0.01 255);
+  --canvas-furniture: oklch(0.45 0.008 255);
+  --canvas-dimension: oklch(0.65 0.01 255);
+  --canvas-room-label: oklch(0.88 0.006 255);
+  --canvas-room-area: oklch(0.66 0.01 255);
+  --canvas-room-stroke: oklch(0.3 0.01 255);
+  --canvas-room-unknown: oklch(0.2 0.006 255);
+  --canvas-room-bedroom: oklch(0.23 0.03 280);
+  --canvas-room-master-bedroom: oklch(0.24 0.04 285);
+  --canvas-room-bathroom: oklch(0.23 0.03 215);
+  --canvas-room-kitchen: oklch(0.24 0.035 80);
+  --canvas-room-living-room: oklch(0.23 0.03 145);
+  --canvas-room-dining-room: oklch(0.24 0.035 60);
+  --canvas-room-hallway: oklch(0.2 0.006 255);
+  --canvas-room-closet: oklch(0.22 0.015 300);
+  --canvas-room-garage: oklch(0.21 0.008 255);
+  --canvas-room-office: oklch(0.23 0.03 190);
+  --canvas-room-laundry: oklch(0.23 0.025 235);
+  --canvas-room-balcony: oklch(0.23 0.035 120);
+  --canvas-room-storage: oklch(0.22 0.015 70);
+  --canvas-room-stairwell: oklch(0.21 0.01 255);
+  --canvas-room-utility: oklch(0.22 0.015 40);
+  --canvas-room-other: oklch(0.21 0.01 255);
+  --canvas-hover: oklch(0.78 0.11 258 / 50%);
+  --canvas-selection: var(--p-cobalt-5);
+  --canvas-selection-fill: oklch(0.78 0.11 258 / 14%);
+  --canvas-handle: var(--p-gray-12);
+  --canvas-preview-add: oklch(0.75 0.15 155);
+  --canvas-preview-modify: oklch(0.8 0.14 75);
+  --canvas-preview-remove: oklch(0.7 0.18 25);
+}
+
+/* Tailwind utilities generated from the semantic layer (bg-success, text-muted-foreground, ...). */
+@theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-heading: var(--font-sans);
+
+  --text-micro: 0.6875rem; /* 11px: meta, axis labels */
+  --text-micro--line-height: 1rem;
+  --text-ui: 0.8125rem; /* 13px: default dense UI */
+  --text-ui--line-height: 1.25rem;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised: var(--surface-raised);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.67);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 1.33);
+  --radius-xl: calc(var(--radius) * 2);
+  --radius-2xl: calc(var(--radius) * 2.67);
+  --radius-3xl: calc(var(--radius) * 3.33);
+  --radius-4xl: calc(var(--radius) * 4);
+
+  --shadow-xs: var(--shadow-1);
+  --shadow-sm: var(--shadow-1);
+  --shadow-md: var(--shadow-2);
+  --shadow-lg: var(--shadow-3);
+
+  --ease-standard: var(--ease-standard);
+  --ease-enter: var(--ease-enter);
+  --ease-exit: var(--ease-exit);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    font-feature-settings: "ss01", "cv11";
+  }
+  body {
+    @apply bg-background text-foreground text-ui antialiased;
+  }
+  /* Dimensions, coordinates, ids and versions use tabular mono numerals. */
+  .numeric {
+    @apply font-mono;
+    font-variant-numeric: tabular-nums slashed-zero;
+  }
+  :focus-visible {
+    outline: var(--focus-ring-width) solid var(--ring);
+    outline-offset: 2px;
+  }
+}

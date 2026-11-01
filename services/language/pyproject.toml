@@ -1,0 +1,40 @@
+[project]
+name = "aec-language"
+version = "0.1.0"
+description = "Rules + LLM (OmniRoute) command parser, room-label classification, local speech-to-text."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "aec-contracts",
+    "fastapi>=0.115",
+    "uvicorn>=0.32",
+    "pydantic-settings>=2.6",
+    "httpx>=0.28",
+    "python-multipart>=0.0.18",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.8", "mypy>=1.13"]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+aec-contracts = { path = "../../packages/contracts", editable = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]

@@ -1,0 +1,24 @@
+{
+  "id": "c0d50567-abaa-43fd-ba84-0b9e05790fa7",
+  "project_id": "a3e1b2c4-d5f6-4a7b-8c9d-e0f1a2b3c4d5",
+  "version": 1,
+  "original_filename": "apartment.png",
+  "content_type": "image/png",
+  "size_bytes": 48213,
+  "status": "PENDING",
+  "current_model_version": null,
+  "download_url": "http://127.0.0.1:54321/storage/v1/object/sign/floorplans/a3e1b2c4-d5f6-4a7b-8c9d-e0f1a2b3c4d5/c0d50567-abaa-43fd-ba84-0b9e05790fa7/source.png?token=example",
+  "latest_job": {
+    "id": "c5a3d4e6-f7b8-4c9d-8e1f-a2b3c4d5e6f7",
+    "floorplan_id": "c0d50567-abaa-43fd-ba84-0b9e05790fa7",
+    "status": "PENDING",
+    "attempts": 0,
+    "stages": [],
+    "error_message": null,
+    "created_at": "2026-11-01T10:00:00.000Z",
+    "started_at": null,
+    "finished_at": null
+  },
+  "warnings": [],
+  "created_at": "2026-11-01T10:00:00.000Z"
+}

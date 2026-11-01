@@ -1,0 +1,20 @@
+{
+  "enabledPlugins": {
+    "ponytail@ponytail": true,
+    "token-optimizer@alexgreensh-token-optimizer": true,
+    "hallmark@hallmark": true,
+    "impeccable@impeccable": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "supabase@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "agent-skills@addy-agent-skills": true
+  },
+  "extraKnownMarketplaces": {
+    "addy-agent-skills": { "source": { "source": "github", "repo": "addyosmani/agent-skills" } },
+    "ponytail": { "source": { "source": "github", "repo": "DietrichGebert/ponytail" } },
+    "alexgreensh-token-optimizer": { "source": { "source": "github", "repo": "alexgreensh/token-optimizer" } },
+    "hallmark": { "source": { "source": "github", "repo": "nutlope/hallmark" } },
+    "impeccable": { "source": { "source": "github", "repo": "pbakaus/impeccable" } },
+    "ui-ux-pro-max-skill": { "source": { "source": "github", "repo": "nextlevelbuilder/ui-ux-pro-max-skill" } }
+  }
+}

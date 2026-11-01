@@ -1,0 +1,64 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "discarded": {
+      "title": "Discarded",
+      "type": "boolean"
+    },
+    "edit_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Edit Id"
+    },
+    "is_head": {
+      "title": "Is Head",
+      "type": "boolean"
+    },
+    "origin": {
+      "enum": [
+        "PROCESSING",
+        "EDIT"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "parent_version": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parent Version"
+    },
+    "version": {
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "version",
+    "origin",
+    "parent_version",
+    "discarded",
+    "is_head",
+    "created_at",
+    "edit_id"
+  ],
+  "title": "VersionInfo",
+  "type": "object"
+}

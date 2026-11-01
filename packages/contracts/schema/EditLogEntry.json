@@ -1,0 +1,113 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Error"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "instruction": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Instruction"
+    },
+    "operation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Operation"
+    },
+    "parent_version": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parent Version"
+    },
+    "result_version": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Result Version"
+    },
+    "stage": {
+      "anyOf": [
+        {
+          "enum": [
+            "parse",
+            "schema",
+            "entity_resolution",
+            "semantic_validation",
+            "geometry",
+            "constraints"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Stage"
+    },
+    "status": {
+      "enum": [
+        "APPLIED",
+        "REJECTED",
+        "CLARIFICATION",
+        "UNDO",
+        "REDO"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "instruction",
+    "operation",
+    "status",
+    "stage",
+    "error",
+    "parent_version",
+    "result_version",
+    "created_at"
+  ],
+  "title": "EditLogEntry",
+  "type": "object"
+}

@@ -1,0 +1,1037 @@
+{
+  "$defs": {
+    "BBox": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "exclusiveMinimum": 0,
+          "title": "Height",
+          "type": "number"
+        },
+        "width": {
+          "exclusiveMinimum": 0,
+          "title": "Width",
+          "type": "number"
+        },
+        "x": {
+          "minimum": 0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "minimum": 0,
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "title": "BBox",
+      "type": "object"
+    },
+    "CalibrationSource": {
+      "enum": [
+        "UNKNOWN",
+        "ASSUMED_DEFAULT",
+        "DIMENSION_OCR",
+        "MANUAL"
+      ],
+      "title": "CalibrationSource",
+      "type": "string"
+    },
+    "Column": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox"
+      ],
+      "title": "Column",
+      "type": "object"
+    },
+    "CoordinateSystem": {
+      "additionalProperties": false,
+      "properties": {
+        "calibration_confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Calibration Confidence"
+        },
+        "calibration_source": {
+          "$ref": "#/$defs/CalibrationSource",
+          "default": "UNKNOWN"
+        },
+        "image_height": {
+          "exclusiveMinimum": 0,
+          "title": "Image Height",
+          "type": "integer"
+        },
+        "image_width": {
+          "exclusiveMinimum": 0,
+          "title": "Image Width",
+          "type": "integer"
+        },
+        "mm_per_pixel": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mm Per Pixel"
+        }
+      },
+      "required": [
+        "image_width",
+        "image_height",
+        "mm_per_pixel",
+        "calibration_source",
+        "calibration_confidence"
+      ],
+      "title": "CoordinateSystem",
+      "type": "object"
+    },
+    "Dimension": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Point"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "span_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Span Px"
+        },
+        "text": {
+          "maxLength": 80,
+          "title": "Text",
+          "type": "string"
+        },
+        "value_mm": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Mm"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "text",
+        "value_mm",
+        "span_px",
+        "position"
+      ],
+      "title": "Dimension",
+      "type": "object"
+    },
+    "Door": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "swing": {
+          "anyOf": [
+            {
+              "enum": [
+                "LEFT",
+                "RIGHT",
+                "DOUBLE",
+                "SLIDING"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Swing"
+        },
+        "wall_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wall Id"
+        },
+        "width_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Width Px"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox",
+        "wall_id",
+        "width_px",
+        "swing"
+      ],
+      "title": "Door",
+      "type": "object"
+    },
+    "FloorPlanModel": {
+      "additionalProperties": false,
+      "properties": {
+        "columns": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Column"
+          },
+          "title": "Columns",
+          "type": "array"
+        },
+        "coordinate_system": {
+          "$ref": "#/$defs/CoordinateSystem"
+        },
+        "dimensions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Dimension"
+          },
+          "title": "Dimensions",
+          "type": "array"
+        },
+        "doors": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Door"
+          },
+          "title": "Doors",
+          "type": "array"
+        },
+        "floorplan_id": {
+          "format": "uuid",
+          "title": "Floorplan Id",
+          "type": "string"
+        },
+        "furniture": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Furniture"
+          },
+          "title": "Furniture",
+          "type": "array"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "rooms": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Room"
+          },
+          "title": "Rooms",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "stairs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Stair"
+          },
+          "title": "Stairs",
+          "type": "array"
+        },
+        "walls": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Wall"
+          },
+          "title": "Walls",
+          "type": "array"
+        },
+        "windows": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Window"
+          },
+          "title": "Windows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "floorplan_id",
+        "coordinate_system",
+        "walls",
+        "doors",
+        "windows",
+        "columns",
+        "stairs",
+        "furniture",
+        "dimensions",
+        "rooms"
+      ],
+      "title": "FloorPlanModel",
+      "type": "object"
+    },
+    "Furniture": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "category": {
+          "anyOf": [
+            {
+              "maxLength": 60,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Category"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox",
+        "category"
+      ],
+      "title": "Furniture",
+      "type": "object"
+    },
+    "Insights": {
+      "additionalProperties": false,
+      "properties": {
+        "average_room_area_px": {
+          "title": "Average Room Area Px",
+          "type": "number"
+        },
+        "counts": {
+          "$ref": "#/$defs/ModelSummary"
+        },
+        "exterior_wall_length_px": {
+          "title": "Exterior Wall Length Px",
+          "type": "number"
+        },
+        "interior_wall_length_px": {
+          "title": "Interior Wall Length Px",
+          "type": "number"
+        },
+        "largest_room": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoomRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metric": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MetricInsights"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rooms_by_type": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/RoomType"
+          },
+          "title": "Rooms By Type",
+          "type": "object"
+        },
+        "smallest_room": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoomRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "total_area_px": {
+          "title": "Total Area Px",
+          "type": "number"
+        },
+        "total_wall_length_px": {
+          "title": "Total Wall Length Px",
+          "type": "number"
+        }
+      },
+      "required": [
+        "counts",
+        "total_area_px",
+        "average_room_area_px",
+        "largest_room",
+        "smallest_room",
+        "total_wall_length_px",
+        "exterior_wall_length_px",
+        "interior_wall_length_px",
+        "rooms_by_type",
+        "metric"
+      ],
+      "title": "Insights",
+      "type": "object"
+    },
+    "MetricInsights": {
+      "additionalProperties": false,
+      "properties": {
+        "average_room_area_m2": {
+          "title": "Average Room Area M2",
+          "type": "number"
+        },
+        "exterior_wall_length_m": {
+          "title": "Exterior Wall Length M",
+          "type": "number"
+        },
+        "interior_wall_length_m": {
+          "title": "Interior Wall Length M",
+          "type": "number"
+        },
+        "total_area_m2": {
+          "title": "Total Area M2",
+          "type": "number"
+        },
+        "total_wall_length_m": {
+          "title": "Total Wall Length M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "total_area_m2",
+        "average_room_area_m2",
+        "total_wall_length_m",
+        "exterior_wall_length_m",
+        "interior_wall_length_m"
+      ],
+      "title": "MetricInsights",
+      "type": "object"
+    },
+    "ModelSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "columns": {
+          "title": "Columns",
+          "type": "integer"
+        },
+        "dimensions": {
+          "title": "Dimensions",
+          "type": "integer"
+        },
+        "doors": {
+          "title": "Doors",
+          "type": "integer"
+        },
+        "furniture": {
+          "title": "Furniture",
+          "type": "integer"
+        },
+        "rooms": {
+          "title": "Rooms",
+          "type": "integer"
+        },
+        "stairs": {
+          "title": "Stairs",
+          "type": "integer"
+        },
+        "walls": {
+          "title": "Walls",
+          "type": "integer"
+        },
+        "windows": {
+          "title": "Windows",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "walls",
+        "doors",
+        "windows",
+        "columns",
+        "stairs",
+        "furniture",
+        "dimensions",
+        "rooms"
+      ],
+      "title": "ModelSummary",
+      "type": "object"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "minimum": 0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "minimum": 0,
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "Room": {
+      "additionalProperties": false,
+      "properties": {
+        "area_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Area Px"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "label_text": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label Text"
+        },
+        "polygon": {
+          "items": {
+            "$ref": "#/$defs/Point"
+          },
+          "minItems": 3,
+          "title": "Polygon",
+          "type": "array"
+        },
+        "room_type": {
+          "$ref": "#/$defs/RoomType",
+          "default": "UNKNOWN"
+        },
+        "room_type_confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Room Type Confidence"
+        },
+        "room_type_source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Source"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "wall_ids": {
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": "Wall Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "polygon",
+        "wall_ids",
+        "label_text",
+        "room_type",
+        "room_type_source",
+        "room_type_confidence",
+        "area_px"
+      ],
+      "title": "Room",
+      "type": "object"
+    },
+    "RoomRef": {
+      "additionalProperties": false,
+      "properties": {
+        "area_px": {
+          "title": "Area Px",
+          "type": "number"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Label"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "area_px"
+      ],
+      "title": "RoomRef",
+      "type": "object"
+    },
+    "RoomType": {
+      "enum": [
+        "UNKNOWN",
+        "BEDROOM",
+        "MASTER_BEDROOM",
+        "BATHROOM",
+        "KITCHEN",
+        "LIVING_ROOM",
+        "DINING_ROOM",
+        "HALLWAY",
+        "CLOSET",
+        "GARAGE",
+        "OFFICE",
+        "LAUNDRY",
+        "BALCONY",
+        "STORAGE",
+        "STAIRWELL",
+        "UTILITY",
+        "OTHER"
+      ],
+      "title": "RoomType",
+      "type": "string"
+    },
+    "Source": {
+      "enum": [
+        "DETECTED",
+        "INFERRED",
+        "USER_CONFIRMED"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "Stair": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "polygon": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Point"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Polygon"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox",
+        "polygon"
+      ],
+      "title": "Stair",
+      "type": "object"
+    },
+    "Wall": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "end": {
+          "$ref": "#/$defs/Point"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "start": {
+          "$ref": "#/$defs/Point"
+        },
+        "thickness_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thickness Px"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "start",
+        "end",
+        "thickness_px"
+      ],
+      "title": "Wall",
+      "type": "object"
+    },
+    "Window": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source",
+          "default": "DETECTED"
+        },
+        "wall_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wall Id"
+        },
+        "width_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Width Px"
+        }
+      },
+      "required": [
+        "id",
+        "confidence",
+        "source",
+        "bbox",
+        "wall_id",
+        "width_px"
+      ],
+      "title": "Window",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "floorplan_id": {
+      "format": "uuid",
+      "title": "Floorplan Id",
+      "type": "string"
+    },
+    "insights": {
+      "$ref": "#/$defs/Insights"
+    },
+    "model": {
+      "$ref": "#/$defs/FloorPlanModel"
+    },
+    "summary": {
+      "$ref": "#/$defs/ModelSummary"
+    },
+    "version": {
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "floorplan_id",
+    "version",
+    "model",
+    "summary",
+    "insights"
+  ],
+  "title": "ModelEnvelope",
+  "type": "object"
+}

@@ -1,0 +1,8 @@
+# Each phase owns its fragment. Only api (8000) and web (3000) publish ports, on 127.0.0.1.
+name: aec
+include:
+  - services/vision/compose.yaml
+  - services/geometry/compose.yaml
+  - services/language/compose.yaml
+  - services/api/compose.yaml
+  - apps/web/compose.yaml

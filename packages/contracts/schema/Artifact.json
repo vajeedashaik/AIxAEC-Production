@@ -1,0 +1,47 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "content_type": {
+      "title": "Content Type",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "job_id": {
+      "format": "uuid",
+      "title": "Job Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "preprocessed",
+        "walls_overlay",
+        "detected_elements",
+        "semantic_model"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "size_bytes": {
+      "title": "Size Bytes",
+      "type": "integer"
+    },
+    "url": {
+      "title": "Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "job_id",
+    "kind",
+    "content_type",
+    "size_bytes",
+    "url"
+  ],
+  "title": "Artifact",
+  "type": "object"
+}

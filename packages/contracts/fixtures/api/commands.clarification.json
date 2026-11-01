@@ -1,0 +1,29 @@
+{
+  "status": "CLARIFICATION",
+  "version": 1,
+  "model": null,
+  "changes": null,
+  "command": null,
+  "summary": null,
+  "question": "Which kitchen wall do you mean?",
+  "candidates": [
+    {
+      "id": "260db342-ed25-4198-9c8d-81a9e520ad2a",
+      "kind": "wall",
+      "label": "vertical wall, 450 px long, kitchen | living",
+      "x": 600,
+      "y": 325
+    },
+    {
+      "id": "19dadcef-e0b3-427f-9059-49f304dca1ab",
+      "kind": "wall",
+      "label": "vertical wall, 450 px long, kitchen | bedroom",
+      "x": 960,
+      "y": 325
+    }
+  ],
+  "stage": null,
+  "detail": null,
+  "transcript": null,
+  "edit_id": null
+}

@@ -1,0 +1,33 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "detail": {
+      "title": "Detail",
+      "type": "string"
+    },
+    "stage": {
+      "enum": [
+        "parse",
+        "schema",
+        "entity_resolution",
+        "semantic_validation",
+        "geometry",
+        "constraints"
+      ],
+      "title": "Stage",
+      "type": "string"
+    },
+    "status": {
+      "const": "REJECTED",
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "stage",
+    "detail"
+  ],
+  "title": "ExecuteRejected",
+  "type": "object"
+}

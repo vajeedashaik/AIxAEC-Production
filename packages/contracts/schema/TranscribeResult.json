@@ -1,0 +1,34 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "duration_ms": {
+      "title": "Duration Ms",
+      "type": "integer"
+    },
+    "language": {
+      "title": "Language",
+      "type": "string"
+    },
+    "provider": {
+      "enum": [
+        "whisper",
+        "stub"
+      ],
+      "title": "Provider",
+      "type": "string"
+    },
+    "text": {
+      "maxLength": 500,
+      "title": "Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "text",
+    "language",
+    "duration_ms",
+    "provider"
+  ],
+  "title": "TranscribeResult",
+  "type": "object"
+}

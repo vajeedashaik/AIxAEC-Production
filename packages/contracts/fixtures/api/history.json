@@ -1,0 +1,38 @@
+{
+  "head_version": 2,
+  "can_undo": true,
+  "can_redo": false,
+  "versions": [
+    {
+      "version": 1,
+      "origin": "PROCESSING",
+      "parent_version": null,
+      "discarded": false,
+      "is_head": false,
+      "created_at": "2026-11-01T10:00:08.412Z",
+      "edit_id": null
+    },
+    {
+      "version": 2,
+      "origin": "EDIT",
+      "parent_version": 1,
+      "discarded": false,
+      "is_head": true,
+      "created_at": "2026-11-01T10:05:13.250Z",
+      "edit_id": "d6b4e5f7-a8c9-4d0e-9f2a-b3c4d5e6f7a8"
+    }
+  ],
+  "edits": [
+    {
+      "id": "d6b4e5f7-a8c9-4d0e-9f2a-b3c4d5e6f7a8",
+      "instruction": "move the wall between the kitchen and the living room 300 mm left",
+      "operation": "MOVE_WALL",
+      "status": "APPLIED",
+      "stage": null,
+      "error": null,
+      "parent_version": 1,
+      "result_version": 2,
+      "created_at": "2026-11-01T10:05:13.250Z"
+    }
+  ]
+}
