@@ -1,13 +1,20 @@
-"""Geometry routes (CONTRACTS.md §6). P0 stub: contract wired, returns 501."""
+"""Geometry routes (CONTRACTS.md §6). Validated envelope in, deterministic result out."""
 
 import hmac
+import logging
 from typing import Annotated
 
 from aec_contracts import ErrorCode, ExecuteRequest, ExecuteResult, Insights, ModelRequest, PlanBrief, ValidateResult
 from fastapi import APIRouter, Depends, Header
 
+from .brief import build_brief
 from .config import Settings, get_settings
-from .errors import NotImplementedYet, ServiceError
+from .engine.constraints import validate_model
+from .engine.execute import execute as run_execute
+from .errors import ServiceError
+from .insights import build_insights
+
+log = logging.getLogger("geometry")
 
 
 def require_internal_token(
@@ -24,19 +31,23 @@ router = APIRouter(prefix="/v1", dependencies=[Depends(require_internal_token)])
 
 @router.post("/commands/execute", response_model=ExecuteResult)
 def execute(body: ExecuteRequest) -> ExecuteResult:
-    raise NotImplementedYet()
+    result = run_execute(body.model, body.command, body.dry_run)
+    log.info("execute", extra={"fields": {"operation": str(body.command.get("operation"))[:40],
+                                          "status": result.status, "dry_run": body.dry_run}})
+    return result
 
 
 @router.post("/models/insights", response_model=Insights)
 def insights(body: ModelRequest) -> Insights:
-    raise NotImplementedYet()
+    return build_insights(body.model)
 
 
 @router.post("/models/brief", response_model=PlanBrief)
 def brief(body: ModelRequest) -> PlanBrief:
-    raise NotImplementedYet()
+    return build_brief(body.model)
 
 
 @router.post("/models/validate", response_model=ValidateResult)
 def validate(body: ModelRequest) -> ValidateResult:
-    raise NotImplementedYet()
+    issues = validate_model(body.model)
+    return ValidateResult(valid=not issues, issues=issues)
