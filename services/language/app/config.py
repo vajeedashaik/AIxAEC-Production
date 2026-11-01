@@ -32,6 +32,8 @@ class Settings(BaseSettings):
         token = self.internal_service_token.get_secret_value()
         if self.environment == "production" and (token == DEFAULT_INTERNAL_TOKEN or len(token) < 32):
             raise ValueError("INTERNAL_SERVICE_TOKEN must be set to a non-default value of >= 32 chars in production")
+        if self.command_parser == "llm" and not (self.llm_model and self.llm_api_key):
+            raise ValueError("COMMAND_PARSER=llm requires LLM_MODEL and LLM_API_KEY")
         return self
 
 

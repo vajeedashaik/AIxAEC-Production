@@ -7,7 +7,7 @@ import uuid
 from contextvars import ContextVar
 from typing import Any
 
-from aec_contracts import ErrorCode, ErrorEnvelope
+from aec_contracts import MAX_AUDIO_BYTES, ErrorCode, ErrorEnvelope
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -15,10 +15,13 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .config import Settings, get_settings
 from .errors import ServiceError
+from .parsers import build_llm_client, build_parser
+from .speech import build_speech
 from .v1 import router as v1_router
 
 request_id_var: ContextVar[str] = ContextVar("request_id", default="-")
 log = logging.getLogger("language")
+MAX_BODY_BYTES = MAX_AUDIO_BYTES + 64 * 1024  # room for the multipart framing
 
 STATUS_CODES = {401: ErrorCode.UNAUTHORIZED, 403: ErrorCode.FORBIDDEN, 404: ErrorCode.NOT_FOUND,
                 409: ErrorCode.CONFLICT, 413: ErrorCode.PAYLOAD_TOO_LARGE, 415: ErrorCode.UNSUPPORTED_MEDIA_TYPE,
@@ -63,6 +66,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     configure_logging(settings)
     app = FastAPI(title="AEC Language service", version=settings.version)
     app.dependency_overrides[get_settings] = lambda: settings
+    app.state.llm_client = build_llm_client(settings)
+    app.state.parser = build_parser(settings, app.state.llm_client)
+    app.state.speech = build_speech(settings)
 
     @app.middleware("http")
     async def request_context(request: Request, call_next: Any) -> Any:
@@ -70,7 +76,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         token = request_id_var.set(rid[:128])
         start = time.perf_counter()
         try:
-            response = await call_next(request)
+            # FastAPI spools the multipart body before any route check runs, so refuse oversized bodies here.
+            # shortcut: a chunked body has no Content-Length and is only capped after spooling; fine while internal.
+            length = request.headers.get("Content-Length", "")
+            if length.isdigit() and int(length) > MAX_BODY_BYTES:
+                response = _envelope(413, ErrorCode.PAYLOAD_TOO_LARGE, "Request body is too large.")
+            else:
+                response = await call_next(request)
         finally:
             request_id_var.reset(token)
         response.headers["X-Request-ID"] = rid[:128]
@@ -104,8 +116,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/readyz")
     def readyz() -> dict[str, str]:
-        # P4: check real dependencies here.
-        return {"status": "ok"}
+        # Stays 200 with the LLM down: rules and local STT still serve every request.
+        client = app.state.llm_client
+        return {"status": "ok", "llm": client.probe() if client else "disabled", "stt": app.state.speech.status}
 
     app.include_router(v1_router)
     return app

@@ -3,7 +3,12 @@
 Rules + LLM (OmniRoute) command parser, room-label classification, local speech-to-text.
 
 Owned by **P4** (see `phases/shared/OWNERSHIP.md`). Contracts: `phases/shared/CONTRACTS.md`.
-Status: **P0 stub**. `/healthz` and `/readyz` work; every `/v1` route returns `501` with the request/response models wired, so `/docs` already shows the contract.
+Status: see `HANDOFF.md`. Works fully offline (rules parser + lexicon + local Whisper or stub). An LLM via OmniRoute only widens coverage: `docs/OMNIROUTE.md`.
+
+| Env | Values |
+|---|---|
+| `COMMAND_PARSER` | `hybrid` (default: rules, then LLM on a miss) / `rules` (offline) / `llm` |
+| `STT_PROVIDER` | `whisper` (default, downloads `WHISPER_MODEL` on first use) / `stub` |
 
 ## Run
 ```powershell
@@ -17,7 +22,7 @@ Every `/v1` route needs `X-Internal-Token: <INTERNAL_SERVICE_TOKEN>` (401 otherw
 
 ## Test
 ```powershell
-py -m uv run pytest
+py -m uv run pytest            # -m slow: real Whisper (if cached), -m live: real OmniRoute
 py -m uv run ruff check .
 py -m uv run mypy app
 ```

@@ -1,0 +1,4 @@
+# Temporary override for OmniRoute setup: publishes its dashboard on this machine only. See docs/OMNIROUTE.md.
+services:
+  omniroute:
+    ports: ["127.0.0.1:20128:20128"]
