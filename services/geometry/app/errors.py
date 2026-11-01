@@ -10,8 +10,3 @@ class ServiceError(Exception):
 
     def __init__(self, status: int, code: ErrorCode, message: str | None = None, **details: Any) -> None:
         self.status, self.code, self.message, self.details = status, code, message, details
-
-
-class NotImplementedYet(ServiceError):
-    def __init__(self) -> None:
-        super().__init__(501, ErrorCode.INTERNAL_ERROR, "not implemented")

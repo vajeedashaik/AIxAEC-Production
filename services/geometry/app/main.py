@@ -104,7 +104,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/readyz")
     def readyz() -> dict[str, str]:
-        # P2: check real dependencies here.
+        # Stateless: no dependencies to check.
         return {"status": "ok"}
 
     app.include_router(v1_router)

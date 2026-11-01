@@ -3,7 +3,7 @@
 Stateless, deterministic: entity resolution, validation, the 10 operations, insights, plan brief.
 
 Owned by **P2** (see `phases/shared/OWNERSHIP.md`). Contracts: `phases/shared/CONTRACTS.md`.
-Status: **P0 stub**. `/healthz` and `/readyz` work; every `/v1` route returns `501` with the request/response models wired, so `/docs` already shows the contract.
+Status: implemented and tested (see `HANDOFF.md`). Scope: geometric consistency, not building-code or structural compliance.
 
 ## Run
 ```powershell
