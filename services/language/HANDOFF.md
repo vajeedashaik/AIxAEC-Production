@@ -61,4 +61,5 @@ None.
 - `shortcut:` a very large classify batch (up to 200 labels) may exceed the 4000-token completion cap. The truncated JSON fails to parse and those labels stay rules-only.
 - Whisper runs on CPU. A cold load of `base.en` took about 14 s in Docker including the download, and later calls reuse the model.
 - The image is 2.1 GB (ctranslate2 + onnxruntime + PyAV).
-- Reviews: `/ponytail-review` and the `code-review-and-quality` / `security-and-hardening` passes were done in-session against this diff. The fixes are already in (DEBUG-log leak, ambiguous "left right", lone "between"). context7 was unavailable (not authenticated), so library APIs were checked against the installed sources and the OmniRoute README/docs on GitHub instead.
+- Reviews: a manual review covered correctness, security (token compare, prompt-injection boundary, log redaction, upload and decompression limits) and simplicity, and its fixes are in (DEBUG-log leak, ambiguous "left right", lone "between", inf thickness). **The formal `/ponytail-review`, `code-review-and-quality` and `security-and-hardening` skill passes were not run.** Run them before P7 merges.
+- context7 wasn't authenticated in this session, so library APIs were checked against the installed package sources and the OmniRoute docs on GitHub.
