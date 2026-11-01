@@ -1,22 +1,29 @@
+x-api-common: &api-common
+  build:
+    context: ../..
+    dockerfile: services/api/Dockerfile
+  env_file:
+    - path: ../../.env
+      required: false
+    - path: .env
+      required: false
+  environment:
+    INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-dev-internal-token-change-me}
+    VISION_URL: http://vision:8001
+    GEOMETRY_URL: http://geometry:8002
+    LANGUAGE_URL: http://language:8003
+    # Supabase runs on the host via `supabase start`
+    DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://postgres:postgres@host.docker.internal:54322/postgres}
+    SUPABASE_URL: ${SUPABASE_URL_DOCKER:-http://host.docker.internal:54321}
+    # Signed URLs are opened by the browser, which reaches Supabase on the host's address
+    SUPABASE_PUBLIC_URL: ${SUPABASE_PUBLIC_URL:-http://127.0.0.1:54321}
+  extra_hosts: ["host.docker.internal:host-gateway"]
+  networks: [aec]
+  restart: unless-stopped
+
 services:
   api:
-    build:
-      context: ../..
-      dockerfile: services/api/Dockerfile
-    env_file:
-      - path: ../../.env
-        required: false
-      - path: .env
-        required: false
-    environment:
-      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-dev-internal-token-change-me}
-      VISION_URL: http://vision:8001
-      GEOMETRY_URL: http://geometry:8002
-      LANGUAGE_URL: http://language:8003
-      # Supabase runs on the host via `supabase start`
-      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://postgres:postgres@host.docker.internal:54322/postgres}
-      SUPABASE_URL: ${SUPABASE_URL_DOCKER:-http://host.docker.internal:54321}
-    networks: [aec]
+    <<: *api-common
     ports: ["127.0.0.1:8000:8000"]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')"]
@@ -24,7 +31,15 @@ services:
       timeout: 3s
       retries: 3
       start_period: 10s
-    restart: unless-stopped
+
+  worker:
+    <<: *api-common
+    command: ["python", "-m", "app.worker"]
+    healthcheck:
+      disable: true
+    stop_grace_period: 200s  # lets an in-flight analysis (vision timeout 180 s) finish after SIGTERM
+    deploy:
+      replicas: ${WORKER_REPLICAS:-1}
 
 networks:
   aec:

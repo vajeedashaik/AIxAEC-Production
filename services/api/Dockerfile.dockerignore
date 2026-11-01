@@ -1,0 +1,12 @@
+# BuildKit reads this instead of a root .dockerignore when building with services/api/Dockerfile.
+# Context is the repo root; the image needs only these two folders.
+*
+!packages/contracts
+!services/api
+**/.venv
+**/__pycache__
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+**/.env
+services/api/supabase/.temp
