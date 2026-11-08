@@ -69,7 +69,8 @@ export class FetchXhr {
   send(body: FormData) {
     FetchXhr.sent.push(body);
     this.upload.onprogress?.({ lengthComputable: true, loaded: 1, total: 2 });
-    fetch(this.url, { method: this.method, headers: this.headers, body }).then(
+    // The body is recorded above. Node 24.22's fetch can't serialise jsdom's File, and these tests never read it.
+    fetch(this.url, { method: this.method, headers: this.headers }).then(
       async (r) => {
         this.status = r.status;
         this.responseHeaders = r.headers;
