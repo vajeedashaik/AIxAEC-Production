@@ -69,3 +69,12 @@ describe("density preference", () => {
     expect(document.documentElement).not.toHaveClass("density-compact");
   });
 });
+
+describe("describeError for oversized uploads", () => {
+  it("blames pixels, not megabytes, when the API says the image has too many", () => {
+    const pixels = describeError(new ApiError(413, "payload_too_large", "The image has too many pixels."));
+    const bytes = describeError(new ApiError(413, "payload_too_large", "The file is too large."));
+    expect(pixels.description).toMatch(/too many pixels/);
+    expect(bytes.description).toBe("Upload a file of 25 MB or less.");
+  });
+});

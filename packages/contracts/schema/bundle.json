@@ -1724,12 +1724,14 @@
       "properties": {
         "brick_each": {
           "default": 9,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Brick Each",
           "type": "number"
         },
         "concrete_per_m3": {
           "default": 7000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Concrete Per M3",
           "type": "number"
@@ -1750,24 +1752,28 @@
         },
         "door_each": {
           "default": 12000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Door Each",
           "type": "number"
         },
         "electrical_point_each": {
           "default": 1500,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Electrical Point Each",
           "type": "number"
         },
         "floor_tile_per_m2": {
           "default": 1000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Floor Tile Per M2",
           "type": "number"
         },
         "flooring_per_m2": {
           "default": 1300,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Flooring Per M2",
           "type": "number"
@@ -1781,36 +1787,42 @@
         },
         "paint_per_litre": {
           "default": 320,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Paint Per Litre",
           "type": "number"
         },
         "painting_labour_per_m2": {
           "default": 120,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Painting Labour Per M2",
           "type": "number"
         },
         "plumbing_fixture_each": {
           "default": 9000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Plumbing Fixture Each",
           "type": "number"
         },
         "steel_per_kg": {
           "default": 70,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Steel Per Kg",
           "type": "number"
         },
         "wall_tile_per_m2": {
           "default": 1000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Wall Tile Per M2",
           "type": "number"
         },
         "window_each": {
           "default": 15000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Window Each",
           "type": "number"
@@ -1824,12 +1836,14 @@
       "properties": {
         "brick_each": {
           "default": 9,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Brick Each",
           "type": "number"
         },
         "concrete_per_m3": {
           "default": 7000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Concrete Per M3",
           "type": "number"
@@ -1850,24 +1864,28 @@
         },
         "door_each": {
           "default": 12000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Door Each",
           "type": "number"
         },
         "electrical_point_each": {
           "default": 1500,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Electrical Point Each",
           "type": "number"
         },
         "floor_tile_per_m2": {
           "default": 1000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Floor Tile Per M2",
           "type": "number"
         },
         "flooring_per_m2": {
           "default": 1300,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Flooring Per M2",
           "type": "number"
@@ -1881,36 +1899,42 @@
         },
         "paint_per_litre": {
           "default": 320,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Paint Per Litre",
           "type": "number"
         },
         "painting_labour_per_m2": {
           "default": 120,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Painting Labour Per M2",
           "type": "number"
         },
         "plumbing_fixture_each": {
           "default": 9000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Plumbing Fixture Each",
           "type": "number"
         },
         "steel_per_kg": {
           "default": 70,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Steel Per Kg",
           "type": "number"
         },
         "wall_tile_per_m2": {
           "default": 1000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Wall Tile Per M2",
           "type": "number"
         },
         "window_each": {
           "default": 15000,
+          "maximum": 1000000000,
           "minimum": 0,
           "title": "Window Each",
           "type": "number"

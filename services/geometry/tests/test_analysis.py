@@ -11,7 +11,7 @@ from app.analysis.compliance import build_compliance
 from app.analysis.cost import build_estimate
 from app.analysis.layouts import suggest_layouts
 from app.analysis.measure import contains, measure, travel_distances_m
-from app.analysis.qa import answer_question, plan_facts
+from app.analysis.qa import answer_question, money, plan_facts
 from app.analysis.takeoff import build_takeoff, quantity
 from app.engine.execute import execute
 from app.insights import build_insights
@@ -270,3 +270,27 @@ def test_split_outside_limits_is_rejected_at_schema(apartment: FloorPlanModel) -
     living = _room(apartment, RoomType.LIVING_ROOM)
     result = execute(apartment, _split(apartment, living, position=0.05))
     assert isinstance(result, ExecuteRejected) and result.stage == "schema"
+
+
+@pytest.mark.parametrize(
+    ("amount", "currency", "expected"),
+    [
+        (2408253.43, "INR", "INR 24,08,253"),
+        (999, "INR", "INR 999"),
+        (1000, "INR", "INR 1,000"),
+        (100000, "INR", "INR 1,00,000"),
+        (12345678, "INR", "INR 1,23,45,678"),
+        (2408253, "USD", "USD 2,408,253"),
+    ],
+)
+def test_money_grouping(amount: float, currency: str, expected: str) -> None:
+    assert money(amount, currency) == expected
+
+
+def test_absurd_rates_are_refused_before_they_can_overflow() -> None:
+    from pydantic import ValidationError
+
+    for field in ("concrete_per_m3", "steel_per_kg", "plumbing_fixture_each"):
+        with pytest.raises(ValidationError):
+            CostRates(**{field: 1e308})
+    assert CostRates(concrete_per_m3=999_999_999).concrete_per_m3 == 999_999_999

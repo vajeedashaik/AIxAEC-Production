@@ -16,6 +16,7 @@ from .walls import Opening, Segment
 MIN_AREA_FRACTION = 0.003
 MAX_AREA_FRACTION = 0.9
 LABEL_MIN_CONFIDENCE = 0.6  # below this Tesseract is mostly reading hatching
+SHORT_LABELS = {"WC", "BR", "DR", "LR", "MB"}  # real two-letter labels; other short words are furniture symbols
 Vertex = tuple[float, float]
 
 
@@ -67,7 +68,7 @@ def _label(polygon: list[Vertex], words: list[OcrWord]) -> str | None:
         w
         for w in words
         if w.confidence >= LABEL_MIN_CONFIDENCE
-        and sum(c.isalpha() for c in w.text) >= 2
+        and (sum(c.isalpha() for c in w.text) >= 3 or w.text.upper() in SHORT_LABELS)
         and not any(c.isdigit() for c in w.text)
         and cv2.pointPolygonTest(contour, w.centre, False) >= 0
     ]

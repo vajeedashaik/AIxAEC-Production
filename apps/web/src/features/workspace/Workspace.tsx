@@ -392,7 +392,9 @@ export function Workspace({ projectId, floorplanId, version, onVersionChange }: 
       >
         {readOnly && (
           <div className="absolute top-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 rounded-md border bg-popover px-3 py-1.5 text-ui shadow-md" data-testid="read-only-bar" role="status">
-            Viewing <span className="numeric">v{version}</span>, read-only
+            <span>
+              Viewing <span className="numeric">v{version}</span>, read-only
+            </span>
             <Button size="xs" variant="outline" onClick={() => onVersionChange(null)}>
               Back to HEAD
             </Button>
@@ -425,7 +427,7 @@ export function Workspace({ projectId, floorplanId, version, onVersionChange }: 
 
     const tabs = (
       <Tabs value={tab} onValueChange={(v) => setTab(v as RightTab)} className="flex h-full min-h-0 flex-col gap-0">
-        <TabsList variant="line" className="h-9 w-full shrink-0 justify-start overflow-x-auto rounded-none border-b px-2">
+        <TabsList variant="line" className={cn("h-9 w-full shrink-0 justify-start overflow-x-auto rounded-none border-b px-2 [scrollbar-width:none]", !wide && "pr-10")}>
           {!wide && <TabsTrigger value="outline" className="text-ui">Outline</TabsTrigger>}
           <TabsTrigger value="inspect" className="flex-none px-2 text-ui">Inspect</TabsTrigger>
           <TabsTrigger value="insights" className="flex-none px-2 text-ui">Insights</TabsTrigger>

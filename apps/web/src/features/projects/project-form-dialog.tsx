@@ -42,7 +42,7 @@ function ProjectFields({ initial, submitLabel, submit, onDone }: { initial?: Pro
   };
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+    <form onSubmit={onSubmit} noValidate className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="project-name">Name</Label>
         <Input id="project-name" name="name" autoFocus defaultValue={initial?.name} aria-invalid={!!errors.name} aria-describedby={errors.name ? "project-name-error" : undefined} />
@@ -56,7 +56,7 @@ function ProjectFields({ initial, submitLabel, submit, onDone }: { initial?: Pro
         <Label htmlFor="project-description">
           Description <span className="font-normal text-muted-foreground">(optional)</span>
         </Label>
-        <Textarea id="project-description" name="description" defaultValue={initial?.description ?? ""} aria-invalid={!!errors.description} aria-describedby={errors.description ? "project-description-error" : undefined} />
+        <Textarea id="project-description" name="description" className="max-h-[40dvh] overflow-y-auto" defaultValue={initial?.description ?? ""} aria-invalid={!!errors.description} aria-describedby={errors.description ? "project-description-error" : undefined} />
         {errors.description && (
           <p id="project-description-error" className="text-ui text-danger">
             {errors.description}
@@ -84,7 +84,7 @@ export function CreateProjectDialog({ open, onOpenChange }: { open: boolean; onO
   const create = useCreateProject();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>New project</DialogTitle>
           <DialogDescription>A project holds the floor plans of one building or job.</DialogDescription>
@@ -108,7 +108,7 @@ export function EditProjectDialog({ project, open, onOpenChange }: { project: Pr
   const update = useUpdateProject(project.id);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Rename project</DialogTitle>
           <DialogDescription>Change how this project appears across AEC Studio.</DialogDescription>

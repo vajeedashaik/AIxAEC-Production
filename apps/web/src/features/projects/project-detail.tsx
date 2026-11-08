@@ -66,7 +66,7 @@ function InlineEdit({
 
   if (draft === null) {
     const button = (
-      <button ref={display} type="button" aria-label={`Edit ${label}: ${value || "empty"}`} onClick={() => ((skipBlur.current = false), setDraft(value))} className={cn("-mx-1.5 max-w-full cursor-text rounded-md px-1.5 text-left transition-colors duration-(--duration-instant) hover:bg-accent", displayClassName, !value && "text-muted-foreground")}>
+      <button ref={display} type="button" aria-label={`Edit ${label}: ${value || "empty"}`} onClick={() => ((skipBlur.current = false), setDraft(value))} className={cn("-mx-1.5 max-w-full cursor-text rounded-md px-1.5 text-left [overflow-wrap:anywhere] transition-colors duration-(--duration-instant) hover:bg-accent", displayClassName, !value && "text-muted-foreground")}>
         {value || placeholder}
       </button>
     );

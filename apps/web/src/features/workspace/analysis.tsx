@@ -21,6 +21,9 @@ const VIEWS = { takeoff: "Quantities and BOQ", cost: "Cost estimate", compliance
 type View = keyof typeof VIEWS;
 
 const RATES_KEY = "aec.cost-rates";
+const MAX_RATE = 1_000_000_000;
+const RATE_MAX: Record<string, number> = { labour_percent: 500, contingency_percent: 100 };
+const maxFor = (key: string) => RATE_MAX[key] ?? MAX_RATE;
 const qty = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 2 });
 const heading = "pb-1 text-micro text-muted-foreground";
 
@@ -115,7 +118,7 @@ export function CostView({ estimate, onRates, busy }: { estimate: CostEstimate; 
     ["Labour", estimate.labour_cost],
     ["Contingency", estimate.contingency],
   ];
-  const valid = Object.entries(draft).every(([k, v]) => (k === "currency" ? String(v).trim() : Number.isFinite(v) && (v as number) >= 0));
+  const valid = Object.entries(draft).every(([k, v]) => (k === "currency" ? String(v).trim() : Number.isFinite(v) && (v as number) >= 0 && (v as number) <= maxFor(k)));
   const exportCost = () => downloadCsv("cost-estimate.csv", [["Category", "Description", "Quantity", "Unit", `Rate (${estimate.currency})`, `Amount (${estimate.currency})`], ...estimate.lines.map((l) => [l.category, l.description, l.quantity, l.unit, l.rate, l.amount]), ["Total", "Construction cost", "", "", "", estimate.construction_cost]]);
   return (
     <div className="flex flex-col gap-4" data-testid="cost">
@@ -158,7 +161,7 @@ export function CostView({ estimate, onRates, busy }: { estimate: CostEstimate; 
                 id={`rate-${key}`}
                 className="numeric h-7 text-ui"
                 value={Number.isNaN(value) ? "" : value}
-                {...(key === "currency" ? { maxLength: 8 } : { type: "number", min: 0, step: "any" })}
+                {...(key === "currency" ? { maxLength: 8 } : { type: "number", min: 0, max: maxFor(key), step: "any" })}
                 onChange={(e) => setDraft((d) => ({ ...d, [key]: key === "currency" ? e.target.value : e.target.valueAsNumber }))}
               />
             </div>

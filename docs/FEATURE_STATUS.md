@@ -130,3 +130,33 @@ Three AI-generated plans of rising difficulty, compared with hand counts of what
 | Doors, simple and medium plans (16 actual) | 12 | 16 |
 
 Known limits: on the 16-room villa, doors are over-counted (24 detected, 18 actual), because bathroom fixtures can look like door swings, and the corridor still merges with two neighbouring rooms. Garage and sliding doors drawn with parallel lines count as windows.
+
+## Edge-case testing in a real browser (2026-11-09)
+
+About 150 checks driven through Playwright on the real stack (hosted Supabase, real OmniRoute, real Tesseract), plus the full e2e suite (11 passed, 2 skipped: the outage tests need `E2E_COMPOSE=1`). Nothing is `VERIFIED`: a person has not yet walked through it.
+
+**Held up:** form validation, XSS-style names and questions (rendered as text, never run), a double-click on Create or Apply sending one request, undo and redo by button and keyboard (and Ctrl+Z inside a text box leaving the model alone), a stale tab refreshing itself, read-only history, all six Analyze views, CSV exports, preview, apply and discard for layout suggestions, prompt-injection attempts (no prompt or key leaked), corrupt, fake, empty, oversized and pixel-bomb uploads, and skewed, noisy and JPEG versions of a plan reading the same as the clean one.
+
+**Found and fixed:**
+
+| Problem | Fix |
+|---|---|
+| A 200-character name with no spaces overflowed the project page | The title now wraps |
+| A long description pushed the Rename dialog's Save button off-screen, sideways and (at 2,000 characters) downwards | The form can't grow past the dialog, the textarea is height-capped, and the dialog scrolls |
+| A rate of `1e308` returned a 502 after 14 s and was saved to local storage | Rates are capped (API 422 at once, and the form refuses them) |
+| A 20,000×20,000-pixel image said "Upload a file of 25 MB or less" | The message now says the image has too many pixels |
+| A 3-page PDF showed two near-identical warnings | One note |
+| Room labels picked up OCR junk (`KITCHEN fl`, `OFFICE Sg`, `LAUNDRY OO`) | Short fragments are dropped |
+| Light-on-dark (blueprint-style) drawings found no rooms | They are inverted first |
+| The chat cost answer used Western digit grouping | Indian grouping, as in the Cost view |
+| CSV files showed `mÂ²` and `â‰¥` in Excel | A UTF-8 byte-order mark is added |
+| The read-only banner read "Viewing v1 , read-only" | Text no longer split by the flex gap |
+| On a phone, the Ask and History tabs sat off-screen under the close button | The tab row reserves room and hides its scrollbar |
+| An AI question could stall for 22 s when the free Groq tier rate-limited | OmniRoute now fails over after 3 s and the language service caps the AI at 10 s |
+
+**Known limits, not fixed:**
+- The hosted Supabase project is in Ireland (`eu-west-1`). From India every API call that touches the database costs 0.5 to 1.5 s, so actions take 2 to 4 s and the 11-test e2e run took 8 minutes. The code isn't slow. Use local Supabase while developing, and create the production project in `ap-south-1` (Mumbai).
+- The free AI tiers still rate-limit under bursts: several simultaneous AI questions can take about 10 s and then answer "can't answer". Single questions take about 2 s.
+- On the 16-room villa the reader still merges the corridor with two rooms and over-counts doors (24 found, 18 real).
+- Not tested: voice recording (needs a real microphone), Firefox and Safari, a screen reader, and real scanned or photographed plans.
+- Running the e2e suite against a hosted project leaves test data behind (the suite recreates its users each run). Run it against local Supabase instead.

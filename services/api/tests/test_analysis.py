@@ -76,3 +76,8 @@ def test_layouts_use_head(api: Api, upstream: respx.MockRouter) -> None:
 
 def test_question_length_is_bounded(api: Api, upstream: respx.MockRouter) -> None:
     assert api.request("POST", url(api.ready_floorplan(), "ask"), json={"question": "x" * 501}).status_code == 422
+
+
+def test_analysis_rejects_an_absurd_rate(api: Api, upstream: respx.MockRouter) -> None:
+    r = api.request("POST", url(api.ready_floorplan(), "analysis"), json={"rates": {"concrete_per_m3": 1e308}})
+    assert r.status_code == 422

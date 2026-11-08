@@ -6,7 +6,8 @@ import pytest
 
 from app.ocr.base import OcrWord
 from app.vision.calibrate import estimate_scale
-from app.vision.rooms import detect_rooms
+from app.vision.preprocess import preprocess
+from app.vision.rooms import _label, detect_rooms
 from app.vision.walls import Opening, Segment, _bridge_gaps, _close_doors_at_walls, _on_line_runs, _snap_junctions
 
 
@@ -71,3 +72,23 @@ def test_scale_is_read_from_the_drawn_dimension_line() -> None:
     calibration = estimate_scale([OcrWord("3600", 280, 55, 40, 30)], [], fine)
     assert calibration.mm_per_pixel == pytest.approx(3600 / 400, rel=0.01)
     assert calibration.dimensions[0].span_px == pytest.approx(400, abs=2)
+
+
+def test_stray_ocr_fragments_do_not_join_a_room_label() -> None:
+    square = [(0.0, 0.0), (400.0, 0.0), (400.0, 400.0), (0.0, 400.0)]
+    words = [
+        OcrWord("KITCHEN", 100, 150, 120, 30),
+        OcrWord("fl", 240, 150, 20, 30),
+        OcrWord("OO", 270, 150, 24, 30),
+        OcrWord("Sg", 300, 150, 20, 30),
+    ]
+    assert _label(square, words) == "KITCHEN"
+    assert _label(square, [OcrWord("WC", 100, 150, 40, 30)]) == "WC"
+
+
+def test_light_lines_on_a_dark_ground_are_read_like_dark_lines_on_paper() -> None:
+    paper = np.full((600, 800), 255, np.uint8)
+    cv2.rectangle(paper, (100, 100), (700, 500), 0, 14)
+    cv2.line(paper, (400, 100), (400, 500), 0, 14)
+    normal, flipped = preprocess(paper, 2400), preprocess(255 - paper, 2400)
+    assert int(np.count_nonzero(normal.binary)) == pytest.approx(int(np.count_nonzero(flipped.binary)), rel=0.02)

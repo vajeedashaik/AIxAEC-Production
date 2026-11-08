@@ -327,3 +327,13 @@ def test_reprocess_with_no_new_rows_is_counted(api: Api, upstream: respx.MockRou
         assert session.scalars(select(FloorplanRow)).one().current_model_version == 2
     kinds = [a["kind"] for a in api.request("GET", f"/v1/floorplans/{floorplan_id}/artifacts").json()]
     assert sorted(kinds) == ["preprocessed", "semantic_model"]  # newest per kind only
+
+
+def test_page_note_from_vision_replaces_the_upload_note() -> None:
+    from app.jobs import merge_warnings
+
+    upload = ["Only page 1 of 3 will be processed.", "Something else."]
+    merged = merge_warnings(upload, ["Only page 1 of 3 was processed."])
+    assert merged == ["Something else.", "Only page 1 of 3 was processed."]
+    assert merge_warnings(upload, []) == upload  # nothing from vision: the upload note stays
+    assert merge_warnings(["a"], ["a", "b"]) == ["a", "b"]

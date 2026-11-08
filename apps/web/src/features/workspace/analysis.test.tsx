@@ -12,7 +12,7 @@ import { server } from "@/mocks/node";
 
 import { AnalyzePanel, ComplianceView, CostView, LayoutsView, TakeoffView } from "./analysis";
 import { AskPanel } from "./ask";
-import { toCsv } from "./csv";
+import { downloadCsv, toCsv } from "./csv";
 
 const analysis = fixture as unknown as Analysis;
 const FP = "c0d50567-abaa-43fd-ba84-0b9e05790fa7";
@@ -89,5 +89,30 @@ describe("AskPanel", () => {
     await userEvent.click(screen.getByRole("button", { name: "Which room has the largest area?" }));
     expect(await screen.findByTestId("answer")).toHaveTextContent("LIVING is the largest room.");
     await waitFor(() => expect(onAnswer).toHaveBeenCalledWith(["r1"]));
+  });
+});
+
+describe("download and rate limits", () => {
+  it("starts the CSV with a byte-order mark so Excel reads m² and ≥", async () => {
+    let blob: Blob | undefined;
+    vi.spyOn(URL, "createObjectURL").mockImplementation((b) => ((blob = b as Blob), "blob:x"));
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    downloadCsv("a.csv", [["m²"]]);
+    const bytes = await new Promise<Uint8Array>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(new Uint8Array(reader.result as ArrayBuffer));
+      reader.readAsArrayBuffer(blob!);
+    });
+    expect([...bytes.slice(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+  });
+
+  it.each([["Concrete per m3", "2000000000"], ["Labour %", "501"], ["Contingency %", "101"]])("won't apply %s = %s", async (label, value) => {
+    render(<CostView estimate={analysis.estimate as CostEstimate} onRates={vi.fn()} busy={false} />);
+    await userEvent.click(screen.getByText("Edit rates"));
+    const field = screen.getByLabelText(label);
+    await userEvent.clear(field);
+    await userEvent.type(field, value);
+    expect(screen.getByRole("button", { name: "Apply rates" })).toBeDisabled();
   });
 });

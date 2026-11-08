@@ -82,6 +82,16 @@ def _owned_job(session: Session, claim: Claim) -> JobRow | None:
                                                 JobRow.status == "PROCESSING").with_for_update()).first()
 
 
+PAGE_NOTE = "Only page 1 of"
+
+
+def merge_warnings(existing: list[str], new: list[str]) -> list[str]:
+    """The vision service's page note replaces the upload-time one, so a PDF doesn't carry both."""
+    if any(w.startswith(PAGE_NOTE) for w in new):
+        existing = [w for w in existing if not w.startswith(PAGE_NOTE)]
+    return list(dict.fromkeys([*existing, *new]))
+
+
 def fail_job(c: Container, claim: Claim, message: str, stages: list[StageReport] | None = None,
              warnings: list[str] | None = None) -> None:
     with c.session_factory() as session:
@@ -93,7 +103,7 @@ def fail_job(c: Container, claim: Claim, message: str, stages: list[StageReport]
         if stages is not None:
             job.stages = [s.model_dump(mode="json") for s in stages]
         floorplan.status = "FAILED"
-        floorplan.warnings = list(dict.fromkeys([*floorplan.warnings, *(warnings or [])]))
+        floorplan.warnings = merge_warnings(floorplan.warnings, warnings or [])
         session.commit()
 
 
@@ -146,7 +156,7 @@ def _complete(c: Container, project_id: UUID, claim: Claim, result: AnalyzeResul
         job.status, job.finished_at = "COMPLETED", func.now()
         job.stages = [s.model_dump(mode="json") for s in result.stages]
         floorplan.status = "COMPLETED"
-        floorplan.warnings = list(dict.fromkeys([*floorplan.warnings, *result.warnings]))
+        floorplan.warnings = merge_warnings(floorplan.warnings, result.warnings)
         session.commit()
 
 

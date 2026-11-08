@@ -30,7 +30,9 @@ export function describeError(error: unknown): ErrorCopy {
   if (error instanceof ApiError) {
     const copy = COPY[error.code] ?? COPY.internal_error;
     const wait = error.code === "rate_limited" && error.retryAfter ? `Try again in ${Math.ceil(error.retryAfter)} s.` : undefined;
-    return { title: copy.title, description: wait ?? copy.description ?? error.message, retryable: copy.retryable };
+    // The same code covers file size and pixel count, and only one of them is about megabytes.
+    const pixels = error.code === "payload_too_large" && /pixel/i.test(error.message) ? "This image has too many pixels. Scale it down and upload it again." : undefined;
+    return { title: copy.title, description: wait ?? pixels ?? copy.description ?? error.message, retryable: copy.retryable };
   }
   // fetch() rejects with a TypeError when the server can't be reached.
   if (error instanceof TypeError) return { ...COPY.network_error, description: COPY.network_error.description! };

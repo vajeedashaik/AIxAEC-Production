@@ -32,20 +32,23 @@ class Takeoff(Strict):
 
 # --- cost ---
 
+MAX_RATE = 1_000_000_000  # an absurd rate would overflow the totals
+
+
 class CostRates(Strict):
     currency: str = Field(default="INR", min_length=1, max_length=8)
-    concrete_per_m3: float = Field(default=7000, ge=0, allow_inf_nan=False)
-    steel_per_kg: float = Field(default=70, ge=0, allow_inf_nan=False)
-    brick_each: float = Field(default=9, ge=0, allow_inf_nan=False)
-    door_each: float = Field(default=12000, ge=0, allow_inf_nan=False)
-    window_each: float = Field(default=15000, ge=0, allow_inf_nan=False)
-    paint_per_litre: float = Field(default=320, ge=0, allow_inf_nan=False)
-    painting_labour_per_m2: float = Field(default=120, ge=0, allow_inf_nan=False)
-    floor_tile_per_m2: float = Field(default=1000, ge=0, allow_inf_nan=False)
-    wall_tile_per_m2: float = Field(default=1000, ge=0, allow_inf_nan=False)
-    flooring_per_m2: float = Field(default=1300, ge=0, allow_inf_nan=False)
-    electrical_point_each: float = Field(default=1500, ge=0, allow_inf_nan=False)
-    plumbing_fixture_each: float = Field(default=9000, ge=0, allow_inf_nan=False)
+    concrete_per_m3: float = Field(default=7000, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    steel_per_kg: float = Field(default=70, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    brick_each: float = Field(default=9, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    door_each: float = Field(default=12000, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    window_each: float = Field(default=15000, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    paint_per_litre: float = Field(default=320, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    painting_labour_per_m2: float = Field(default=120, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    floor_tile_per_m2: float = Field(default=1000, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    wall_tile_per_m2: float = Field(default=1000, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    flooring_per_m2: float = Field(default=1300, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    electrical_point_each: float = Field(default=1500, ge=0, le=MAX_RATE, allow_inf_nan=False)
+    plumbing_fixture_each: float = Field(default=9000, ge=0, le=MAX_RATE, allow_inf_nan=False)
     labour_percent: float = Field(default=35, ge=0, le=500, allow_inf_nan=False)
     contingency_percent: float = Field(default=10, ge=0, le=100, allow_inf_nan=False)
 

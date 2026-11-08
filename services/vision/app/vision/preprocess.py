@@ -10,6 +10,7 @@ from .decode import Gray
 
 DESKEW_MIN_DEG = 0.3
 DESKEW_MAX_DEG = 20.0
+DARK_GROUND_MEDIAN = 110  # a plan on paper is mostly white; blueprints are mostly dark
 SOLID_INK = 64  # below this is ink whatever the neighbourhood: stops the local threshold hollowing thick walls
 
 
@@ -69,6 +70,8 @@ def preprocess(image: Gray, max_dimension: int) -> Preprocessed:
         scale = max_dimension / max(h, w)
         size = (max(1, round(w * scale)), max(1, round(h * scale)))
         image = np.asarray(cv2.resize(image, size, interpolation=cv2.INTER_AREA), np.uint8)
+    if float(np.median(image)) < DARK_GROUND_MEDIAN:  # light lines on a dark ground: flip to ink on paper
+        image = np.asarray(255 - image, np.uint8)
     denoised = cv2.fastNlMeansDenoising(image, None, h=10, templateWindowSize=7, searchWindowSize=21)
     gray = np.asarray(cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(denoised), np.uint8)
     binary, fine = _binarize(gray)

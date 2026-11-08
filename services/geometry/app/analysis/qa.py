@@ -35,6 +35,19 @@ _MATERIALS: tuple[tuple[str, str, str], ...] = (
 _SYNONYM_PATTERN = sorted(ROOM_SYNONYMS, key=len, reverse=True)
 
 
+def money(amount: float, currency: str) -> str:
+    """INR groups as 24,08,253 (lakh and crore), matching the Cost view."""
+    whole = str(round(amount))
+    if currency != "INR" or len(whole) <= 3:
+        return f"{currency} {round(amount):,}"
+    head, tail = whole[:-3], whole[-3:]
+    groups: list[str] = []
+    while len(head) > 2:
+        groups.insert(0, head[-2:])
+        head = head[:-2]
+    return f"{currency} {','.join([head, *groups, tail] if head else [*groups, tail])}"
+
+
 def _plural(n: int, word: str) -> str:
     return f"{n} {word}" if n == 1 else f"{n} {word}s"
 
@@ -102,7 +115,7 @@ def _measured(model: FloorPlanModel, text: str) -> Answer | None:
     if wants_cost:
         e = build_estimate(plan, takeoff, None)
         return _ok(
-            f"About {e.currency} {e.construction_cost:,.0f} at the default India rates. "
+            f"About {money(e.construction_cost, e.currency)} at the default India rates. "
             "Set local rates in Analyze > Cost."
         )
     if material:
