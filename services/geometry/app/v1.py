@@ -2,11 +2,15 @@
 
 import hmac
 import logging
-from typing import Annotated
+from typing import Annotated, Any
 
 from aec_contracts import ErrorCode, ExecuteRequest, ExecuteResult, Insights, ModelRequest, PlanBrief, ValidateResult
+from aec_contracts.analysis import Analysis, AnalysisRequest, Answer, LayoutRequest, LayoutSuggestions, QuestionRequest
 from fastapi import APIRouter, Depends, Header
 
+from .analysis import build_analysis
+from .analysis.layouts import suggest_layouts
+from .analysis.qa import answer_question, plan_facts
 from .brief import build_brief
 from .config import Settings, get_settings
 from .engine.constraints import validate_model
@@ -45,6 +49,26 @@ def insights(body: ModelRequest) -> Insights:
 @router.post("/models/brief", response_model=PlanBrief)
 def brief(body: ModelRequest) -> PlanBrief:
     return build_brief(body.model)
+
+
+@router.post("/models/analysis", response_model=Analysis)
+def analysis(body: AnalysisRequest) -> Analysis:
+    return build_analysis(body.model, body.rates)
+
+
+@router.post("/models/answer", response_model=Answer)
+def answer(body: QuestionRequest) -> Answer:
+    return answer_question(body.model, body.question)
+
+
+@router.post("/models/facts")
+def facts(body: ModelRequest) -> dict[str, Any]:
+    return plan_facts(body.model)
+
+
+@router.post("/models/layouts", response_model=LayoutSuggestions)
+def layouts(body: LayoutRequest) -> LayoutSuggestions:
+    return suggest_layouts(body.model, body.goal)
 
 
 @router.post("/models/validate", response_model=ValidateResult)

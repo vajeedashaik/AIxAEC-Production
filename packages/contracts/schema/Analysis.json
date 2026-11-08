@@ -1,0 +1,1568 @@
+{
+  "$defs": {
+    "AddDoor": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "ADD_DOOR",
+          "title": "Operation",
+          "type": "string"
+        },
+        "position": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Position",
+          "type": "number"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        },
+        "width": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Distance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "position",
+        "width"
+      ],
+      "title": "AddDoor",
+      "type": "object"
+    },
+    "AddWall": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/Point"
+        },
+        "operation": {
+          "const": "ADD_WALL",
+          "title": "Operation",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/Point"
+        },
+        "thickness_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thickness Px"
+        }
+      },
+      "required": [
+        "operation",
+        "start",
+        "end",
+        "thickness_px"
+      ],
+      "title": "AddWall",
+      "type": "object"
+    },
+    "AddWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "ADD_WINDOW",
+          "title": "Operation",
+          "type": "string"
+        },
+        "position": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Position",
+          "type": "number"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        },
+        "width": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Distance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "position",
+        "width"
+      ],
+      "title": "AddWindow",
+      "type": "object"
+    },
+    "Assumption": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "value"
+      ],
+      "title": "Assumption",
+      "type": "object"
+    },
+    "BBox": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "exclusiveMinimum": 0,
+          "title": "Height",
+          "type": "number"
+        },
+        "width": {
+          "exclusiveMinimum": 0,
+          "title": "Width",
+          "type": "number"
+        },
+        "x": {
+          "minimum": 0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "minimum": 0,
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "title": "BBox",
+      "type": "object"
+    },
+    "BoqItem": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "title": "Basis",
+          "type": "string"
+        },
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "quantity": {
+          "title": "Quantity",
+          "type": "number"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "category",
+        "description",
+        "unit",
+        "quantity",
+        "basis"
+      ],
+      "title": "BoqItem",
+      "type": "object"
+    },
+    "ComplianceCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "enum": [
+            "Corridor width",
+            "Room size",
+            "Accessibility",
+            "Emergency exits",
+            "Door width",
+            "Window placement",
+            "Fire safety"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "element_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Element Id"
+        },
+        "measured": {
+          "title": "Measured",
+          "type": "string"
+        },
+        "required": {
+          "title": "Required",
+          "type": "string"
+        },
+        "rule": {
+          "title": "Rule",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "WARN",
+            "FAIL"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "subject": {
+          "title": "Subject",
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "rule",
+        "status",
+        "subject",
+        "measured",
+        "required",
+        "element_id"
+      ],
+      "title": "ComplianceCheck",
+      "type": "object"
+    },
+    "ComplianceReport": {
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/ComplianceCheck"
+          },
+          "title": "Checks",
+          "type": "array"
+        },
+        "disclaimer": {
+          "title": "Disclaimer",
+          "type": "string"
+        },
+        "failed": {
+          "title": "Failed",
+          "type": "integer"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "integer"
+        },
+        "profile": {
+          "title": "Profile",
+          "type": "string"
+        },
+        "warnings": {
+          "title": "Warnings",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "disclaimer",
+        "passed",
+        "warnings",
+        "failed",
+        "checks"
+      ],
+      "title": "ComplianceReport",
+      "type": "object"
+    },
+    "CostEstimate": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "items": {
+            "$ref": "#/$defs/Assumption"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "construction_cost": {
+          "title": "Construction Cost",
+          "type": "number"
+        },
+        "contingency": {
+          "title": "Contingency",
+          "type": "number"
+        },
+        "cost_per_m2": {
+          "title": "Cost Per M2",
+          "type": "number"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "electrical_cost": {
+          "title": "Electrical Cost",
+          "type": "number"
+        },
+        "flooring_cost": {
+          "title": "Flooring Cost",
+          "type": "number"
+        },
+        "labour_cost": {
+          "title": "Labour Cost",
+          "type": "number"
+        },
+        "lines": {
+          "items": {
+            "$ref": "#/$defs/CostLine"
+          },
+          "title": "Lines",
+          "type": "array"
+        },
+        "material_cost": {
+          "title": "Material Cost",
+          "type": "number"
+        },
+        "painting_cost": {
+          "title": "Painting Cost",
+          "type": "number"
+        },
+        "plumbing_cost": {
+          "title": "Plumbing Cost",
+          "type": "number"
+        },
+        "rates": {
+          "$ref": "#/$defs/CostRates"
+        },
+        "tile_count": {
+          "title": "Tile Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "currency",
+        "rates",
+        "lines",
+        "material_cost",
+        "painting_cost",
+        "flooring_cost",
+        "electrical_cost",
+        "plumbing_cost",
+        "labour_cost",
+        "contingency",
+        "construction_cost",
+        "cost_per_m2",
+        "tile_count",
+        "assumptions"
+      ],
+      "title": "CostEstimate",
+      "type": "object"
+    },
+    "CostLine": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "title": "Amount",
+          "type": "number"
+        },
+        "category": {
+          "enum": [
+            "Structure",
+            "Openings",
+            "Painting",
+            "Flooring",
+            "Electrical",
+            "Plumbing"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "quantity": {
+          "title": "Quantity",
+          "type": "number"
+        },
+        "rate": {
+          "title": "Rate",
+          "type": "number"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "description",
+        "quantity",
+        "unit",
+        "rate",
+        "amount"
+      ],
+      "title": "CostLine",
+      "type": "object"
+    },
+    "CostRates": {
+      "additionalProperties": false,
+      "properties": {
+        "brick_each": {
+          "default": 9,
+          "minimum": 0,
+          "title": "Brick Each",
+          "type": "number"
+        },
+        "concrete_per_m3": {
+          "default": 7000,
+          "minimum": 0,
+          "title": "Concrete Per M3",
+          "type": "number"
+        },
+        "contingency_percent": {
+          "default": 10,
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Contingency Percent",
+          "type": "number"
+        },
+        "currency": {
+          "default": "INR",
+          "maxLength": 8,
+          "minLength": 1,
+          "title": "Currency",
+          "type": "string"
+        },
+        "door_each": {
+          "default": 12000,
+          "minimum": 0,
+          "title": "Door Each",
+          "type": "number"
+        },
+        "electrical_point_each": {
+          "default": 1500,
+          "minimum": 0,
+          "title": "Electrical Point Each",
+          "type": "number"
+        },
+        "floor_tile_per_m2": {
+          "default": 1000,
+          "minimum": 0,
+          "title": "Floor Tile Per M2",
+          "type": "number"
+        },
+        "flooring_per_m2": {
+          "default": 1300,
+          "minimum": 0,
+          "title": "Flooring Per M2",
+          "type": "number"
+        },
+        "labour_percent": {
+          "default": 35,
+          "maximum": 500,
+          "minimum": 0,
+          "title": "Labour Percent",
+          "type": "number"
+        },
+        "paint_per_litre": {
+          "default": 320,
+          "minimum": 0,
+          "title": "Paint Per Litre",
+          "type": "number"
+        },
+        "painting_labour_per_m2": {
+          "default": 120,
+          "minimum": 0,
+          "title": "Painting Labour Per M2",
+          "type": "number"
+        },
+        "plumbing_fixture_each": {
+          "default": 9000,
+          "minimum": 0,
+          "title": "Plumbing Fixture Each",
+          "type": "number"
+        },
+        "steel_per_kg": {
+          "default": 70,
+          "minimum": 0,
+          "title": "Steel Per Kg",
+          "type": "number"
+        },
+        "wall_tile_per_m2": {
+          "default": 1000,
+          "minimum": 0,
+          "title": "Wall Tile Per M2",
+          "type": "number"
+        },
+        "window_each": {
+          "default": 15000,
+          "minimum": 0,
+          "title": "Window Each",
+          "type": "number"
+        }
+      },
+      "required": [
+        "currency",
+        "concrete_per_m3",
+        "steel_per_kg",
+        "brick_each",
+        "door_each",
+        "window_each",
+        "paint_per_litre",
+        "painting_labour_per_m2",
+        "floor_tile_per_m2",
+        "wall_tile_per_m2",
+        "flooring_per_m2",
+        "electrical_point_each",
+        "plumbing_fixture_each",
+        "labour_percent",
+        "contingency_percent"
+      ],
+      "title": "CostRates",
+      "type": "object"
+    },
+    "DeleteDoor": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "DELETE_DOOR",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation"
+      ],
+      "title": "DeleteDoor",
+      "type": "object"
+    },
+    "DeleteWall": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "DELETE_WALL",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation"
+      ],
+      "title": "DeleteWall",
+      "type": "object"
+    },
+    "DeleteWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "DELETE_WINDOW",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation"
+      ],
+      "title": "DeleteWindow",
+      "type": "object"
+    },
+    "Direction": {
+      "enum": [
+        "LEFT",
+        "RIGHT",
+        "UP",
+        "DOWN"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "Distance": {
+      "additionalProperties": false,
+      "properties": {
+        "unit": {
+          "enum": [
+            "mm",
+            "px"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "exclusiveMinimum": 0,
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "unit"
+      ],
+      "title": "Distance",
+      "type": "object"
+    },
+    "FurniturePlacement": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "category": {
+          "maxLength": 60,
+          "title": "Category",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "category",
+        "bbox"
+      ],
+      "title": "FurniturePlacement",
+      "type": "object"
+    },
+    "InteriorPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "furniture": {
+          "items": {
+            "$ref": "#/$defs/FurniturePlacement"
+          },
+          "title": "Furniture",
+          "type": "array"
+        },
+        "lighting": {
+          "items": {
+            "$ref": "#/$defs/RoomLighting"
+          },
+          "title": "Lighting",
+          "type": "array"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
+        },
+        "themes": {
+          "items": {
+            "$ref": "#/$defs/InteriorTheme"
+          },
+          "title": "Themes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "furniture",
+        "lighting",
+        "themes",
+        "notes"
+      ],
+      "title": "InteriorPlan",
+      "type": "object"
+    },
+    "InteriorTheme": {
+      "additionalProperties": false,
+      "properties": {
+        "lighting": {
+          "title": "Lighting",
+          "type": "string"
+        },
+        "materials": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Materials",
+          "type": "array"
+        },
+        "name": {
+          "enum": [
+            "Modern",
+            "Minimalist",
+            "Industrial",
+            "Luxury",
+            "Scandinavian"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "palette": {
+          "items": {
+            "$ref": "#/$defs/ThemeSwatch"
+          },
+          "title": "Palette",
+          "type": "array"
+        },
+        "room_finishes": {
+          "items": {
+            "$ref": "#/$defs/RoomFinish"
+          },
+          "title": "Room Finishes",
+          "type": "array"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "summary",
+        "palette",
+        "materials",
+        "lighting",
+        "room_finishes"
+      ],
+      "title": "InteriorTheme",
+      "type": "object"
+    },
+    "MoveWall": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "distance": {
+          "$ref": "#/$defs/Distance"
+        },
+        "operation": {
+          "const": "MOVE_WALL",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "direction",
+        "distance"
+      ],
+      "title": "MoveWall",
+      "type": "object"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "minimum": 0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "minimum": 0,
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "RenameRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "operation": {
+          "const": "RENAME_ROOM",
+          "title": "Operation",
+          "type": "string"
+        },
+        "room_type": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoomType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "name",
+        "room_type"
+      ],
+      "title": "RenameRoom",
+      "type": "object"
+    },
+    "ResizeMode": {
+      "enum": [
+        "EXPAND",
+        "CONTRACT"
+      ],
+      "title": "ResizeMode",
+      "type": "string"
+    },
+    "ResizeRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "distance": {
+          "$ref": "#/$defs/Distance"
+        },
+        "mode": {
+          "$ref": "#/$defs/ResizeMode"
+        },
+        "operation": {
+          "const": "RESIZE_ROOM",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "direction",
+        "distance",
+        "mode"
+      ],
+      "title": "ResizeRoom",
+      "type": "object"
+    },
+    "RoomFinish": {
+      "additionalProperties": false,
+      "properties": {
+        "finish": {
+          "title": "Finish",
+          "type": "string"
+        },
+        "room": {
+          "title": "Room",
+          "type": "string"
+        }
+      },
+      "required": [
+        "room",
+        "finish"
+      ],
+      "title": "RoomFinish",
+      "type": "object"
+    },
+    "RoomLighting": {
+      "additionalProperties": false,
+      "properties": {
+        "colour_temperature_k": {
+          "title": "Colour Temperature K",
+          "type": "integer"
+        },
+        "daylight": {
+          "title": "Daylight",
+          "type": "string"
+        },
+        "fixture": {
+          "title": "Fixture",
+          "type": "string"
+        },
+        "fixtures": {
+          "title": "Fixtures",
+          "type": "integer"
+        },
+        "lumens": {
+          "title": "Lumens",
+          "type": "integer"
+        },
+        "room": {
+          "title": "Room",
+          "type": "string"
+        },
+        "room_id": {
+          "format": "uuid",
+          "title": "Room Id",
+          "type": "string"
+        },
+        "target_lux": {
+          "title": "Target Lux",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "room_id",
+        "room",
+        "target_lux",
+        "lumens",
+        "fixtures",
+        "fixture",
+        "colour_temperature_k",
+        "daylight"
+      ],
+      "title": "RoomLighting",
+      "type": "object"
+    },
+    "RoomType": {
+      "enum": [
+        "UNKNOWN",
+        "BEDROOM",
+        "MASTER_BEDROOM",
+        "BATHROOM",
+        "KITCHEN",
+        "LIVING_ROOM",
+        "DINING_ROOM",
+        "HALLWAY",
+        "CLOSET",
+        "GARAGE",
+        "OFFICE",
+        "LAUNDRY",
+        "BALCONY",
+        "STORAGE",
+        "STAIRWELL",
+        "UTILITY",
+        "OTHER"
+      ],
+      "title": "RoomType",
+      "type": "string"
+    },
+    "SetScale": {
+      "additionalProperties": false,
+      "properties": {
+        "length_mm": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Length Mm",
+          "type": "number"
+        },
+        "operation": {
+          "const": "SET_SCALE",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "length_mm"
+      ],
+      "title": "SetScale",
+      "type": "object"
+    },
+    "SplitRoom": {
+      "additionalProperties": false,
+      "description": "Generated by layout suggestions only: deliberately outside `Command`, so a parser or LLM can never emit it.",
+      "properties": {
+        "axis": {
+          "enum": [
+            "VERTICAL",
+            "HORIZONTAL"
+          ],
+          "title": "Axis",
+          "type": "string"
+        },
+        "new_room_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "New Room Name",
+          "type": "string"
+        },
+        "new_room_type": {
+          "$ref": "#/$defs/RoomType",
+          "default": "BEDROOM"
+        },
+        "operation": {
+          "const": "SPLIT_ROOM",
+          "title": "Operation",
+          "type": "string"
+        },
+        "position": {
+          "default": 0.5,
+          "maximum": 0.8,
+          "minimum": 0.2,
+          "title": "Position",
+          "type": "number"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "target_id",
+        "target_query",
+        "operation",
+        "axis",
+        "position",
+        "new_room_name",
+        "new_room_type"
+      ],
+      "title": "SplitRoom",
+      "type": "object"
+    },
+    "StructuralReport": {
+      "additionalProperties": false,
+      "properties": {
+        "disclaimer": {
+          "title": "Disclaimer",
+          "type": "string"
+        },
+        "suggestions": {
+          "items": {
+            "$ref": "#/$defs/StructuralSuggestion"
+          },
+          "title": "Suggestions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "disclaimer",
+        "suggestions"
+      ],
+      "title": "StructuralReport",
+      "type": "object"
+    },
+    "StructuralSuggestion": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "enum": [
+            "Column placement",
+            "Wall alignment",
+            "Space optimization",
+            "Natural ventilation",
+            "Lighting improvement"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "command": {
+          "anyOf": [
+            {
+              "discriminator": {
+                "mapping": {
+                  "ADD_DOOR": "#/$defs/AddDoor",
+                  "ADD_WALL": "#/$defs/AddWall",
+                  "ADD_WINDOW": "#/$defs/AddWindow",
+                  "DELETE_DOOR": "#/$defs/DeleteDoor",
+                  "DELETE_WALL": "#/$defs/DeleteWall",
+                  "DELETE_WINDOW": "#/$defs/DeleteWindow",
+                  "MOVE_WALL": "#/$defs/MoveWall",
+                  "RENAME_ROOM": "#/$defs/RenameRoom",
+                  "RESIZE_ROOM": "#/$defs/ResizeRoom",
+                  "SET_SCALE": "#/$defs/SetScale",
+                  "SPLIT_ROOM": "#/$defs/SplitRoom"
+                },
+                "propertyName": "operation"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/MoveWall"
+                },
+                {
+                  "$ref": "#/$defs/AddWall"
+                },
+                {
+                  "$ref": "#/$defs/DeleteWall"
+                },
+                {
+                  "$ref": "#/$defs/ResizeRoom"
+                },
+                {
+                  "$ref": "#/$defs/AddDoor"
+                },
+                {
+                  "$ref": "#/$defs/AddWindow"
+                },
+                {
+                  "$ref": "#/$defs/DeleteDoor"
+                },
+                {
+                  "$ref": "#/$defs/DeleteWindow"
+                },
+                {
+                  "$ref": "#/$defs/RenameRoom"
+                },
+                {
+                  "$ref": "#/$defs/SetScale"
+                },
+                {
+                  "$ref": "#/$defs/SplitRoom"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Command"
+        },
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "element_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Element Id"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "title",
+        "detail",
+        "element_id",
+        "command"
+      ],
+      "title": "StructuralSuggestion",
+      "type": "object"
+    },
+    "Takeoff": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "items": {
+            "$ref": "#/$defs/Assumption"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/BoqItem"
+          },
+          "title": "Items",
+          "type": "array"
+        }
+      },
+      "required": [
+        "items",
+        "assumptions"
+      ],
+      "title": "Takeoff",
+      "type": "object"
+    },
+    "ThemeSwatch": {
+      "additionalProperties": false,
+      "properties": {
+        "hex": {
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "title": "Hex",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "hex"
+      ],
+      "title": "ThemeSwatch",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "compliance": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComplianceReport"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "estimate": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CostEstimate"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "interior": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/InteriorPlan"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "needs_scale": {
+      "title": "Needs Scale",
+      "type": "boolean"
+    },
+    "structural": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StructuralReport"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "takeoff": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Takeoff"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "needs_scale",
+    "takeoff",
+    "compliance",
+    "estimate",
+    "interior",
+    "structural"
+  ],
+  "title": "Analysis",
+  "type": "object"
+}

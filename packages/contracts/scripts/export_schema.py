@@ -14,12 +14,18 @@ from pydantic import BaseModel, RootModel
 from pydantic.json_schema import JsonSchemaMode, models_json_schema
 
 import aec_contracts as c
+import aec_contracts.analysis as a
+from aec_contracts.commands import EngineCommand as EngineCommandUnion
 
 OUT = Path(__file__).resolve().parent.parent / "schema"
 
 
 class Command(RootModel[c.Command]):
     """Any of the 10 structured edit commands, discriminated by `operation`."""
+
+
+class EngineCommand(RootModel[EngineCommandUnion]):
+    """A structured edit command, or a generated SPLIT_ROOM from layout suggestions."""
 
 
 class ProjectPage(c.Page[c.Project]):
@@ -29,6 +35,8 @@ class ProjectPage(c.Page[c.Project]):
 REQUESTS: list[type[BaseModel]] = [
     c.ProjectCreate, c.ProjectUpdate, c.CommandRequest, Command,
     c.ExecuteRequest, c.ModelRequest, c.ParseRequest, c.ClassifyRoomsRequest, c.AnalyzeOptions,
+    EngineCommand, a.CostRates, a.AnalysisRequest, a.QuestionRequest, a.LayoutRequest, a.AnswerRequest,
+    a.AnalysisQuery, a.AskRequest, a.LayoutGoal,
 ]
 RESPONSES: list[type[BaseModel]] = [
     c.FloorPlanModel, c.ModelSummary, c.ErrorEnvelope, c.Candidate, c.ChangeSet,
@@ -40,7 +48,9 @@ RESPONSES: list[type[BaseModel]] = [
     # geometry
     c.ExecuteApplied, c.ExecuteClarification, c.ExecuteRejected, c.Insights, c.PlanBrief, c.ValidateResult,
     # language
-    c.ParseResult, c.ClassifyRoomsResult, c.TranscribeResult,
+    c.ParseResult, c.ClassifyRoomsResult, c.TranscribeResult, a.AnswerResult,
+    # analysis
+    a.Analysis, a.Answer, a.LayoutSuggestions,
 ]
 
 

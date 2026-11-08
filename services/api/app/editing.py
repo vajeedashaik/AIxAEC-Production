@@ -13,7 +13,7 @@ from aec_contracts import (
     FloorPlanModel,
     Me,
 )
-from aec_contracts.commands import COMMAND_ADAPTER
+from aec_contracts.commands import ENGINE_COMMAND_ADAPTER
 from aec_contracts.errors import ErrorCode
 from pydantic import ValidationError
 
@@ -144,7 +144,7 @@ def _clarify(c: Container, user: Me, floorplan_id: UUID, persist: bool, base: in
     # The unresolved command comes back so the client can re-send it with the picked target_id.
     # Geometry passed its schema stage, so this validates; if it somehow doesn't, the client asks to rephrase.
     try:
-        parsed = COMMAND_ADAPTER.validate_python(command)
+        parsed = ENGINE_COMMAND_ADAPTER.validate_python(command)
     except ValidationError:
         parsed = None
     return CommandResponse(status="CLARIFICATION", version=base, question=result.question, candidates=candidates,

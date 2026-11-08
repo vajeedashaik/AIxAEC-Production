@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic import Field, TypeAdapter
 
-from .commands import Command
+from .commands import EngineCommand
 from .model import FloorPlanModel, ModelSummary, RoomType, Strict
 from .results import Candidate, ChangeSet, RejectStage
 
@@ -18,7 +18,7 @@ class ExecuteRequest(Strict):
 
 class ExecuteApplied(Strict):
     status: Literal["APPLIED"]
-    command: Command        # resolved: target_id set, target_query cleared
+    command: EngineCommand  # resolved: target_id set, target_query cleared
     model: FloorPlanModel   # the new candidate model (validated)
     changes: ChangeSet
     summary: str            # "Moved wall 300 mm left; 2 rooms resized."

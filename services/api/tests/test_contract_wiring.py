@@ -33,6 +33,9 @@ def routes(p: object, f: object) -> list[tuple[str, str, dict[str, Any]]]:
         ("POST", f"/v1/floorplans/{f}/model/undo?expected_version=2", {}),
         ("POST", f"/v1/floorplans/{f}/model/redo?expected_version=1", {}),
         ("GET", f"/v1/floorplans/{f}/history", {}),
+        ("POST", f"/v1/floorplans/{f}/analysis", {"json": {}}),
+        ("POST", f"/v1/floorplans/{f}/ask", {"json": {"question": "how many rooms?"}}),
+        ("POST", f"/v1/floorplans/{f}/layouts", {"json": {"goal": "make the kitchen larger"}}),
     ]
 
 
@@ -41,7 +44,7 @@ NOT_OWNER_SCOPED = {"/v1/me", "/v1/projects", "/v1/projects?limit=20&offset=0"}
 
 def test_every_contract_route_is_registered(api: Api) -> None:
     table = routes("{project_id}", "{floorplan_id}")
-    assert len(table) == 20
+    assert len(table) == 23
     expected = {(m.lower(), path.split("?")[0]) for m, path, _ in table}
     paths = api.client.get("/openapi.json").json()["paths"]
     assert {(m, p) for p, ops in paths.items() if p.startswith("/v1") for m in ops} == expected
@@ -68,7 +71,7 @@ def test_idor_sweep(api: Api, upstream: respx.MockRouter) -> None:
         swept += 1
         r = api.request(method, path, "intruder", **kwargs)
         assert (r.status_code, r.json()["error"]["code"]) == (404, "not_found"), f"{method} {path}: {r.text}"
-    assert swept == 17
+    assert swept == 20
 
     # Nothing moved, and the intruder never reached a downstream service.
     assert upstream.calls.call_count == calls

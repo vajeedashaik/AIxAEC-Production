@@ -2,16 +2,8 @@
 
 from typing import Any
 
-from aec_contracts import (
-    COMMAND_ADAPTER,
-    AddWall,
-    Command,
-    ExecuteApplied,
-    ExecuteClarification,
-    ExecuteRejected,
-    ExecuteResult,
-    FloorPlanModel,
-)
+from aec_contracts import AddWall, ExecuteApplied, ExecuteClarification, ExecuteRejected, ExecuteResult, FloorPlanModel
+from aec_contracts.commands import ENGINE_COMMAND_ADAPTER, EngineCommand
 from pydantic import ValidationError
 
 from .changes import build_changes
@@ -38,9 +30,9 @@ def _schema_sentence(exc: ValidationError) -> str:
     return f"The command's '{field}' is invalid: {message}." if field else f"The command is invalid: {message}."
 
 
-def _parse_command(raw: dict[str, Any]) -> Command:
+def _parse_command(raw: dict[str, Any]) -> EngineCommand:
     try:
-        return COMMAND_ADAPTER.validate_python(raw)
+        return ENGINE_COMMAND_ADAPTER.validate_python(raw)
     except ValidationError as exc:
         raise SchemaError(_schema_sentence(exc)) from exc
 

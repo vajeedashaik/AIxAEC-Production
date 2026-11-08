@@ -15,7 +15,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Artifact, Candidate, CommandInput, CommandResponse, FloorPlan, ModelEnvelope } from "@/contracts";
+import type { Artifact, Candidate, CommandInput, CommandResponse, FloorPlan, Furniture, FurniturePlacement, ModelEnvelope } from "@/contracts";
 import { ApiError, queryKeys, useApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,8 @@ import { FloorPlanViewer, isTyping, type ViewerHandle } from "../viewer/componen
 import { previewOverlay } from "../viewer/render/diff";
 import { indexElements } from "../viewer/render/geometry";
 import { CommandBar } from "./CommandBar";
+import { AnalyzePanel } from "./analysis";
+import { AskPanel } from "./ask";
 import { HistoryPanel, Inspector, InsightsPanel, Outline } from "./panels";
 import { useCommandFlow, type CommandSource } from "./use-command-flow";
 
@@ -30,7 +32,7 @@ const PULSE_CLEAR_MS = 1400;
 const POLL_MS = 2000;
 const MOD = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl+";
 
-type RightTab = "inspect" | "insights" | "history" | "outline";
+type RightTab = "inspect" | "insights" | "analyze" | "ask" | "history" | "outline";
 
 const wideQuery = "(min-width: 1024px)";
 function useWide() {
@@ -159,6 +161,8 @@ export function Workspace({ projectId, floorplanId, version, onVersionChange }: 
   const [candidate, setCandidate] = useState<string | null>(null);
   const [pulse, setPulse] = useState<string[]>([]);
   const [scaleRequested, setScaleRequested] = useState(false);
+  const [furniture, setFurniture] = useState<FurniturePlacement[] | null>(null);
+  const [answerIds, setAnswerIds] = useState<string[]>([]);
 
   const pulseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => {
@@ -275,7 +279,28 @@ export function Workspace({ projectId, floorplanId, version, onVersionChange }: 
   const scaleConsumed = useCallback(() => setScaleRequested(false), []);
 
   const preview = flow.state === "preview" ? flow.response : null;
-  const overlay = useMemo(() => (preview ? previewOverlay(preview.changes, head.data?.model, preview.model) : undefined), [preview, head.data?.model]);
+  const shownFurniture = tab === "analyze" ? furniture : null;
+  const overlay = useMemo(() => {
+    if (preview) return previewOverlay(preview.changes, head.data?.model, preview.model);
+    if (!shownFurniture || !model) return undefined;
+    // Proposed furniture is shown, never saved: nothing here reaches the model.
+    const items: Furniture[] = shownFurniture.map((f) => ({ id: f.id, bbox: f.bbox, category: f.category, confidence: null, source: "INFERRED" }));
+    return previewOverlay({ added: items.map((i) => i.id), modified: [], removed: [] }, model, { ...model, furniture: [...model.furniture, ...items] });
+  }, [preview, head.data?.model, shownFurniture, model]);
+
+  /** Layout and fix-it suggestions: same preview → Apply path as any edit, with the plan in view. */
+  const previewSuggestion = useCallback(
+    (command: CommandInput) => {
+      setSheetOpen(false);
+      onCommand(command);
+    },
+    [onCommand],
+  );
+  const showAnswer = useCallback((ids: string[]) => {
+    setAnswerIds(ids);
+    if (ids.length === 1) viewer.current?.zoomToElement(ids[0]);
+  }, []);
+  const highlightIds = candidate ? [candidate] : tab === "ask" && answerIds.length ? answerIds : undefined;
 
   const pastInstructions = useMemo(() => {
     const server = history.data?.edits.flatMap((e) => e.instruction ?? []) ?? [];
@@ -360,7 +385,7 @@ export function Workspace({ projectId, floorplanId, version, onVersionChange }: 
           if (ids.length) setTab("inspect");
         }}
         overlay={overlay}
-        highlightIds={candidate ? [candidate] : undefined}
+        highlightIds={highlightIds}
         pulseIds={pulse}
         underlayUrl={preprocessed}
         readOnly={readOnly}
@@ -400,10 +425,12 @@ export function Workspace({ projectId, floorplanId, version, onVersionChange }: 
 
     const tabs = (
       <Tabs value={tab} onValueChange={(v) => setTab(v as RightTab)} className="flex h-full min-h-0 flex-col gap-0">
-        <TabsList variant="line" className="h-9 w-full shrink-0 justify-start rounded-none border-b px-2">
+        <TabsList variant="line" className="h-9 w-full shrink-0 justify-start overflow-x-auto rounded-none border-b px-2">
           {!wide && <TabsTrigger value="outline" className="text-ui">Outline</TabsTrigger>}
           <TabsTrigger value="inspect" className="flex-none px-2 text-ui">Inspect</TabsTrigger>
           <TabsTrigger value="insights" className="flex-none px-2 text-ui">Insights</TabsTrigger>
+          <TabsTrigger value="analyze" className="flex-none px-2 text-ui">Analyze</TabsTrigger>
+          <TabsTrigger value="ask" className="flex-none px-2 text-ui">Ask</TabsTrigger>
           <TabsTrigger value="history" className="flex-none px-2 text-ui">History</TabsTrigger>
         </TabsList>
         <ScrollArea className="min-h-0 flex-1">
@@ -417,6 +444,13 @@ export function Workspace({ projectId, floorplanId, version, onVersionChange }: 
           </TabsContent>
           <TabsContent value="insights">
             <InsightsPanel insights={envelope.insights} onCalibrate={requestScale} readOnly={readOnly} />
+          </TabsContent>
+          {/* Kept mounted: picking an element or switching tabs must not lose the open report or the conversation. */}
+          <TabsContent value="analyze" forceMount className="data-[state=inactive]:hidden">
+            <AnalyzePanel active={tab === "analyze"} floorplanId={floorplanId} version={envelope.version} readOnly={readOnly} onCalibrate={requestScale} onPick={wide ? onLink : onPick} onPreview={previewSuggestion} onFurniture={setFurniture} />
+          </TabsContent>
+          <TabsContent value="ask" forceMount className="data-[state=inactive]:hidden">
+            <AskPanel floorplanId={floorplanId} version={envelope.version} onAnswer={showAnswer} />
           </TabsContent>
           <TabsContent value="history">
             <HistoryPanel history={history.data} loading={history.isPending} viewing={version} onView={onVersionChange} />
@@ -455,7 +489,7 @@ export function Workspace({ projectId, floorplanId, version, onVersionChange }: 
           {canvas}
         </ResizablePanel>
         <ResizableHandle aria-label="Resize inspector" />
-        <ResizablePanel id="inspector" defaultSize={300} minSize={240} maxSize={460}>
+        <ResizablePanel id="inspector" defaultSize={350} minSize={240} maxSize={460}>
           <div className="h-full bg-card">{tabs}</div>
         </ResizablePanel>
       </ResizablePanelGroup>

@@ -1,0 +1,16 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "goal": {
+      "maxLength": 300,
+      "minLength": 1,
+      "title": "Goal",
+      "type": "string"
+    }
+  },
+  "required": [
+    "goal"
+  ],
+  "title": "LayoutGoal",
+  "type": "object"
+}

@@ -1,4 +1,7 @@
+from typing import Any
+
 from aec_contracts import ClassifyRoomsResult, ParseResult, PlanBrief, TranscribeResult
+from aec_contracts.analysis import AnswerResult
 
 from .base import ServiceClient
 
@@ -10,6 +13,10 @@ class LanguageClient(ServiceClient):
         # No retry: the language service already falls back across LLM providers.
         return self.post("/v1/commands/parse", ParseResult.model_validate, retry=False,
                          json={"instruction": instruction, "brief": brief.model_dump(mode="json")})
+
+    def answer(self, question: str, facts: dict[str, Any]) -> AnswerResult:
+        return self.post("/v1/questions/answer", AnswerResult.model_validate, retry=False,
+                         json={"question": question, "facts": facts})
 
     def classify(self, labels: list[str]) -> ClassifyRoomsResult:
         return self.post("/v1/rooms/classify", ClassifyRoomsResult.model_validate, retry=False,

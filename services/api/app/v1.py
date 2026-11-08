@@ -11,6 +11,7 @@ from aec_contracts import (
     CommandResponse,
     ErrorCode,
     FloorPlan,
+    FloorPlanModel,
     History,
     Job,
     Me,
@@ -20,6 +21,7 @@ from aec_contracts import (
     ProjectCreate,
     ProjectUpdate,
 )
+from aec_contracts.analysis import Analysis, AnalysisQuery, Answer, AskRequest, LayoutGoal, LayoutSuggestions
 from aec_contracts.language import ACCEPTED_AUDIO_TYPES
 from fastapi import APIRouter, Depends, File, Form, Query, Request, UploadFile
 from sqlalchemy import func, select
@@ -221,6 +223,46 @@ def read_model(floorplan_id: UUID, user: CurrentUser, c: Ctx, session: Db,
 def list_artifacts(floorplan_id: UUID, user: CurrentUser, c: Ctx, session: Db) -> list[Artifact]:
     get_floorplan(session, user.id, floorplan_id)
     return artifact_dtos(c, session, floorplan_id)
+
+
+# --- building intelligence ---
+
+def _model_at(session: Session, user: CurrentUser, floorplan_id: UUID, version: int | None) -> FloorPlanModel:
+    floorplan = get_floorplan(session, user.id, floorplan_id)
+    if version is None:
+        version = floorplan.current_model_version
+        if version is None or floorplan.status in LIVE_STATUSES:
+            raise model_not_ready()
+    row = version_row(session, floorplan_id, version)
+    if row is None:
+        raise not_found()
+    session.rollback()  # no open transaction across the service call
+    return load_model(row)
+
+
+@router.post("/floorplans/{floorplan_id}/analysis", response_model=Analysis)
+def analysis(floorplan_id: UUID, body: AnalysisQuery, user: CurrentUser, c: Ctx, session: Db) -> Analysis:
+    return c.geometry.analysis(_model_at(session, user, floorplan_id, body.version), body.rates)
+
+
+@router.post("/floorplans/{floorplan_id}/ask", response_model=Answer)
+def ask(floorplan_id: UUID, body: AskRequest, user: CurrentUser, c: Ctx, session: Db) -> Answer:
+    model = _model_at(session, user, floorplan_id, body.version)
+    answer = c.geometry.answer(model, body.question)
+    if answer.status != "UNKNOWN":
+        return answer
+    try:
+        result = c.language.answer(body.question, c.geometry.facts(model))
+    except ServiceError:  # the rules' honest "can't answer" stands when the assistant is down
+        return answer
+    if result.status == "ANSWERED" and result.answer:
+        return Answer(status="ANSWERED", answer=result.answer, source="llm")
+    return answer
+
+
+@router.post("/floorplans/{floorplan_id}/layouts", response_model=LayoutSuggestions)
+def layouts(floorplan_id: UUID, body: LayoutGoal, user: CurrentUser, c: Ctx, session: Db) -> LayoutSuggestions:
+    return c.geometry.layouts(_model_at(session, user, floorplan_id, None), body.goal)
 
 
 # --- edits ---

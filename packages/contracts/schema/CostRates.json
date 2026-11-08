@@ -1,0 +1,100 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "brick_each": {
+      "default": 9,
+      "minimum": 0,
+      "title": "Brick Each",
+      "type": "number"
+    },
+    "concrete_per_m3": {
+      "default": 7000,
+      "minimum": 0,
+      "title": "Concrete Per M3",
+      "type": "number"
+    },
+    "contingency_percent": {
+      "default": 10,
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Contingency Percent",
+      "type": "number"
+    },
+    "currency": {
+      "default": "INR",
+      "maxLength": 8,
+      "minLength": 1,
+      "title": "Currency",
+      "type": "string"
+    },
+    "door_each": {
+      "default": 12000,
+      "minimum": 0,
+      "title": "Door Each",
+      "type": "number"
+    },
+    "electrical_point_each": {
+      "default": 1500,
+      "minimum": 0,
+      "title": "Electrical Point Each",
+      "type": "number"
+    },
+    "floor_tile_per_m2": {
+      "default": 1000,
+      "minimum": 0,
+      "title": "Floor Tile Per M2",
+      "type": "number"
+    },
+    "flooring_per_m2": {
+      "default": 1300,
+      "minimum": 0,
+      "title": "Flooring Per M2",
+      "type": "number"
+    },
+    "labour_percent": {
+      "default": 35,
+      "maximum": 500,
+      "minimum": 0,
+      "title": "Labour Percent",
+      "type": "number"
+    },
+    "paint_per_litre": {
+      "default": 320,
+      "minimum": 0,
+      "title": "Paint Per Litre",
+      "type": "number"
+    },
+    "painting_labour_per_m2": {
+      "default": 120,
+      "minimum": 0,
+      "title": "Painting Labour Per M2",
+      "type": "number"
+    },
+    "plumbing_fixture_each": {
+      "default": 9000,
+      "minimum": 0,
+      "title": "Plumbing Fixture Each",
+      "type": "number"
+    },
+    "steel_per_kg": {
+      "default": 70,
+      "minimum": 0,
+      "title": "Steel Per Kg",
+      "type": "number"
+    },
+    "wall_tile_per_m2": {
+      "default": 1000,
+      "minimum": 0,
+      "title": "Wall Tile Per M2",
+      "type": "number"
+    },
+    "window_each": {
+      "default": 15000,
+      "minimum": 0,
+      "title": "Window Each",
+      "type": "number"
+    }
+  },
+  "title": "CostRates",
+  "type": "object"
+}

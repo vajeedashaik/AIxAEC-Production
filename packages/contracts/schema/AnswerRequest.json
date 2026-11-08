@@ -1,0 +1,22 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "facts": {
+      "additionalProperties": true,
+      "title": "Facts",
+      "type": "object"
+    },
+    "question": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Question",
+      "type": "string"
+    }
+  },
+  "required": [
+    "question",
+    "facts"
+  ],
+  "title": "AnswerRequest",
+  "type": "object"
+}

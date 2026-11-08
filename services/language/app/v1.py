@@ -13,8 +13,10 @@ from aec_contracts import (
     ParseResult,
     TranscribeResult,
 )
+from aec_contracts.analysis import AnswerRequest, AnswerResult
 from fastapi import APIRouter, Depends, File, Form, Header, Request, UploadFile
 
+from .answer import answer_question
 from .classify import classify_rooms
 from .config import Settings, get_settings
 from .errors import ServiceError
@@ -36,6 +38,11 @@ router = APIRouter(prefix="/v1", dependencies=[Depends(require_internal_token)])
 def parse(body: ParseRequest, request: Request) -> ParseResult:
     result: ParseResult = request.app.state.parser.parse(body.instruction, body.brief)
     return result
+
+
+@router.post("/questions/answer", response_model=AnswerResult)
+def answer(body: AnswerRequest, request: Request) -> AnswerResult:
+    return answer_question(body.question, body.facts, request.app.state.llm_client)
 
 
 @router.post("/rooms/classify", response_model=ClassifyRoomsResult)

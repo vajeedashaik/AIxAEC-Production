@@ -3,14 +3,14 @@
 
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Source".
+ * via the `definition` "Direction".
  */
-export type Source = "DETECTED" | "INFERRED" | "USER_CONFIRMED";
+export type Direction = "LEFT" | "RIGHT" | "UP" | "DOWN";
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "CalibrationSource".
+ * via the `definition` "ResizeMode".
  */
-export type CalibrationSource = "UNKNOWN" | "ASSUMED_DEFAULT" | "DIMENSION_OCR" | "MANUAL";
+export type ResizeMode = "EXPAND" | "CONTRACT";
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
  * via the `definition` "RoomType".
@@ -34,6 +34,16 @@ export type RoomType =
   | "UTILITY"
   | "OTHER";
 /**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Source".
+ */
+export type Source = "DETECTED" | "INFERRED" | "USER_CONFIRMED";
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "CalibrationSource".
+ */
+export type CalibrationSource = "UNKNOWN" | "ASSUMED_DEFAULT" | "DIMENSION_OCR" | "MANUAL";
+/**
  * Any of the 10 structured edit commands, discriminated by `operation`.
  *
  * This interface was referenced by `_Root`'s JSON-Schema
@@ -51,15 +61,23 @@ export type Command =
   | RenameRoomInput
   | SetScaleInput;
 /**
+ * A structured edit command, or a generated SPLIT_ROOM from layout suggestions.
+ *
  * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Direction".
+ * via the `definition` "EngineCommand".
  */
-export type Direction = "LEFT" | "RIGHT" | "UP" | "DOWN";
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "ResizeMode".
- */
-export type ResizeMode = "EXPAND" | "CONTRACT";
+export type EngineCommand =
+  | MoveWallInput
+  | AddWallInput
+  | DeleteWallInput
+  | ResizeRoomInput
+  | AddDoorInput
+  | AddWindowInput
+  | DeleteDoorInput
+  | DeleteWindowInput
+  | RenameRoomInput
+  | SetScaleInput
+  | SplitRoomInput;
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
  * via the `definition` "ErrorCode".
@@ -161,6 +179,493 @@ export interface AddWindowOutput {
   width: Distance | null;
 }
 /**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Analysis".
+ */
+export interface Analysis {
+  compliance: ComplianceReport | null;
+  estimate: CostEstimate | null;
+  interior: InteriorPlan | null;
+  needs_scale: boolean;
+  structural: StructuralReport | null;
+  takeoff: Takeoff | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "ComplianceReport".
+ */
+export interface ComplianceReport {
+  checks: ComplianceCheck[];
+  disclaimer: string;
+  failed: number;
+  passed: number;
+  profile: string;
+  warnings: number;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "ComplianceCheck".
+ */
+export interface ComplianceCheck {
+  category:
+    | "Corridor width"
+    | "Room size"
+    | "Accessibility"
+    | "Emergency exits"
+    | "Door width"
+    | "Window placement"
+    | "Fire safety";
+  element_id: string | null;
+  measured: string;
+  required: string;
+  rule: string;
+  status: "PASS" | "WARN" | "FAIL";
+  subject: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "CostEstimate".
+ */
+export interface CostEstimate {
+  assumptions: Assumption[];
+  construction_cost: number;
+  contingency: number;
+  cost_per_m2: number;
+  currency: string;
+  electrical_cost: number;
+  flooring_cost: number;
+  labour_cost: number;
+  lines: CostLine[];
+  material_cost: number;
+  painting_cost: number;
+  plumbing_cost: number;
+  rates: CostRatesOutput;
+  tile_count: number;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Assumption".
+ */
+export interface Assumption {
+  label: string;
+  value: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "CostLine".
+ */
+export interface CostLine {
+  amount: number;
+  category: "Structure" | "Openings" | "Painting" | "Flooring" | "Electrical" | "Plumbing";
+  description: string;
+  quantity: number;
+  rate: number;
+  unit: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "CostRates-Output".
+ */
+export interface CostRatesOutput {
+  brick_each: number;
+  concrete_per_m3: number;
+  contingency_percent: number;
+  currency: string;
+  door_each: number;
+  electrical_point_each: number;
+  floor_tile_per_m2: number;
+  flooring_per_m2: number;
+  labour_percent: number;
+  paint_per_litre: number;
+  painting_labour_per_m2: number;
+  plumbing_fixture_each: number;
+  steel_per_kg: number;
+  wall_tile_per_m2: number;
+  window_each: number;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "InteriorPlan".
+ */
+export interface InteriorPlan {
+  furniture: FurniturePlacement[];
+  lighting: RoomLighting[];
+  notes: string[];
+  themes: InteriorTheme[];
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "FurniturePlacement".
+ */
+export interface FurniturePlacement {
+  bbox: BBox;
+  category: string;
+  id: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "BBox".
+ */
+export interface BBox {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "RoomLighting".
+ */
+export interface RoomLighting {
+  colour_temperature_k: number;
+  daylight: string;
+  fixture: string;
+  fixtures: number;
+  lumens: number;
+  room: string;
+  room_id: string;
+  target_lux: number;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "InteriorTheme".
+ */
+export interface InteriorTheme {
+  lighting: string;
+  materials: string[];
+  name: "Modern" | "Minimalist" | "Industrial" | "Luxury" | "Scandinavian";
+  palette: ThemeSwatch[];
+  room_finishes: RoomFinish[];
+  summary: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "ThemeSwatch".
+ */
+export interface ThemeSwatch {
+  hex: string;
+  name: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "RoomFinish".
+ */
+export interface RoomFinish {
+  finish: string;
+  room: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "StructuralReport".
+ */
+export interface StructuralReport {
+  disclaimer: string;
+  suggestions: StructuralSuggestion[];
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "StructuralSuggestion".
+ */
+export interface StructuralSuggestion {
+  category:
+    | "Column placement"
+    | "Wall alignment"
+    | "Space optimization"
+    | "Natural ventilation"
+    | "Lighting improvement";
+  command:
+    | (
+        | MoveWallOutput
+        | AddWallOutput
+        | DeleteWallOutput
+        | ResizeRoomOutput
+        | AddDoorOutput
+        | AddWindowOutput
+        | DeleteDoorOutput
+        | DeleteWindowOutput
+        | RenameRoomOutput
+        | SetScaleOutput
+        | SplitRoomOutput
+      )
+    | null;
+  detail: string;
+  element_id: string | null;
+  title: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "MoveWall-Output".
+ */
+export interface MoveWallOutput {
+  direction: Direction;
+  distance: Distance;
+  operation: "MOVE_WALL";
+  target_id: string | null;
+  target_query: string | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "DeleteWall-Output".
+ */
+export interface DeleteWallOutput {
+  operation: "DELETE_WALL";
+  target_id: string | null;
+  target_query: string | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "ResizeRoom-Output".
+ */
+export interface ResizeRoomOutput {
+  direction: Direction;
+  distance: Distance;
+  mode: ResizeMode;
+  operation: "RESIZE_ROOM";
+  target_id: string | null;
+  target_query: string | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "DeleteDoor-Output".
+ */
+export interface DeleteDoorOutput {
+  operation: "DELETE_DOOR";
+  target_id: string | null;
+  target_query: string | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "DeleteWindow-Output".
+ */
+export interface DeleteWindowOutput {
+  operation: "DELETE_WINDOW";
+  target_id: string | null;
+  target_query: string | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "RenameRoom-Output".
+ */
+export interface RenameRoomOutput {
+  name: string;
+  operation: "RENAME_ROOM";
+  room_type: RoomType | null;
+  target_id: string | null;
+  target_query: string | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "SetScale-Output".
+ */
+export interface SetScaleOutput {
+  length_mm: number;
+  operation: "SET_SCALE";
+  target_id: string | null;
+  target_query: string | null;
+}
+/**
+ * Generated by layout suggestions only: deliberately outside `Command`, so a parser or LLM can never emit it.
+ *
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "SplitRoom-Output".
+ */
+export interface SplitRoomOutput {
+  axis: "VERTICAL" | "HORIZONTAL";
+  new_room_name: string;
+  new_room_type: RoomType;
+  operation: "SPLIT_ROOM";
+  position: number;
+  target_id: string | null;
+  target_query: string | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Takeoff".
+ */
+export interface Takeoff {
+  assumptions: Assumption[];
+  items: BoqItem[];
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "BoqItem".
+ */
+export interface BoqItem {
+  basis: string;
+  category: string;
+  code: string;
+  description: string;
+  quantity: number;
+  unit: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "AnalysisQuery".
+ */
+export interface AnalysisQuery {
+  rates?: CostRatesInput | null;
+  version?: number | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "CostRates-Input".
+ */
+export interface CostRatesInput {
+  brick_each?: number;
+  concrete_per_m3?: number;
+  contingency_percent?: number;
+  currency?: string;
+  door_each?: number;
+  electrical_point_each?: number;
+  floor_tile_per_m2?: number;
+  flooring_per_m2?: number;
+  labour_percent?: number;
+  paint_per_litre?: number;
+  painting_labour_per_m2?: number;
+  plumbing_fixture_each?: number;
+  steel_per_kg?: number;
+  wall_tile_per_m2?: number;
+  window_each?: number;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "AnalysisRequest".
+ */
+export interface AnalysisRequest {
+  model: FloorPlanModelInput;
+  rates?: CostRatesInput | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "FloorPlanModel-Input".
+ */
+export interface FloorPlanModelInput {
+  columns?: ColumnInput[];
+  coordinate_system: CoordinateSystemInput;
+  dimensions?: DimensionInput[];
+  doors?: DoorInput[];
+  floorplan_id: string;
+  furniture?: FurnitureInput[];
+  id?: string;
+  rooms?: RoomInput[];
+  schema_version?: 1;
+  stairs?: StairInput[];
+  walls?: WallInput[];
+  windows?: WindowInput[];
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Column-Input".
+ */
+export interface ColumnInput {
+  bbox: BBox;
+  confidence?: number | null;
+  id?: string;
+  source?: Source;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "CoordinateSystem-Input".
+ */
+export interface CoordinateSystemInput {
+  calibration_confidence?: number | null;
+  calibration_source?: CalibrationSource;
+  image_height: number;
+  image_width: number;
+  mm_per_pixel?: number | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Dimension-Input".
+ */
+export interface DimensionInput {
+  confidence?: number | null;
+  id?: string;
+  position?: Point | null;
+  source?: Source;
+  span_px?: number | null;
+  text: string;
+  value_mm?: number | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Door-Input".
+ */
+export interface DoorInput {
+  bbox: BBox;
+  confidence?: number | null;
+  id?: string;
+  source?: Source;
+  swing?: ("LEFT" | "RIGHT" | "DOUBLE" | "SLIDING") | null;
+  wall_id?: string | null;
+  width_px?: number | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Furniture-Input".
+ */
+export interface FurnitureInput {
+  bbox: BBox;
+  category?: string | null;
+  confidence?: number | null;
+  id?: string;
+  source?: Source;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Room-Input".
+ */
+export interface RoomInput {
+  area_px?: number | null;
+  confidence?: number | null;
+  id?: string;
+  label_text?: string | null;
+  /**
+   * @minItems 3
+   */
+  polygon: [Point, Point, Point, ...Point[]];
+  room_type?: RoomType;
+  room_type_confidence?: number | null;
+  room_type_source?: Source | null;
+  source?: Source;
+  wall_ids?: string[];
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Stair-Input".
+ */
+export interface StairInput {
+  bbox: BBox;
+  confidence?: number | null;
+  id?: string;
+  polygon?: Point[] | null;
+  source?: Source;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Wall-Input".
+ */
+export interface WallInput {
+  confidence?: number | null;
+  end: Point;
+  id?: string;
+  source?: Source;
+  start: Point;
+  thickness_px?: number | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Window-Input".
+ */
+export interface WindowInput {
+  bbox: BBox;
+  confidence?: number | null;
+  id?: string;
+  source?: Source;
+  wall_id?: string | null;
+  width_px?: number | null;
+}
+/**
  * The optional `options` JSON form field of POST /v1/analyze.
  *
  * This interface was referenced by `_Root`'s JSON-Schema
@@ -219,16 +724,6 @@ export interface ColumnOutput {
   confidence: number | null;
   id: string;
   source: Source;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "BBox".
- */
-export interface BBox {
-  height: number;
-  width: number;
-  x: number;
-  y: number;
 }
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
@@ -355,6 +850,35 @@ export interface StageReport {
 }
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "Answer".
+ */
+export interface Answer {
+  answer: string;
+  element_ids: string[];
+  source: "rules" | "llm";
+  status: "ANSWERED" | "UNKNOWN";
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "AnswerRequest".
+ */
+export interface AnswerRequest {
+  facts: {
+    [k: string]: unknown | undefined;
+  };
+  question: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "AnswerResult".
+ */
+export interface AnswerResult {
+  answer: string | null;
+  model: string | null;
+  status: "ANSWERED" | "UNKNOWN" | "ERROR";
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
  * via the `definition` "Artifact".
  */
 export interface Artifact {
@@ -364,6 +888,14 @@ export interface Artifact {
   kind: "preprocessed" | "walls_overlay" | "detected_elements" | "semantic_model";
   size_bytes: number;
   url: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "AskRequest".
+ */
+export interface AskRequest {
+  question: string;
+  version?: number | null;
 }
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
@@ -411,16 +943,6 @@ export interface RoomClassification {
   label: string;
   room_type: RoomType;
   source: "rules" | "llm";
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Column-Input".
- */
-export interface ColumnInput {
-  bbox: BBox;
-  confidence?: number | null;
-  id?: string;
-  source?: Source;
 }
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
@@ -523,6 +1045,7 @@ export interface CommandResponse {
         | DeleteWindowOutput
         | RenameRoomOutput
         | SetScaleOutput
+        | SplitRoomOutput
       )
     | null;
   detail: string | null;
@@ -535,114 +1058,6 @@ export interface CommandResponse {
   summary: string | null;
   transcript: string | null;
   version: number | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "MoveWall-Output".
- */
-export interface MoveWallOutput {
-  direction: Direction;
-  distance: Distance;
-  operation: "MOVE_WALL";
-  target_id: string | null;
-  target_query: string | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "DeleteWall-Output".
- */
-export interface DeleteWallOutput {
-  operation: "DELETE_WALL";
-  target_id: string | null;
-  target_query: string | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "ResizeRoom-Output".
- */
-export interface ResizeRoomOutput {
-  direction: Direction;
-  distance: Distance;
-  mode: ResizeMode;
-  operation: "RESIZE_ROOM";
-  target_id: string | null;
-  target_query: string | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "DeleteDoor-Output".
- */
-export interface DeleteDoorOutput {
-  operation: "DELETE_DOOR";
-  target_id: string | null;
-  target_query: string | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "DeleteWindow-Output".
- */
-export interface DeleteWindowOutput {
-  operation: "DELETE_WINDOW";
-  target_id: string | null;
-  target_query: string | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "RenameRoom-Output".
- */
-export interface RenameRoomOutput {
-  name: string;
-  operation: "RENAME_ROOM";
-  room_type: RoomType | null;
-  target_id: string | null;
-  target_query: string | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "SetScale-Output".
- */
-export interface SetScaleOutput {
-  length_mm: number;
-  operation: "SET_SCALE";
-  target_id: string | null;
-  target_query: string | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "CoordinateSystem-Input".
- */
-export interface CoordinateSystemInput {
-  calibration_confidence?: number | null;
-  calibration_source?: CalibrationSource;
-  image_height: number;
-  image_width: number;
-  mm_per_pixel?: number | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Dimension-Input".
- */
-export interface DimensionInput {
-  confidence?: number | null;
-  id?: string;
-  position?: Point | null;
-  source?: Source;
-  span_px?: number | null;
-  text: string;
-  value_mm?: number | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Door-Input".
- */
-export interface DoorInput {
-  bbox: BBox;
-  confidence?: number | null;
-  id?: string;
-  source?: Source;
-  swing?: ("LEFT" | "RIGHT" | "DOUBLE" | "SLIDING") | null;
-  wall_id?: string | null;
-  width_px?: number | null;
 }
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
@@ -659,6 +1074,21 @@ export interface EditLogEntry {
   stage:
     ("parse" | "schema" | "entity_resolution" | "semantic_validation" | "geometry" | "constraints") | null;
   status: "APPLIED" | "REJECTED" | "CLARIFICATION" | "UNDO" | "REDO";
+}
+/**
+ * Generated by layout suggestions only: deliberately outside `Command`, so a parser or LLM can never emit it.
+ *
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "SplitRoom-Input".
+ */
+export interface SplitRoomInput {
+  axis: "VERTICAL" | "HORIZONTAL";
+  new_room_name: string;
+  new_room_type?: RoomType;
+  operation: "SPLIT_ROOM";
+  position?: number;
+  target_id?: string | null;
+  target_query?: string | null;
 }
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
@@ -694,7 +1124,8 @@ export interface ExecuteApplied {
     | DeleteDoorOutput
     | DeleteWindowOutput
     | RenameRoomOutput
-    | SetScaleOutput;
+    | SetScaleOutput
+    | SplitRoomOutput;
   model: FloorPlanModelOutput;
   status: "APPLIED";
   summary: string;
@@ -730,89 +1161,6 @@ export interface ExecuteRequest {
   };
   dry_run?: boolean;
   model: FloorPlanModelInput;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "FloorPlanModel-Input".
- */
-export interface FloorPlanModelInput {
-  columns?: ColumnInput[];
-  coordinate_system: CoordinateSystemInput;
-  dimensions?: DimensionInput[];
-  doors?: DoorInput[];
-  floorplan_id: string;
-  furniture?: FurnitureInput[];
-  id?: string;
-  rooms?: RoomInput[];
-  schema_version?: 1;
-  stairs?: StairInput[];
-  walls?: WallInput[];
-  windows?: WindowInput[];
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Furniture-Input".
- */
-export interface FurnitureInput {
-  bbox: BBox;
-  category?: string | null;
-  confidence?: number | null;
-  id?: string;
-  source?: Source;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Room-Input".
- */
-export interface RoomInput {
-  area_px?: number | null;
-  confidence?: number | null;
-  id?: string;
-  label_text?: string | null;
-  /**
-   * @minItems 3
-   */
-  polygon: [Point, Point, Point, ...Point[]];
-  room_type?: RoomType;
-  room_type_confidence?: number | null;
-  room_type_source?: Source | null;
-  source?: Source;
-  wall_ids?: string[];
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Stair-Input".
- */
-export interface StairInput {
-  bbox: BBox;
-  confidence?: number | null;
-  id?: string;
-  polygon?: Point[] | null;
-  source?: Source;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Wall-Input".
- */
-export interface WallInput {
-  confidence?: number | null;
-  end: Point;
-  id?: string;
-  source?: Source;
-  start: Point;
-  thickness_px?: number | null;
-}
-/**
- * This interface was referenced by `_Root`'s JSON-Schema
- * via the `definition` "Window-Input".
- */
-export interface WindowInput {
-  bbox: BBox;
-  confidence?: number | null;
-  id?: string;
-  source?: Source;
-  wall_id?: string | null;
-  width_px?: number | null;
 }
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
@@ -922,6 +1270,54 @@ export interface MetricInsights {
   interior_wall_length_m: number;
   total_area_m2: number;
   total_wall_length_m: number;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "LayoutGoal".
+ */
+export interface LayoutGoal {
+  goal: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "LayoutOption".
+ */
+export interface LayoutOption {
+  command:
+    | MoveWallOutput
+    | AddWallOutput
+    | DeleteWallOutput
+    | ResizeRoomOutput
+    | AddDoorOutput
+    | AddWindowOutput
+    | DeleteDoorOutput
+    | DeleteWindowOutput
+    | RenameRoomOutput
+    | SetScaleOutput
+    | SplitRoomOutput;
+  new_compliance_failures: number;
+  rationale: string;
+  score: number;
+  target_area_after_m2: number | null;
+  target_area_before_m2: number | null;
+  title: string;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "LayoutRequest".
+ */
+export interface LayoutRequest {
+  goal: string;
+  model: FloorPlanModelInput;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "LayoutSuggestions".
+ */
+export interface LayoutSuggestions {
+  answer: string;
+  feasible: boolean;
+  options: LayoutOption[];
 }
 /**
  * This interface was referenced by `_Root`'s JSON-Schema
@@ -1035,6 +1431,14 @@ export interface ProjectPage {
 export interface ProjectUpdate {
   description?: string | null;
   name?: string | null;
+}
+/**
+ * This interface was referenced by `_Root`'s JSON-Schema
+ * via the `definition` "QuestionRequest".
+ */
+export interface QuestionRequest {
+  model: FloorPlanModelInput;
+  question: string;
 }
 /**
  * This interface was referenced by `_Root`'s JSON-Schema

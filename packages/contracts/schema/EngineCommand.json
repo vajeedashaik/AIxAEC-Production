@@ -1,0 +1,708 @@
+{
+  "$defs": {
+    "AddDoor": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "ADD_DOOR",
+          "title": "Operation",
+          "type": "string"
+        },
+        "position": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Position",
+          "type": "number"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        },
+        "width": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Distance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "operation"
+      ],
+      "title": "AddDoor",
+      "type": "object"
+    },
+    "AddWall": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/Point"
+        },
+        "operation": {
+          "const": "ADD_WALL",
+          "title": "Operation",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/Point"
+        },
+        "thickness_px": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thickness Px"
+        }
+      },
+      "required": [
+        "operation",
+        "start",
+        "end"
+      ],
+      "title": "AddWall",
+      "type": "object"
+    },
+    "AddWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "ADD_WINDOW",
+          "title": "Operation",
+          "type": "string"
+        },
+        "position": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Position",
+          "type": "number"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        },
+        "width": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Distance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "operation"
+      ],
+      "title": "AddWindow",
+      "type": "object"
+    },
+    "DeleteDoor": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "DELETE_DOOR",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "operation"
+      ],
+      "title": "DeleteDoor",
+      "type": "object"
+    },
+    "DeleteWall": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "DELETE_WALL",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "operation"
+      ],
+      "title": "DeleteWall",
+      "type": "object"
+    },
+    "DeleteWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "DELETE_WINDOW",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "operation"
+      ],
+      "title": "DeleteWindow",
+      "type": "object"
+    },
+    "Direction": {
+      "enum": [
+        "LEFT",
+        "RIGHT",
+        "UP",
+        "DOWN"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "Distance": {
+      "additionalProperties": false,
+      "properties": {
+        "unit": {
+          "enum": [
+            "mm",
+            "px"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "exclusiveMinimum": 0,
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "unit"
+      ],
+      "title": "Distance",
+      "type": "object"
+    },
+    "MoveWall": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "distance": {
+          "$ref": "#/$defs/Distance"
+        },
+        "operation": {
+          "const": "MOVE_WALL",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "operation",
+        "direction",
+        "distance"
+      ],
+      "title": "MoveWall",
+      "type": "object"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "minimum": 0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "minimum": 0,
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "RenameRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "operation": {
+          "const": "RENAME_ROOM",
+          "title": "Operation",
+          "type": "string"
+        },
+        "room_type": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RoomType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "operation",
+        "name"
+      ],
+      "title": "RenameRoom",
+      "type": "object"
+    },
+    "ResizeMode": {
+      "enum": [
+        "EXPAND",
+        "CONTRACT"
+      ],
+      "title": "ResizeMode",
+      "type": "string"
+    },
+    "ResizeRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "distance": {
+          "$ref": "#/$defs/Distance"
+        },
+        "mode": {
+          "$ref": "#/$defs/ResizeMode"
+        },
+        "operation": {
+          "const": "RESIZE_ROOM",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "operation",
+        "direction",
+        "distance",
+        "mode"
+      ],
+      "title": "ResizeRoom",
+      "type": "object"
+    },
+    "RoomType": {
+      "enum": [
+        "UNKNOWN",
+        "BEDROOM",
+        "MASTER_BEDROOM",
+        "BATHROOM",
+        "KITCHEN",
+        "LIVING_ROOM",
+        "DINING_ROOM",
+        "HALLWAY",
+        "CLOSET",
+        "GARAGE",
+        "OFFICE",
+        "LAUNDRY",
+        "BALCONY",
+        "STORAGE",
+        "STAIRWELL",
+        "UTILITY",
+        "OTHER"
+      ],
+      "title": "RoomType",
+      "type": "string"
+    },
+    "SetScale": {
+      "additionalProperties": false,
+      "properties": {
+        "length_mm": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Length Mm",
+          "type": "number"
+        },
+        "operation": {
+          "const": "SET_SCALE",
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "operation",
+        "length_mm"
+      ],
+      "title": "SetScale",
+      "type": "object"
+    },
+    "SplitRoom": {
+      "additionalProperties": false,
+      "description": "Generated by layout suggestions only: deliberately outside `Command`, so a parser or LLM can never emit it.",
+      "properties": {
+        "axis": {
+          "enum": [
+            "VERTICAL",
+            "HORIZONTAL"
+          ],
+          "title": "Axis",
+          "type": "string"
+        },
+        "new_room_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "New Room Name",
+          "type": "string"
+        },
+        "new_room_type": {
+          "$ref": "#/$defs/RoomType",
+          "default": "BEDROOM"
+        },
+        "operation": {
+          "const": "SPLIT_ROOM",
+          "title": "Operation",
+          "type": "string"
+        },
+        "position": {
+          "default": 0.5,
+          "maximum": 0.8,
+          "minimum": 0.2,
+          "title": "Position",
+          "type": "number"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "target_query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Query"
+        }
+      },
+      "required": [
+        "operation",
+        "axis",
+        "new_room_name"
+      ],
+      "title": "SplitRoom",
+      "type": "object"
+    }
+  },
+  "description": "A structured edit command, or a generated SPLIT_ROOM from layout suggestions.",
+  "discriminator": {
+    "mapping": {
+      "ADD_DOOR": "#/$defs/AddDoor",
+      "ADD_WALL": "#/$defs/AddWall",
+      "ADD_WINDOW": "#/$defs/AddWindow",
+      "DELETE_DOOR": "#/$defs/DeleteDoor",
+      "DELETE_WALL": "#/$defs/DeleteWall",
+      "DELETE_WINDOW": "#/$defs/DeleteWindow",
+      "MOVE_WALL": "#/$defs/MoveWall",
+      "RENAME_ROOM": "#/$defs/RenameRoom",
+      "RESIZE_ROOM": "#/$defs/ResizeRoom",
+      "SET_SCALE": "#/$defs/SetScale",
+      "SPLIT_ROOM": "#/$defs/SplitRoom"
+    },
+    "propertyName": "operation"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/MoveWall"
+    },
+    {
+      "$ref": "#/$defs/AddWall"
+    },
+    {
+      "$ref": "#/$defs/DeleteWall"
+    },
+    {
+      "$ref": "#/$defs/ResizeRoom"
+    },
+    {
+      "$ref": "#/$defs/AddDoor"
+    },
+    {
+      "$ref": "#/$defs/AddWindow"
+    },
+    {
+      "$ref": "#/$defs/DeleteDoor"
+    },
+    {
+      "$ref": "#/$defs/DeleteWindow"
+    },
+    {
+      "$ref": "#/$defs/RenameRoom"
+    },
+    {
+      "$ref": "#/$defs/SetScale"
+    },
+    {
+      "$ref": "#/$defs/SplitRoom"
+    }
+  ],
+  "title": "EngineCommand"
+}

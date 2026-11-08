@@ -1,0 +1,63 @@
+{
+  "feasible": true,
+  "answer": "Here are 3 ways to make KITCHEN larger.",
+  "options": [
+    {
+      "title": "Extend KITCHEN 900 mm up",
+      "rationale": "Moves the top side of KITCHEN out by 900 mm. No new compliance failures.",
+      "command": {
+        "target_id": "262acbf6-0915-4a50-a657-28e02a8868fa",
+        "target_query": null,
+        "operation": "RESIZE_ROOM",
+        "direction": "UP",
+        "distance": {
+          "value": 900.0,
+          "unit": "mm"
+        },
+        "mode": "EXPAND"
+      },
+      "target_area_before_m2": 16.2,
+      "target_area_after_m2": 19.44,
+      "new_compliance_failures": 0,
+      "score": 3.24
+    },
+    {
+      "title": "Extend KITCHEN 900 mm left",
+      "rationale": "Moves the left side of KITCHEN out by 900 mm. Takes 4.1 m² from neighbouring rooms. No new compliance failures.",
+      "command": {
+        "target_id": "262acbf6-0915-4a50-a657-28e02a8868fa",
+        "target_query": null,
+        "operation": "RESIZE_ROOM",
+        "direction": "LEFT",
+        "distance": {
+          "value": 900.0,
+          "unit": "mm"
+        },
+        "mode": "EXPAND"
+      },
+      "target_area_before_m2": 16.2,
+      "target_area_after_m2": 20.25,
+      "new_compliance_failures": 0,
+      "score": 2.03
+    },
+    {
+      "title": "Extend KITCHEN 900 mm right",
+      "rationale": "Moves the right side of KITCHEN out by 900 mm. Takes 4.1 m² from neighbouring rooms. No new compliance failures.",
+      "command": {
+        "target_id": "262acbf6-0915-4a50-a657-28e02a8868fa",
+        "target_query": null,
+        "operation": "RESIZE_ROOM",
+        "direction": "RIGHT",
+        "distance": {
+          "value": 900.0,
+          "unit": "mm"
+        },
+        "mode": "EXPAND"
+      },
+      "target_area_before_m2": 16.2,
+      "target_area_after_m2": 20.25,
+      "new_compliance_failures": 0,
+      "score": 2.03
+    }
+  ]
+}

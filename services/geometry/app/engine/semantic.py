@@ -2,7 +2,8 @@
 
 from math import hypot, isfinite
 
-from aec_contracts import AddDoor, AddWall, AddWindow, Command, FloorPlanModel, MoveWall, ResizeRoom, SetScale
+from aec_contracts import AddDoor, AddWall, AddWindow, FloorPlanModel, MoveWall, ResizeRoom, SetScale
+from aec_contracts.commands import EngineCommand
 
 from .errors import SemanticError
 from .geom import IMAGE_MARGIN_PX, find, to_px
@@ -11,7 +12,7 @@ MOVE_LIMIT_FACTOR = 3
 MIN_MM_PER_PX, MAX_MM_PER_PX = 0.05, 500.0
 
 
-def check_semantics(model: FloorPlanModel, command: Command) -> None:
+def check_semantics(model: FloorPlanModel, command: EngineCommand) -> None:
     cs = model.coordinate_system
     if isinstance(command, MoveWall | ResizeRoom):
         limit = MOVE_LIMIT_FACTOR * max(cs.image_width, cs.image_height)

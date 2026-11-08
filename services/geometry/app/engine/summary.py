@@ -4,7 +4,6 @@ from aec_contracts import (
     AddDoor,
     AddWall,
     AddWindow,
-    Command,
     DeleteDoor,
     DeleteWall,
     DeleteWindow,
@@ -18,6 +17,7 @@ from aec_contracts import (
     Room,
     polygon_area,
 )
+from aec_contracts.commands import EngineCommand, SplitRoom
 
 from .geom import find
 
@@ -46,7 +46,7 @@ def _opening_width(after: FloorPlanModel, command: AddDoor | AddWindow) -> str:
     return f"{added.width_px:.0f} px"
 
 
-def build_summary(before: FloorPlanModel, after: FloorPlanModel, command: Command) -> str:
+def build_summary(before: FloorPlanModel, after: FloorPlanModel, command: EngineCommand) -> str:
     if isinstance(command, MoveWall):
         direction = command.direction.value.lower()
         return f"Moved wall {_distance(command.distance)} {direction}{_resized(before, after)}."
@@ -79,4 +79,6 @@ def build_summary(before: FloorPlanModel, after: FloorPlanModel, command: Comman
         return "Deleted window."
     if isinstance(command, RenameRoom):
         return f'Renamed {_name(find(before.rooms, command.target_id))} to "{command.name}".'
+    if isinstance(command, SplitRoom):
+        return f'Split {_name(find(before.rooms, command.target_id))} and created "{command.new_room_name}".'
     return f"Set scale to {after.coordinate_system.mm_per_pixel:.4g} mm per pixel."

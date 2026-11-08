@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from typing import Literal
 from uuid import UUID
 
-from aec_contracts import TARGET_KIND, Candidate, Direction, FloorPlanModel, Room, Wall
-from aec_contracts.commands import Targeted
+from aec_contracts import Candidate, Direction, FloorPlanModel, Room, Wall
+from aec_contracts.commands import ENGINE_TARGET_KIND, Targeted
 from aec_contracts.lexicon import ROOM_SYNONYMS
 from aec_contracts.model import Opening
 
@@ -231,7 +231,7 @@ def _check_kind(model: FloorPlanModel, target_id: UUID, kind: str) -> None:
 
 
 def resolve_target(model: FloorPlanModel, command: Targeted, operation: str) -> UUID:
-    kind = TARGET_KIND[operation]
+    kind = ENGINE_TARGET_KIND[operation]
     if command.target_id is not None:
         _check_kind(model, command.target_id, kind)
         return command.target_id

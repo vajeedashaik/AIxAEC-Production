@@ -1,12 +1,16 @@
 // Typed client for every public endpoint in phases/shared/CONTRACTS.md §8.
 import type {
+  Analysis,
+  Answer,
   Artifact,
   CommandRequest,
   CommandResponse,
+  CostRatesInput,
   ErrorEnvelope,
   FloorPlan,
   History,
   Job,
+  LayoutSuggestions,
   Me,
   ModelEnvelope,
   Project,
@@ -197,6 +201,10 @@ export function createApiClient({ getToken, baseUrl = API_URL }: { getToken: Get
     redo: (floorplanId: string, expectedVersion?: number | null) =>
       send<CommandResponse>("POST", `${fp(floorplanId)}/model/redo`, undefined, { expected_version: expectedVersion }),
     getHistory: (floorplanId: string, signal?: AbortSignal) => get<History>(`${fp(floorplanId)}/history`, undefined, signal),
+
+    analyze: (floorplanId: string, version: number, rates: CostRatesInput | null) => send<Analysis>("POST", `${fp(floorplanId)}/analysis`, { version, rates }),
+    ask: (floorplanId: string, question: string, version: number) => send<Answer>("POST", `${fp(floorplanId)}/ask`, { question, version }),
+    suggestLayouts: (floorplanId: string, goal: string) => send<LayoutSuggestions>("POST", `${fp(floorplanId)}/layouts`, { goal }),
   };
 }
 

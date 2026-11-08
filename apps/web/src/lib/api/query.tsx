@@ -20,6 +20,7 @@ export const queryKeys = {
     model: (floorplanId: string, version?: number) => ["floorplans", floorplanId, "model", version ?? "head"] as const,
     artifacts: (floorplanId: string) => ["floorplans", floorplanId, "artifacts"] as const,
     history: (floorplanId: string) => ["floorplans", floorplanId, "history"] as const,
+    analysis: (floorplanId: string, version: number, rates: unknown) => ["floorplans", floorplanId, "analysis", version, rates] as const,
   },
 };
 

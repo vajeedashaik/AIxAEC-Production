@@ -1,0 +1,43 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "answer": {
+      "title": "Answer",
+      "type": "string"
+    },
+    "element_ids": {
+      "default": [],
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Element Ids",
+      "type": "array"
+    },
+    "source": {
+      "default": "rules",
+      "enum": [
+        "rules",
+        "llm"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "ANSWERED",
+        "UNKNOWN"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "answer",
+    "element_ids",
+    "source"
+  ],
+  "title": "Answer",
+  "type": "object"
+}

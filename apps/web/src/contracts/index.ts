@@ -51,7 +51,20 @@ export type Room = G.RoomOutput;
 
 // Commands: `Command` is a resolved command as returned; `CommandInput` is what a client may send.
 export type Command = NonNullable<G.CommandResponse["command"]>;
-export type CommandInput = G.Command;
+export type CommandInput = G.EngineCommand;
+export type Analysis = G.Analysis;
+export type CostRates = G.CostRatesOutput;
+export type CostRatesInput = G.CostRatesInput;
+export type ComplianceCheck = G.ComplianceCheck;
+export type ComplianceReport = G.ComplianceReport;
+export type CostEstimate = G.CostEstimate;
+export type Takeoff = G.Takeoff;
+export type BoqItem = G.BoqItem;
+export type InteriorPlan = G.InteriorPlan;
+export type FurniturePlacement = G.FurniturePlacement;
+export type StructuralReport = G.StructuralReport;
+export type Answer = G.Answer;
+export type LayoutSuggestions = G.LayoutSuggestions;
 export type Operation = Command["operation"];
 export type MoveWall = G.MoveWallOutput;
 export type AddWall = G.AddWallOutput;

@@ -325,6 +325,21 @@ class PlanBrief(Strict):
 
 ---
 
+## 6a. Building intelligence (added after P7): `aec_contracts.analysis`
+
+All deterministic, in `services/geometry/app/analysis/`. Internal routes, with the usual internal token:
+
+| Route | Body | Returns |
+|---|---|---|
+| `POST /v1/models/analysis` | `AnalysisRequest` (`model`, `rates?`) | `Analysis`: `needs_scale`, plus `takeoff`, `compliance`, `estimate`, `interior`, `structural` (all null without a scale) |
+| `POST /v1/models/answer` | `QuestionRequest` | `Answer` |
+| `POST /v1/models/facts` | `ModelRequest` | Facts sheet for the LLM: no coordinates, no ids |
+| `POST /v1/models/layouts` | `LayoutRequest` | `LayoutSuggestions`: up to 3 options, each one engine-validated `EngineCommand` |
+
+`SPLIT_ROOM` (`axis`, `position` 0.2–0.8, `new_room_name`, `new_room_type`) is in `EngineCommand` but **not** in `Command` or `OPERATIONS`, so the language service can never produce it. `POST /v1/commands/execute` accepts it.
+
+Language service: `POST /v1/questions/answer` (`AnswerRequest` → `AnswerResult`). Returns `UNKNOWN` when no LLM is configured.
+
 ## 7. Language service API (`services/language`, :8003)
 
 ### `POST /v1/commands/parse`
@@ -457,6 +472,14 @@ class History(Strict):
 | `GET /v1/floorplans/{floorplan_id}/history` | | `History` |
 
 ---
+
+### Building intelligence
+
+| Route | Body | Returns |
+|---|---|---|
+| `POST /v1/floorplans/{id}/analysis` | `AnalysisQuery` (`version?`, `rates?`) | `Analysis` |
+| `POST /v1/floorplans/{id}/ask` | `AskRequest` (`question` ≤ 500, `version?`) | `Answer`. Rules first; `UNKNOWN` goes to the LLM with the facts sheet |
+| `POST /v1/floorplans/{id}/layouts` | `LayoutGoal` (`goal` ≤ 300) | `LayoutSuggestions` against HEAD. Apply an option through `POST .../commands` |
 
 ## 9. Database schema (Supabase Postgres), owned by P3
 

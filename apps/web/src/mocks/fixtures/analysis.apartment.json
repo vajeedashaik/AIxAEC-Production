@@ -1,0 +1,1140 @@
+{
+  "needs_scale": false,
+  "takeoff": {
+    "items": [
+      {
+        "code": "WL-01",
+        "category": "Walls",
+        "description": "Exterior wall length",
+        "unit": "m",
+        "quantity": 40.0,
+        "basis": "Sum of exterior wall centre-lines"
+      },
+      {
+        "code": "WL-02",
+        "category": "Walls",
+        "description": "Interior wall length",
+        "unit": "m",
+        "quantity": 24.4,
+        "basis": "Sum of interior wall centre-lines"
+      },
+      {
+        "code": "WL-03",
+        "category": "Walls",
+        "description": "Total wall length",
+        "unit": "m",
+        "quantity": 64.4,
+        "basis": "Exterior + interior"
+      },
+      {
+        "code": "FA-01",
+        "category": "Floor",
+        "description": "Floor area",
+        "unit": "m²",
+        "quantity": 78.8,
+        "basis": "Sum of room polygons"
+      },
+      {
+        "code": "OP-01",
+        "category": "Openings",
+        "description": "Doors",
+        "unit": "nr",
+        "quantity": 4.0,
+        "basis": "Counted from the model"
+      },
+      {
+        "code": "OP-02",
+        "category": "Openings",
+        "description": "Windows",
+        "unit": "nr",
+        "quantity": 3.0,
+        "basis": "Counted from the model"
+      },
+      {
+        "code": "MA-01",
+        "category": "Masonry",
+        "description": "Brickwork",
+        "unit": "m³",
+        "quantity": 29.41,
+        "basis": "Wall volume less openings"
+      },
+      {
+        "code": "MA-02",
+        "category": "Masonry",
+        "description": "Bricks",
+        "unit": "nr",
+        "quantity": 15440.0,
+        "basis": "Brickwork × bricks per m³ + waste"
+      },
+      {
+        "code": "CO-01",
+        "category": "Concrete",
+        "description": "RCC floor slab",
+        "unit": "m³",
+        "quantity": 13.39,
+        "basis": "(Floor + wall footprint) × slab thickness"
+      },
+      {
+        "code": "CO-02",
+        "category": "Concrete",
+        "description": "RCC columns",
+        "unit": "m³",
+        "quantity": 0.17,
+        "basis": "Detected column sections × wall height"
+      },
+      {
+        "code": "CO-03",
+        "category": "Concrete",
+        "description": "RCC lintels",
+        "unit": "m³",
+        "quantity": 0.24,
+        "basis": "Opening span + bearing × wall × depth"
+      },
+      {
+        "code": "CO-04",
+        "category": "Concrete",
+        "description": "Total concrete",
+        "unit": "m³",
+        "quantity": 13.8,
+        "basis": "Slab + columns + lintels"
+      },
+      {
+        "code": "ST-01",
+        "category": "Steel",
+        "description": "Reinforcement steel",
+        "unit": "kg",
+        "quantity": 1122.53,
+        "basis": "Concrete volumes × steel ratios"
+      },
+      {
+        "code": "PA-01",
+        "category": "Paint",
+        "description": "Interior paint area",
+        "unit": "m²",
+        "quantity": 305.09,
+        "basis": "Wall faces + ceilings − openings − tiled walls"
+      },
+      {
+        "code": "PA-02",
+        "category": "Paint",
+        "description": "Exterior paint area",
+        "unit": "m²",
+        "quantity": 113.07,
+        "basis": "Exterior wall face − openings"
+      },
+      {
+        "code": "PA-03",
+        "category": "Paint",
+        "description": "Paint",
+        "unit": "L",
+        "quantity": 83.63,
+        "basis": "Painted area × coats ÷ coverage"
+      },
+      {
+        "code": "TI-01",
+        "category": "Tiles",
+        "description": "Floor tile area",
+        "unit": "m²",
+        "quantity": 23.0,
+        "basis": "Bathrooms, kitchens, laundries, balconies"
+      },
+      {
+        "code": "TI-02",
+        "category": "Tiles",
+        "description": "Wall tile area",
+        "unit": "m²",
+        "quantity": 22.68,
+        "basis": "Bathroom perimeters × tile height"
+      },
+      {
+        "code": "TI-03",
+        "category": "Tiles",
+        "description": "Floor tiles",
+        "unit": "nr",
+        "quantity": 71.0,
+        "basis": "Area ÷ tile size + waste"
+      },
+      {
+        "code": "TI-04",
+        "category": "Tiles",
+        "description": "Wall tiles",
+        "unit": "nr",
+        "quantity": 278.0,
+        "basis": "Area ÷ tile size + waste"
+      },
+      {
+        "code": "FL-01",
+        "category": "Floor",
+        "description": "Other flooring",
+        "unit": "m²",
+        "quantity": 55.8,
+        "basis": "Floor area − tiled floors"
+      }
+    ],
+    "assumptions": [
+      {
+        "label": "Wall height",
+        "value": "3 m"
+      },
+      {
+        "label": "Door height",
+        "value": "2.1 m"
+      },
+      {
+        "label": "Window height",
+        "value": "1.2 m"
+      },
+      {
+        "label": "Slab thickness",
+        "value": "150 mm"
+      },
+      {
+        "label": "Wall thickness when not detected",
+        "value": "230 mm exterior, 115 mm interior"
+      },
+      {
+        "label": "Bricks",
+        "value": "500 per m³ including mortar, plus 5% waste"
+      },
+      {
+        "label": "Paint",
+        "value": "2 coats at 10 m² per litre"
+      },
+      {
+        "label": "Tiles",
+        "value": "600 × 600 mm floor, 300 × 300 mm wall, plus 10% waste"
+      },
+      {
+        "label": "Steel",
+        "value": "80 kg/m³ slab, 160 kg/m³ columns, 100 kg/m³ lintels"
+      },
+      {
+        "label": "Excluded",
+        "value": "Foundations, roof finishes and external works"
+      }
+    ]
+  },
+  "compliance": {
+    "profile": "NBC India 2016, residential (indicative)",
+    "disclaimer": "Thresholds follow published summaries of the National Building Code of India 2016. This is not a certified code review: confirm every result against the NBC text and your state or municipal building bylaws.",
+    "passed": 28,
+    "warnings": 3,
+    "failed": 2,
+    "checks": [
+      {
+        "category": "Room size",
+        "rule": "Minimum floor area",
+        "status": "PASS",
+        "subject": "LIVING",
+        "measured": "22.50 m²",
+        "required": "≥ 9.5 m²",
+        "element_id": "593cf519-4e7e-4fa9-96da-4b9d645b030a"
+      },
+      {
+        "category": "Room size",
+        "rule": "Minimum room width",
+        "status": "PASS",
+        "subject": "LIVING",
+        "measured": "4500 mm",
+        "required": "≥ 2400 mm",
+        "element_id": "593cf519-4e7e-4fa9-96da-4b9d645b030a"
+      },
+      {
+        "category": "Window placement",
+        "rule": "Window on an exterior wall",
+        "status": "PASS",
+        "subject": "LIVING",
+        "measured": "1 exterior window",
+        "required": "≥ 1",
+        "element_id": "593cf519-4e7e-4fa9-96da-4b9d645b030a"
+      },
+      {
+        "category": "Window placement",
+        "rule": "Glazing for daylight",
+        "status": "WARN",
+        "subject": "LIVING",
+        "measured": "1.80 m²",
+        "required": "≥ 2.25 m² (10% of floor)",
+        "element_id": "593cf519-4e7e-4fa9-96da-4b9d645b030a"
+      },
+      {
+        "category": "Room size",
+        "rule": "Minimum floor area",
+        "status": "PASS",
+        "subject": "KITCHEN",
+        "measured": "16.20 m²",
+        "required": "≥ 5 m²",
+        "element_id": "262acbf6-0915-4a50-a657-28e02a8868fa"
+      },
+      {
+        "category": "Room size",
+        "rule": "Minimum room width",
+        "status": "PASS",
+        "subject": "KITCHEN",
+        "measured": "3600 mm",
+        "required": "≥ 1800 mm",
+        "element_id": "262acbf6-0915-4a50-a657-28e02a8868fa"
+      },
+      {
+        "category": "Window placement",
+        "rule": "Window on an exterior wall",
+        "status": "PASS",
+        "subject": "KITCHEN",
+        "measured": "1 exterior window",
+        "required": "≥ 1",
+        "element_id": "262acbf6-0915-4a50-a657-28e02a8868fa"
+      },
+      {
+        "category": "Window placement",
+        "rule": "Glazing for daylight",
+        "status": "WARN",
+        "subject": "KITCHEN",
+        "measured": "1.44 m²",
+        "required": "≥ 1.62 m² (10% of floor)",
+        "element_id": "262acbf6-0915-4a50-a657-28e02a8868fa"
+      },
+      {
+        "category": "Room size",
+        "rule": "Minimum floor area",
+        "status": "PASS",
+        "subject": "BEDROOM",
+        "measured": "15.30 m²",
+        "required": "≥ 9.5 m²",
+        "element_id": "36173087-9b98-4939-9845-0a72df97ac97"
+      },
+      {
+        "category": "Room size",
+        "rule": "Minimum room width",
+        "status": "PASS",
+        "subject": "BEDROOM",
+        "measured": "3400 mm",
+        "required": "≥ 2400 mm",
+        "element_id": "36173087-9b98-4939-9845-0a72df97ac97"
+      },
+      {
+        "category": "Window placement",
+        "rule": "Window on an exterior wall",
+        "status": "PASS",
+        "subject": "BEDROOM",
+        "measured": "1 exterior window",
+        "required": "≥ 1",
+        "element_id": "36173087-9b98-4939-9845-0a72df97ac97"
+      },
+      {
+        "category": "Window placement",
+        "rule": "Glazing for daylight",
+        "status": "PASS",
+        "subject": "BEDROOM",
+        "measured": "1.80 m²",
+        "required": "≥ 1.53 m² (10% of floor)",
+        "element_id": "36173087-9b98-4939-9845-0a72df97ac97"
+      },
+      {
+        "category": "Fire safety",
+        "rule": "Escape window or exterior door from sleeping room",
+        "status": "PASS",
+        "subject": "BEDROOM",
+        "measured": "Present",
+        "required": "Exterior door or window ≥ 600 mm wide",
+        "element_id": "36173087-9b98-4939-9845-0a72df97ac97"
+      },
+      {
+        "category": "Corridor width",
+        "rule": "Minimum clear corridor width",
+        "status": "PASS",
+        "subject": "HALL",
+        "measured": "1500 mm",
+        "required": "≥ 1000 mm",
+        "element_id": "d478af0f-9451-4dd7-aedf-cd5601731625"
+      },
+      {
+        "category": "Accessibility",
+        "rule": "Wheelchair-passable corridor",
+        "status": "PASS",
+        "subject": "HALL",
+        "measured": "1500 mm",
+        "required": "≥ 1200 mm",
+        "element_id": "d478af0f-9451-4dd7-aedf-cd5601731625"
+      },
+      {
+        "category": "Room size",
+        "rule": "Minimum floor area",
+        "status": "PASS",
+        "subject": "BATH",
+        "measured": "6.80 m²",
+        "required": "≥ 1.8 m²",
+        "element_id": "d8148ea5-3359-42c9-965c-8e68c43942c2"
+      },
+      {
+        "category": "Room size",
+        "rule": "Minimum room width",
+        "status": "PASS",
+        "subject": "BATH",
+        "measured": "2000 mm",
+        "required": "≥ 1200 mm",
+        "element_id": "d8148ea5-3359-42c9-965c-8e68c43942c2"
+      },
+      {
+        "category": "Accessibility",
+        "rule": "Wheelchair turning space",
+        "status": "PASS",
+        "subject": "BATH",
+        "measured": "2000 mm",
+        "required": "≥ 1500 mm",
+        "element_id": "d8148ea5-3359-42c9-965c-8e68c43942c2"
+      },
+      {
+        "category": "Door width",
+        "rule": "Exit door clear width",
+        "status": "FAIL",
+        "subject": "HALL",
+        "measured": "900 mm",
+        "required": "≥ 1000 mm",
+        "element_id": "2346fec6-d79e-46a2-8659-f3cbede815c3"
+      },
+      {
+        "category": "Accessibility",
+        "rule": "Wheelchair-passable door",
+        "status": "PASS",
+        "subject": "HALL",
+        "measured": "900 mm",
+        "required": "≥ 900 mm",
+        "element_id": "2346fec6-d79e-46a2-8659-f3cbede815c3"
+      },
+      {
+        "category": "Door width",
+        "rule": "Internal door clear width",
+        "status": "PASS",
+        "subject": "HALL / LIVING",
+        "measured": "900 mm",
+        "required": "≥ 800 mm",
+        "element_id": "e19b04c4-fd03-4973-b193-0d8d89e88400"
+      },
+      {
+        "category": "Accessibility",
+        "rule": "Wheelchair-passable door",
+        "status": "PASS",
+        "subject": "HALL / LIVING",
+        "measured": "900 mm",
+        "required": "≥ 900 mm",
+        "element_id": "e19b04c4-fd03-4973-b193-0d8d89e88400"
+      },
+      {
+        "category": "Door width",
+        "rule": "Internal door clear width",
+        "status": "PASS",
+        "subject": "HALL / BEDROOM",
+        "measured": "900 mm",
+        "required": "≥ 800 mm",
+        "element_id": "0f201baf-09da-4435-92fd-447a37d09e91"
+      },
+      {
+        "category": "Accessibility",
+        "rule": "Wheelchair-passable door",
+        "status": "PASS",
+        "subject": "HALL / BEDROOM",
+        "measured": "900 mm",
+        "required": "≥ 900 mm",
+        "element_id": "0f201baf-09da-4435-92fd-447a37d09e91"
+      },
+      {
+        "category": "Door width",
+        "rule": "Internal door clear width",
+        "status": "PASS",
+        "subject": "BATH / HALL",
+        "measured": "700 mm",
+        "required": "≥ 700 mm",
+        "element_id": "d50b70b9-2ea6-4e67-af0e-d9565ecd5da2"
+      },
+      {
+        "category": "Accessibility",
+        "rule": "Wheelchair-passable door",
+        "status": "WARN",
+        "subject": "BATH / HALL",
+        "measured": "700 mm",
+        "required": "≥ 900 mm",
+        "element_id": "d50b70b9-2ea6-4e67-af0e-d9565ecd5da2"
+      },
+      {
+        "category": "Emergency exits",
+        "rule": "At least one exit to the outside",
+        "status": "PASS",
+        "subject": "Whole plan",
+        "measured": "1 exit door(s)",
+        "required": "≥ 1",
+        "element_id": null
+      },
+      {
+        "category": "Fire safety",
+        "rule": "Travel distance to exit",
+        "status": "PASS",
+        "subject": "LIVING",
+        "measured": "11.8 m",
+        "required": "≤ 22.5 m",
+        "element_id": "593cf519-4e7e-4fa9-96da-4b9d645b030a"
+      },
+      {
+        "category": "Fire safety",
+        "rule": "Door route to an exit",
+        "status": "FAIL",
+        "subject": "KITCHEN",
+        "measured": "No route through doors",
+        "required": "A connected route",
+        "element_id": "262acbf6-0915-4a50-a657-28e02a8868fa"
+      },
+      {
+        "category": "Fire safety",
+        "rule": "Travel distance to exit",
+        "status": "PASS",
+        "subject": "BEDROOM",
+        "measured": "12.6 m",
+        "required": "≤ 22.5 m",
+        "element_id": "36173087-9b98-4939-9845-0a72df97ac97"
+      },
+      {
+        "category": "Fire safety",
+        "rule": "Travel distance to exit",
+        "status": "PASS",
+        "subject": "HALL",
+        "measured": "6.0 m",
+        "required": "≤ 22.5 m",
+        "element_id": "d478af0f-9451-4dd7-aedf-cd5601731625"
+      },
+      {
+        "category": "Fire safety",
+        "rule": "Travel distance to exit",
+        "status": "PASS",
+        "subject": "BATH",
+        "measured": "11.4 m",
+        "required": "≤ 22.5 m",
+        "element_id": "d8148ea5-3359-42c9-965c-8e68c43942c2"
+      },
+      {
+        "category": "Fire safety",
+        "rule": "Stair clear width",
+        "status": "PASS",
+        "subject": "Stair",
+        "measured": "1200 mm",
+        "required": "≥ 1000 mm",
+        "element_id": "b8603b8b-1f0f-4920-a5bb-630e20e3ae4f"
+      }
+    ]
+  },
+  "estimate": {
+    "currency": "INR",
+    "rates": {
+      "currency": "INR",
+      "concrete_per_m3": 7000.0,
+      "steel_per_kg": 70.0,
+      "brick_each": 9.0,
+      "door_each": 12000.0,
+      "window_each": 15000.0,
+      "paint_per_litre": 320.0,
+      "painting_labour_per_m2": 120.0,
+      "floor_tile_per_m2": 1000.0,
+      "wall_tile_per_m2": 1000.0,
+      "flooring_per_m2": 1300.0,
+      "electrical_point_each": 1500.0,
+      "plumbing_fixture_each": 9000.0,
+      "labour_percent": 35.0,
+      "contingency_percent": 10.0
+    },
+    "lines": [
+      {
+        "category": "Structure",
+        "description": "Concrete",
+        "quantity": 13.8,
+        "unit": "m³",
+        "rate": 7000.0,
+        "amount": 96600.0
+      },
+      {
+        "category": "Structure",
+        "description": "Reinforcement steel",
+        "quantity": 1122.53,
+        "unit": "kg",
+        "rate": 70.0,
+        "amount": 78577.1
+      },
+      {
+        "category": "Structure",
+        "description": "Bricks",
+        "quantity": 15440.0,
+        "unit": "nr",
+        "rate": 9.0,
+        "amount": 138960.0
+      },
+      {
+        "category": "Openings",
+        "description": "Doors",
+        "quantity": 4.0,
+        "unit": "nr",
+        "rate": 12000.0,
+        "amount": 48000.0
+      },
+      {
+        "category": "Openings",
+        "description": "Windows",
+        "quantity": 3.0,
+        "unit": "nr",
+        "rate": 15000.0,
+        "amount": 45000.0
+      },
+      {
+        "category": "Painting",
+        "description": "Paint",
+        "quantity": 83.63,
+        "unit": "L",
+        "rate": 320.0,
+        "amount": 26761.6
+      },
+      {
+        "category": "Painting",
+        "description": "Painting labour",
+        "quantity": 418.16,
+        "unit": "m²",
+        "rate": 120.0,
+        "amount": 50179.2
+      },
+      {
+        "category": "Flooring",
+        "description": "Floor tiles",
+        "quantity": 23.0,
+        "unit": "m²",
+        "rate": 1000.0,
+        "amount": 23000.0
+      },
+      {
+        "category": "Flooring",
+        "description": "Wall tiles",
+        "quantity": 22.68,
+        "unit": "m²",
+        "rate": 1000.0,
+        "amount": 22680.0
+      },
+      {
+        "category": "Flooring",
+        "description": "Other flooring",
+        "quantity": 55.8,
+        "unit": "m²",
+        "rate": 1300.0,
+        "amount": 72540.0
+      },
+      {
+        "category": "Electrical",
+        "description": "Lighting and socket points",
+        "quantity": 33.0,
+        "unit": "nr",
+        "rate": 1500.0,
+        "amount": 49500.0
+      },
+      {
+        "category": "Plumbing",
+        "description": "Plumbing fixtures",
+        "quantity": 5.0,
+        "unit": "nr",
+        "rate": 9000.0,
+        "amount": 45000.0
+      }
+    ],
+    "material_cost": 407137.1,
+    "painting_cost": 76940.8,
+    "flooring_cost": 118220.0,
+    "electrical_cost": 49500.0,
+    "plumbing_cost": 45000.0,
+    "labour_cost": 183874.98,
+    "contingency": 88067.29,
+    "construction_cost": 968740.17,
+    "cost_per_m2": 12293.66,
+    "tile_count": 349,
+    "assumptions": [
+      {
+        "label": "Rates",
+        "value": "Rough India averages: replace them with current local prices"
+      },
+      {
+        "label": "Labour",
+        "value": "35% of structure, openings and flooring; painting labour is its own line"
+      },
+      {
+        "label": "Electrical",
+        "value": "One light per 9 m² plus sockets by room type"
+      },
+      {
+        "label": "Plumbing",
+        "value": "Bathroom 3 fixtures, kitchen 2, laundry 2"
+      }
+    ]
+  },
+  "interior": {
+    "furniture": [
+      {
+        "id": "dd23a068-4b23-5aaf-8d48-52496bb3cb9c",
+        "category": "Sofa",
+        "bbox": {
+          "x": 230.0,
+          "y": 105.0,
+          "width": 220.0,
+          "height": 90.0
+        }
+      },
+      {
+        "id": "7b620842-2e6d-5c3a-a5fa-426c5f707666",
+        "category": "TV unit",
+        "bbox": {
+          "x": 105.0,
+          "y": 225.0,
+          "width": 40.0,
+          "height": 180.0
+        }
+      },
+      {
+        "id": "f246f6b1-3859-5f30-9a74-81e356b381c8",
+        "category": "Coffee table",
+        "bbox": {
+          "x": 290.0,
+          "y": 295.0,
+          "width": 120.0,
+          "height": 60.0
+        }
+      },
+      {
+        "id": "6e82fe30-6954-5ac2-b44a-d69ff75b7750",
+        "category": "Counter",
+        "bbox": {
+          "x": 605.0,
+          "y": 205.0,
+          "width": 60.0,
+          "height": 240.0
+        }
+      },
+      {
+        "id": "0a29e9a1-9d16-540d-a5f8-443a139d4800",
+        "category": "Fridge",
+        "bbox": {
+          "x": 885.0,
+          "y": 290.0,
+          "width": 70.0,
+          "height": 70.0
+        }
+      },
+      {
+        "id": "d1b7b8b5-c540-5477-8b98-b66f0af964e9",
+        "category": "Queen bed",
+        "bbox": {
+          "x": 965.0,
+          "y": 250.0,
+          "width": 200.0,
+          "height": 150.0
+        }
+      },
+      {
+        "id": "a2941210-dcda-5bb9-8f15-782bedf97357",
+        "category": "Nightstand",
+        "bbox": {
+          "x": 965.0,
+          "y": 190.0,
+          "width": 40.0,
+          "height": 50.0
+        }
+      },
+      {
+        "id": "94767fc4-44a9-5ff0-8dc0-dd89a91472a6",
+        "category": "Wardrobe",
+        "bbox": {
+          "x": 1235.0,
+          "y": 125.0,
+          "width": 60.0,
+          "height": 120.0
+        }
+      },
+      {
+        "id": "a90c6b27-9abc-51d4-b5d1-38bd19446e08",
+        "category": "Shower",
+        "bbox": {
+          "x": 965.0,
+          "y": 705.0,
+          "width": 90.0,
+          "height": 90.0
+        }
+      },
+      {
+        "id": "bb0b0a1c-7f81-55d0-9f40-966799118cc2",
+        "category": "Toilet",
+        "bbox": {
+          "x": 1210.0,
+          "y": 705.0,
+          "width": 40.0,
+          "height": 70.0
+        }
+      },
+      {
+        "id": "59123fe7-2fdd-5ca7-a32a-e3793a6d34ae",
+        "category": "Basin",
+        "bbox": {
+          "x": 1090.0,
+          "y": 845.0,
+          "width": 60.0,
+          "height": 50.0
+        }
+      }
+    ],
+    "lighting": [
+      {
+        "room_id": "593cf519-4e7e-4fa9-96da-4b9d645b030a",
+        "room": "LIVING",
+        "target_lux": 150,
+        "lumens": 5625,
+        "fixtures": 8,
+        "fixture": "Dimmable downlights and a floor lamp",
+        "colour_temperature_k": 2700,
+        "daylight": "1 exterior window"
+      },
+      {
+        "room_id": "262acbf6-0915-4a50-a657-28e02a8868fa",
+        "room": "KITCHEN",
+        "target_lux": 300,
+        "lumens": 8100,
+        "fixtures": 11,
+        "fixture": "Downlights and under-cabinet strips",
+        "colour_temperature_k": 4000,
+        "daylight": "1 exterior window"
+      },
+      {
+        "room_id": "36173087-9b98-4939-9845-0a72df97ac97",
+        "room": "BEDROOM",
+        "target_lux": 100,
+        "lumens": 2550,
+        "fixtures": 4,
+        "fixture": "Ceiling light and bedside lamps",
+        "colour_temperature_k": 2700,
+        "daylight": "1 exterior window"
+      },
+      {
+        "room_id": "d478af0f-9451-4dd7-aedf-cd5601731625",
+        "room": "HALL",
+        "target_lux": 100,
+        "lumens": 3000,
+        "fixtures": 4,
+        "fixture": "Low-glare downlights",
+        "colour_temperature_k": 3000,
+        "daylight": "No daylight: consider a lightwell or borrowed light"
+      },
+      {
+        "room_id": "d8148ea5-3359-42c9-965c-8e68c43942c2",
+        "room": "BATH",
+        "target_lux": 200,
+        "lumens": 2267,
+        "fixtures": 3,
+        "fixture": "Moisture-rated downlights and a mirror light",
+        "colour_temperature_k": 4000,
+        "daylight": "No daylight: consider a lightwell or borrowed light"
+      }
+    ],
+    "themes": [
+      {
+        "name": "Modern",
+        "summary": "Clean lines, neutral walls and one strong contrast.",
+        "palette": [
+          {
+            "name": "Warm white",
+            "hex": "#F2F0EB"
+          },
+          {
+            "name": "Graphite",
+            "hex": "#3A3D42"
+          },
+          {
+            "name": "Oak",
+            "hex": "#B48A5E"
+          }
+        ],
+        "materials": [
+          "Large-format porcelain",
+          "Matte lacquer",
+          "Black steel"
+        ],
+        "lighting": "Recessed 3000 K with hidden linear strips",
+        "room_finishes": [
+          {
+            "room": "LIVING",
+            "finish": "Oak-look plank floor, matte white walls"
+          },
+          {
+            "room": "KITCHEN",
+            "finish": "Handleless graphite cabinets, quartz counter"
+          },
+          {
+            "room": "BEDROOM",
+            "finish": "Oak floor, graphite feature wall"
+          },
+          {
+            "room": "HALL",
+            "finish": "Oak-look plank floor, matte white walls"
+          },
+          {
+            "room": "BATH",
+            "finish": "Large grey porcelain, black fittings"
+          }
+        ]
+      },
+      {
+        "name": "Minimalist",
+        "summary": "Very little on show, soft tones and hidden storage.",
+        "palette": [
+          {
+            "name": "Chalk",
+            "hex": "#F5F4F0"
+          },
+          {
+            "name": "Stone",
+            "hex": "#D8D4CC"
+          },
+          {
+            "name": "Ash",
+            "hex": "#9A958C"
+          }
+        ],
+        "materials": [
+          "Microcement",
+          "Pale ash veneer",
+          "Linen"
+        ],
+        "lighting": "Soft indirect 2700 K, no visible fittings",
+        "room_finishes": [
+          {
+            "room": "LIVING",
+            "finish": "Pale microcement floor, flush storage"
+          },
+          {
+            "room": "KITCHEN",
+            "finish": "Flat ash fronts, stone counter"
+          },
+          {
+            "room": "BEDROOM",
+            "finish": "Pale ash floor, full-height wardrobes"
+          },
+          {
+            "room": "HALL",
+            "finish": "Pale microcement floor, flush storage"
+          },
+          {
+            "room": "BATH",
+            "finish": "Microcement walls, frameless glass"
+          }
+        ]
+      },
+      {
+        "name": "Industrial",
+        "summary": "Raw materials, exposed services and dark metal.",
+        "palette": [
+          {
+            "name": "Concrete",
+            "hex": "#8C8C88"
+          },
+          {
+            "name": "Brick",
+            "hex": "#8A4B38"
+          },
+          {
+            "name": "Iron",
+            "hex": "#2B2B2B"
+          }
+        ],
+        "materials": [
+          "Polished concrete",
+          "Exposed brick",
+          "Blackened steel"
+        ],
+        "lighting": "Track lights and caged pendants at 3000 K",
+        "room_finishes": [
+          {
+            "room": "LIVING",
+            "finish": "Polished concrete, one exposed brick wall"
+          },
+          {
+            "room": "KITCHEN",
+            "finish": "Steel counter, open shelving"
+          },
+          {
+            "room": "BEDROOM",
+            "finish": "Dark timber floor, concrete-look wall"
+          },
+          {
+            "room": "HALL",
+            "finish": "Polished concrete, one exposed brick wall"
+          },
+          {
+            "room": "BATH",
+            "finish": "Metro tile, black pipework"
+          }
+        ]
+      },
+      {
+        "name": "Luxury",
+        "summary": "Rich materials, layered light and fine detail.",
+        "palette": [
+          {
+            "name": "Ivory",
+            "hex": "#EFE7D8"
+          },
+          {
+            "name": "Emerald",
+            "hex": "#1F4D40"
+          },
+          {
+            "name": "Brass",
+            "hex": "#B08D57"
+          }
+        ],
+        "materials": [
+          "Marble",
+          "Walnut",
+          "Brushed brass"
+        ],
+        "lighting": "Chandelier and dimmable layered 2700 K",
+        "room_finishes": [
+          {
+            "room": "LIVING",
+            "finish": "Herringbone walnut, marble fireplace wall"
+          },
+          {
+            "room": "KITCHEN",
+            "finish": "Marble counter, brass hardware"
+          },
+          {
+            "room": "BEDROOM",
+            "finish": "Walnut floor, upholstered headboard wall"
+          },
+          {
+            "room": "HALL",
+            "finish": "Herringbone walnut, marble fireplace wall"
+          },
+          {
+            "room": "BATH",
+            "finish": "Book-matched marble, brass fittings"
+          }
+        ]
+      },
+      {
+        "name": "Scandinavian",
+        "summary": "Light timber, soft white and natural textures.",
+        "palette": [
+          {
+            "name": "Snow",
+            "hex": "#F7F6F2"
+          },
+          {
+            "name": "Birch",
+            "hex": "#D9C4A0"
+          },
+          {
+            "name": "Fjord",
+            "hex": "#6E8894"
+          }
+        ],
+        "materials": [
+          "Birch",
+          "Wool",
+          "Painted panelling"
+        ],
+        "lighting": "Warm 2700 K pendants, daylight kept open",
+        "room_finishes": [
+          {
+            "room": "LIVING",
+            "finish": "Birch floor, white walls, wool textiles"
+          },
+          {
+            "room": "KITCHEN",
+            "finish": "White fronts, birch counter"
+          },
+          {
+            "room": "BEDROOM",
+            "finish": "Birch floor, soft blue accent wall"
+          },
+          {
+            "room": "HALL",
+            "finish": "Birch floor, white walls, wool textiles"
+          },
+          {
+            "room": "BATH",
+            "finish": "Matte white tile, birch vanity"
+          }
+        ]
+      }
+    ],
+    "notes": []
+  },
+  "structural": {
+    "disclaimer": "Early-stage advice from plan geometry only. Loads and soil are unknown here: a structural engineer must check anything before it is built.",
+    "suggestions": [
+      {
+        "category": "Column placement",
+        "title": "Unbroken 8.6 m wall",
+        "detail": "Runs over 6 m usually want an intermediate column or pier.",
+        "element_id": "b3d8c88a-b706-4e8d-be3c-1131ec137e65",
+        "command": null
+      },
+      {
+        "category": "Space optimization",
+        "title": "A lot of floor goes to circulation",
+        "detail": "Hallways take 23% of the floor. Under 15% leaves more usable room area.",
+        "element_id": null,
+        "command": null
+      },
+      {
+        "category": "Natural ventilation",
+        "title": "Single-sided ventilation in LIVING",
+        "detail": "Openings on two walls would allow cross-ventilation.",
+        "element_id": "593cf519-4e7e-4fa9-96da-4b9d645b030a",
+        "command": null
+      },
+      {
+        "category": "Lighting improvement",
+        "title": "More daylight for LIVING",
+        "detail": "Glazing is 1.80 m² against a target of 2.25 m².",
+        "element_id": "593cf519-4e7e-4fa9-96da-4b9d645b030a",
+        "command": {
+          "target_id": "c2b9546e-0f02-40f3-adb7-f1d5cbf15150",
+          "target_query": null,
+          "operation": "ADD_WINDOW",
+          "position": 0.2,
+          "width": {
+            "value": 1200.0,
+            "unit": "mm"
+          }
+        }
+      },
+      {
+        "category": "Natural ventilation",
+        "title": "Single-sided ventilation in KITCHEN",
+        "detail": "Openings on two walls would allow cross-ventilation.",
+        "element_id": "262acbf6-0915-4a50-a657-28e02a8868fa",
+        "command": null
+      },
+      {
+        "category": "Lighting improvement",
+        "title": "More daylight for KITCHEN",
+        "detail": "Glazing is 1.44 m² against a target of 1.62 m².",
+        "element_id": "262acbf6-0915-4a50-a657-28e02a8868fa",
+        "command": {
+          "target_id": "f1d5effe-dcda-46fb-b2b2-7cadc29f12fb",
+          "target_query": null,
+          "operation": "ADD_WINDOW",
+          "position": 0.2,
+          "width": {
+            "value": 800.0,
+            "unit": "mm"
+          }
+        }
+      },
+      {
+        "category": "Natural ventilation",
+        "title": "Single-sided ventilation in BEDROOM",
+        "detail": "Openings on two walls would allow cross-ventilation.",
+        "element_id": "36173087-9b98-4939-9845-0a72df97ac97",
+        "command": null
+      }
+    ]
+  }
+}

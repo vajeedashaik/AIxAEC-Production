@@ -47,3 +47,73 @@ Labels: `NOT_STARTED / IN_PROGRESS / IMPLEMENTED / TESTED / VERIFIED`.
 
 ## Known limitations
 See the "Known limitations" sections in each `HANDOFF.md`, and `docs/SECURITY.md` for accepted risks. Biggest product limits: vision supports solid/thick walls only (no hairline double-line walls, curves or noisy scans), PDF page 1 only, columns fused into wall junctions aren't detected, and the app header plus workspace top bar stack to 88 px on the workspace route.
+
+## Testing progress (2026-11-07)
+
+After P7 (commit `38b6b61`). Nothing is `VERIFIED` yet, because that label means a human checked it on the real stack.
+
+### Unit and integration suites (all green on `main`)
+
+| Suite | Result | Gates |
+|---|---|---|
+| `packages/contracts` | 154 passed | ruff, mypy, generated TS up to date |
+| `services/vision` | 113 passed, 1 skipped | ruff, mypy |
+| `services/geometry` | 200 passed | ruff, mypy |
+| `services/language` | 276 passed, 1 skipped, 1 deselected (live OmniRoute) | ruff, mypy |
+| `services/api` | 151 passed, 1 skipped (Supabase Storage, opt-in) | ruff, mypy; needs Postgres via `TEST_DATABASE_URL` |
+| `apps/web` | 209 passed | tsc, eslint, `next build` |
+
+### End to end (`e2e/`, Playwright, real stack)
+
+10/10 passed in the final run (3.3 min), with zero Content-Security-Policy violations. No mocks: compose backend, local Supabase, Clerk dev instance, real Tesseract and Whisper.
+
+| Flow | Spec |
+|---|---|
+| 1–2. Sign up, first-run dashboard, create project, upload, 8-stage timeline, open workspace | `01-onboarding` |
+| 3, 6. Set scale then m²; mm on an unscaled plan; preview, apply, clarification, UNKNOWN | `02-editing` |
+| 7. Voice through the API (spoken WAV, Whisper) | `03-versions` |
+| 8–9. Undo ×2, redo, discarded branch; re-process then undo | `03-versions` |
+| 10–11. Second user gets 404; two tabs give the stale-model message | `04-isolation` |
+| 12. Language down (refused at parse) and vision down (job FAILED, retry works) | `05-outages` (needs `E2E_COMPOSE=1`) |
+| 7b. Voice in the browser, fake microphone | `06-voice-ui` |
+
+Run: `cd e2e; npm ci; npx playwright install chromium; npx playwright test`. Screenshots land in `apps/web/qa/p7/`.
+
+### Measured performance
+
+| Check | Result | Target |
+|---|---|---|
+| Vision, apartment plan | 2.4–2.6 s | under 6 s |
+| Geometry execute | p95 23 ms or less | under 50 ms |
+| Landing page | LCP 213 ms, CLS 0; accessibility 100, SEO 100, best practices 77 | Lighthouse 95 or more |
+| Worker killed mid-job | recovered on attempt 2 (manual run) | |
+
+### Not tested yet
+
+- Supabase advisors (the Supabase MCP isn't authenticated).
+- The LLM path through OmniRoute on the real stack (no key; rules cover 51/51 fixture commands).
+- OmniRoute-down and whisper-model-missing paths on the real stack (unit-tested only).
+- The Lighthouse performance score (LCP and CLS were measured instead).
+- The worker-crash test is not in the committed suite.
+- CI (`.github/workflows/ci.yml`) has never run on GitHub.
+- Impeccable and hallmark design audits, the formal `/security-review`, and the `/token-optimizer` audit.
+
+### Flaky or timing-sensitive
+
+- `apps/web` workspace tests sit near vitest's 5 s default under load (OneDrive sync plus the running stack); that file now sets a 15 s timeout.
+- `services/vision` tests take 50–80 s when the machine is busy.
+
+## Building intelligence (2026-11-08)
+
+Everything numeric is deterministic. Nothing here is `VERIFIED`. "TESTED (e2e)" means `e2e/tests/07-analysis.spec.ts` in Chromium on compose services with local Supabase.
+
+| Feature | Status | Notes |
+|---|---|---|
+| Quantity takeoff and Bill of Quantities (walls, floor, doors, windows, paint, concrete, bricks, tiles, steel), CSV | TESTED (e2e) | Build-ups (wall height, slab, ratios) are stated assumptions |
+| Compliance report (corridors, room sizes, accessibility, exits, doors, windows, fire), CSV | TESTED (e2e) | Based on published summaries of NBC India 2016; indicative, not certified |
+| Cost estimate (construction, material, painting, flooring, tile count, electrical, plumbing), editable rates, CSV | TESTED (e2e) | Default rates are rough India averages in INR |
+| Blueprint chatbot (rules on the model) | TESTED (e2e) | |
+| Chatbot LLM fallback | TESTED (unit) | No OmniRoute key on this machine; not run on the real stack |
+| Interior: furniture proposal, lighting, 5 themes | TESTED (e2e) | Furniture is drawn over the plan, not saved to the model |
+| Layout suggestions (more space, another bedroom, parking), preview and apply | TESTED (e2e) | Goals are matched by rules; other phrasing gets a help message |
+| Structural suggestions with previewable fixes | TESTED (e2e) | Advisory; no load or soil data |

@@ -5,6 +5,8 @@ import type { CommandRequest } from "@/contracts";
 import { API_URL } from "@/lib/api/client";
 
 import { MockError, mockApi } from "./db";
+import analysis from "./fixtures/analysis.apartment.json";
+import layouts from "./fixtures/layouts.kitchen.json";
 
 const V1 = `${API_URL}/v1`;
 const TRANSCRIPT = "move the wall between the kitchen and the living room 300 mm left";
@@ -84,4 +86,7 @@ export const handlers = [
   http.post(`${V1}/floorplans/:floorplanId/model/undo`, handle(({ request, params }) => mockApi.move(params.floorplanId, "UNDO", intParam(request, "expected_version")))),
   http.post(`${V1}/floorplans/:floorplanId/model/redo`, handle(({ request, params }) => mockApi.move(params.floorplanId, "REDO", intParam(request, "expected_version")))),
   http.get(`${V1}/floorplans/:floorplanId/history`, handle(({ params }) => mockApi.history(params.floorplanId))),
+  http.post(`${V1}/floorplans/:floorplanId/analysis`, handle(() => analysis)),
+  http.post(`${V1}/floorplans/:floorplanId/layouts`, handle(() => layouts)),
+  http.post(`${V1}/floorplans/:floorplanId/ask`, handle(() => ({ status: "ANSWERED", answer: "This plan has 1 bedroom: BEDROOM.", element_ids: [], source: "rules" }))),
 ];
