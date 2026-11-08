@@ -71,6 +71,8 @@ jobs:
       - name: Generated TS contracts are up to date
         run: npm run gen:contracts:check
       - run: npm run lint
+      # PageProps and LayoutProps are generated, and a fresh checkout has none yet.
+      - run: npx next typegen
       - run: npx tsc --noEmit
       - run: npm test
       - run: npm run build

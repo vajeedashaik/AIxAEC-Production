@@ -25,7 +25,7 @@ Labels: `NOT_STARTED / IN_PROGRESS / IMPLEMENTED / TESTED / VERIFIED`.
 | Vision down → job FAILED cleanly → retry succeeds | TESTED (e2e) | `05-outages` 12b |
 | Worker killed mid-job → stale recovery completes it (attempt 2) | TESTED (manual run on compose) | Stale timeout lowered to 20 s for the run; not in the committed suite |
 | Parallel edits → exactly one wins | TESTED | P3 integration test (6 parallel → 1 APPLIED, 5 × 409) |
-| LLM parsing through OmniRoute | NOT_STARTED on the real stack | No OmniRoute key on this machine. Rules handle 51/51 fixture commands; the LLM path is tested against a fake gateway (P4) |
+| LLM parsing through OmniRoute | TESTED (real gateway) | Combo `aec-parser` (Groq Qwen first, Gemini fallback). Live smoke test and a free-phrased command parsed through the compose network |
 | Whisper model missing / OmniRoute unreachable paths | TESTED (unit, P4) | Not exercised on the real stack |
 | Landing, projects list, project detail, settings, command palette | TESTED (unit, P5) + seen in e2e | |
 | Sign-in with Clerk (ticket sign-in in e2e) | TESTED (e2e) | Password sign-in through the form not exercised |
@@ -113,7 +113,7 @@ Everything numeric is deterministic. Nothing here is `VERIFIED`. "TESTED (e2e)" 
 | Compliance report (corridors, room sizes, accessibility, exits, doors, windows, fire), CSV | TESTED (e2e) | Based on published summaries of NBC India 2016; indicative, not certified |
 | Cost estimate (construction, material, painting, flooring, tile count, electrical, plumbing), editable rates, CSV | TESTED (e2e) | Default rates are rough India averages in INR |
 | Blueprint chatbot (rules on the model) | TESTED (e2e) | |
-| Chatbot LLM fallback | TESTED (unit) | No OmniRoute key on this machine; not run on the real stack |
+| Chatbot LLM fallback | TESTED (real gateway) | Answered from a facts sheet and returned UNKNOWN for a fact it wasn't given |
 | Interior: furniture proposal, lighting, 5 themes | TESTED (e2e) | Furniture is drawn over the plan, not saved to the model |
 | Layout suggestions (more space, another bedroom, parking), preview and apply | TESTED (e2e) | Goals are matched by rules; other phrasing gets a help message |
 | Structural suggestions with previewable fixes | TESTED (e2e) | Advisory; no load or soil data |
