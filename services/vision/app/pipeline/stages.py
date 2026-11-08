@@ -119,7 +119,7 @@ def run_object_detection(ctx: Context) -> Detail:
 
 def run_room_detection(ctx: Context) -> Detail:
     walls = _detection(ctx).walls
-    ctx.rooms = detect_rooms(walls, _pre(ctx).size, ctx.words)
+    ctx.rooms = detect_rooms(walls, _pre(ctx).size, ctx.words, ctx.openings)
     detail: Detail = {"rooms": len(ctx.rooms), "labelled": sum(r.label is not None for r in ctx.rooms)}
     if walls and not ctx.rooms:
         ctx.warnings.append("No enclosed rooms were found. The walls may not form closed outlines.")
@@ -128,7 +128,7 @@ def run_room_detection(ctx: Context) -> Detail:
 
 
 def run_calibration(ctx: Context) -> Detail:
-    ctx.calibration = estimate_scale(ctx.words, _detection(ctx).walls)
+    ctx.calibration = estimate_scale(ctx.words, _detection(ctx).walls, _pre(ctx).fine)
     return {
         "mm_per_pixel": ctx.calibration.mm_per_pixel,
         "source": str(ctx.calibration.source),

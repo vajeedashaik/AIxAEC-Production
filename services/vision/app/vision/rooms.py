@@ -2,6 +2,7 @@
 
 import math
 import statistics
+from collections.abc import Sequence
 from dataclasses import dataclass
 from itertools import combinations
 
@@ -10,7 +11,7 @@ import numpy as np
 
 from app.ocr.base import OcrWord
 
-from .walls import Segment
+from .walls import Opening, Segment
 
 MIN_AREA_FRACTION = 0.003
 MAX_AREA_FRACTION = 0.9
@@ -77,7 +78,9 @@ def _label(polygon: list[Vertex], words: list[OcrWord]) -> str | None:
     return " ".join(w.text for w in inside)[:80]
 
 
-def detect_rooms(walls: list[Segment], size: tuple[int, int], words: list[OcrWord]) -> list[DetectedRoom]:
+def detect_rooms(
+    walls: list[Segment], size: tuple[int, int], words: list[OcrWord], openings: Sequence[Opening] = ()
+) -> list[DetectedRoom]:
     if not walls:
         return []
     width, height = size
@@ -86,6 +89,8 @@ def detect_rooms(walls: list[Segment], size: tuple[int, int], words: list[OcrWor
     canvas = np.zeros((height, width), np.uint8)
     for w in walls:
         cv2.line(canvas, (round(w.x1), round(w.y1)), (round(w.x2), round(w.y2)), 255, stroke)
+    for o in openings:  # a door beside a corner has no wall across it, and rooms must not leak through
+        cv2.line(canvas, (round(o.x1), round(o.y1)), (round(o.x2), round(o.y2)), 255, stroke)
     closed = cv2.morphologyEx(canvas, cv2.MORPH_CLOSE, np.ones((stroke | 1, stroke | 1), np.uint8))
     n, labels, stats, _ = cv2.connectedComponentsWithStats(cv2.bitwise_not(closed), connectivity=4)
     # Anything reaching the image border is the outside (flooding from border seeds gives the same set).

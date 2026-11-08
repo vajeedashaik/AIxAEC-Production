@@ -19,6 +19,9 @@ AXIS_CONFIDENCE = 0.9
 DIAGONAL_CONFIDENCE = 0.45
 STRAIGHTEN_DEG = 3.0
 BRIDGE_FRACTION = 0.14
+WIDE_OPENING_FACTOR = 2.0
+DOOR_GAP_FACTOR = 6.0  # a door is at most this many wall-widths wide
+SWING_COVERAGE = 0.8
 TOUCHING_PX = 2.0
 THICKNESS_STEP = 1.4  # walls this different in width are different walls, even when collinear
 
@@ -145,24 +148,42 @@ def _thickness_runs(counts: np.ndarray, min_run: int) -> list[tuple[int, int]]:
     return list(zip(cuts, [*cuts[1:], n], strict=True))
 
 
+def _fit_centre_line(
+    centres: np.ndarray, remaining: np.ndarray, seed: float, tol: float, min_run: int
+) -> tuple[float, np.ndarray] | None:
+    """(slope, columns on the line) for the line nearest `seed`, or None if too few columns sit on it."""
+    cols = np.arange(len(centres))
+    slope, intercept = 0.0, seed
+    inliers = remaining
+    for _ in range(3):
+        inliers = remaining & (np.abs(centres - (slope * cols + intercept)) <= tol)
+        if np.count_nonzero(inliers) < min_run:
+            return None
+        slope, intercept = (float(v) for v in np.polyfit(cols[inliers], centres[inliers], 1))
+    return slope, inliers
+
+
 def _on_line_runs(centres: np.ndarray, valid: np.ndarray, tol: float, min_run: int) -> list[tuple[int, int]]:
     """Column runs whose centre sits on one near-axis line.
 
     A shallow diagonal survives the axis opening and can join an axis wall's body; its columns drift off the line.
     """
-    cols = np.arange(len(centres))
-    slope, intercept = 0.0, float(np.median(centres[valid]))
-    inliers = valid
-    for _ in range(3):
-        inliers = valid & (np.abs(centres - (slope * cols + intercept)) <= tol)
-        if np.count_nonzero(inliers) < min_run:
-            return []
-        slope, intercept = (float(v) for v in np.polyfit(cols[inliers], centres[inliers], 1))
-    if abs(slope) > math.tan(math.radians(STRAIGHTEN_DEG)):
-        return []
-    edges = np.diff(np.concatenate(([0], inliers.astype(np.int8), [0])))
-    starts, ends = np.flatnonzero(edges == 1), np.flatnonzero(edges == -1)
-    return [(int(a), int(b)) for a, b in zip(starts, ends, strict=True) if b - a >= min_run]
+    runs: list[tuple[int, int]] = []
+    remaining = valid.copy()
+    while np.count_nonzero(remaining) >= min_run:  # a wall that jogs sideways is two lines in one body
+        fitted = _fit_centre_line(centres, remaining, float(np.median(centres[remaining])), tol, min_run)
+        if fitted is None:  # two equal halves put the median between them, on neither line
+            fitted = _fit_centre_line(centres, remaining, float(centres[remaining][0]), tol, min_run)
+        if fitted is None:
+            return sorted(runs)
+        slope, inliers = fitted
+        if abs(slope) > math.tan(math.radians(STRAIGHTEN_DEG)):
+            return sorted(runs)
+        edges = np.diff(np.concatenate(([0], inliers.astype(np.int8), [0])))
+        starts, ends = np.flatnonzero(edges == 1), np.flatnonzero(edges == -1)
+        runs += [(int(a), int(b)) for a, b in zip(starts, ends, strict=True) if b - a >= min_run]
+        remaining = remaining & ~inliers
+    return sorted(runs)
 
 
 def _bodies_to_segments(opened: Gray, horizontal: bool, min_length: int) -> list[Segment]:
@@ -335,6 +356,20 @@ def _classify_opening(
     return "window" if lines >= 2 else "door"
 
 
+def _swing_ink(fine: Gray, p: tuple[float, float], q: tuple[float, float], thickness: float) -> bool:
+    """Does a door's arc sweep past this gap? An arc leaves ink over nearly its whole width on one side of the wall."""
+    half, reach, inset = round(thickness / 2) + 2, round(math.dist(p, q)), 3
+    if abs(q[1] - p[1]) <= 2:
+        c, a, b = round((p[1] + q[1]) / 2), round(min(p[0], q[0])) + inset, round(max(p[0], q[0])) - inset
+        sides = [fine[c + half : c + half + reach, a:b], fine[max(0, c - half - reach) : max(0, c - half), a:b]]
+    elif abs(q[0] - p[0]) <= 2:
+        c, a, b = round((p[0] + q[0]) / 2), round(min(p[1], q[1])) + inset, round(max(p[1], q[1])) - inset
+        sides = [fine[a:b, c + half : c + half + reach].T, fine[a:b, max(0, c - half - reach) : max(0, c - half)].T]
+    else:
+        return False
+    return any(side.size > 0 and float((side > 0).any(axis=0).mean()) >= SWING_COVERAGE for side in sides)
+
+
 def _bridge_gaps(segs: list[Segment], fine: Gray, limit: float) -> tuple[list[Segment], list[Opening]]:
     """One pass per line: only neighbouring pieces can share a gap (rescanning all pairs took minutes)."""
     lines: list[list[Segment]] = []
@@ -353,23 +388,80 @@ def _bridge_gaps(segs: list[Segment], fine: Gray, limit: float) -> tuple[list[Se
         for nxt in pieces[1:]:
             gap = _gap(current, nxt)
             p, q = _facing_ends(current, nxt)
+            thick = max(current.thickness, nxt.thickness)
+            # Lines running along the gap prove the wall continues, so a garage or sliding door can exceed the limit.
+            door_beside_junction = gap <= DOOR_GAP_FACTOR * thick and _swing_ink(fine, p, q, thick)
+            glazed_wide = (
+                limit < gap <= WIDE_OPENING_FACTOR * limit and _classify_opening(fine, p, q, thick) == "window"
+            )
             # A wall ending on a perpendicular wall stopped there on purpose; the stretch beyond is open floor.
             if (
-                not TOUCHING_PX < gap <= limit
-                or _junction_on(p, current, segs)
-                or _junction_on(q, nxt, segs)
+                not (TOUCHING_PX < gap <= limit or glazed_wide)
+                or ((_junction_on(p, current, segs) or _junction_on(q, nxt, segs)) and not door_beside_junction)
                 or _crossed(p, q, segs)
             ):
                 out.append(current)
                 current = nxt
                 continue
-            thick = max(current.thickness, nxt.thickness)
             merged = _union(current, nxt)
             (x1, y1), (x2, y2) = sorted((merged.at(merged.along(*p)), merged.at(merged.along(*q))))
             openings.append(Opening(_classify_opening(fine, p, q, thick), x1, y1, x2, y2, thick))
             current = merged
         out.append(current)
     return out, sorted(openings, key=lambda o: (o.y1, o.x1))
+
+
+def _ray_hit(
+    point: tuple[float, float], direction: tuple[float, float], seg: Segment, segs: list[Segment]
+) -> tuple[float, Segment] | None:
+    """Nearest wall across this ray: (distance to its centre-line, the wall)."""
+    best: tuple[float, Segment] | None = None
+    for other in segs:
+        if other is seg or _parallel(seg, other):
+            continue
+        offset = other.offset(*point)
+        rate = other.offset(point[0] + direction[0], point[1] + direction[1]) - offset
+        if abs(rate) < 1e-9:
+            continue
+        t = -offset / rate
+        x, y = point[0] + direction[0] * t, point[1] + direction[1] * t
+        tol = other.thickness
+        if t > 0 and -tol <= other.along(x, y) <= other.length + tol and (best is None or t < best[0]):
+            best = (t, other)
+    return best
+
+
+def _close_doors_at_walls(segs: list[Segment], fine: Gray) -> tuple[list[Segment], list[Opening]]:
+    """A door hung against a side wall leaves a free wall end facing that wall, with no second piece to bridge to."""
+    out: list[Segment] = []
+    openings: list[Opening] = []
+    for s in segs:
+        ends = list(s.ends)
+        for i, point in enumerate(s.ends):
+            if _junction_on(point, s, segs):
+                continue
+            ox, oy = s.ends[1 - i]
+            direction = ((point[0] - ox) / s.length, (point[1] - oy) / s.length)
+            hit = _ray_hit(point, direction, s, segs)
+            if hit is None:
+                continue
+            distance, wall = hit
+            clear = distance - wall.thickness / 2
+            face = (point[0] + direction[0] * clear, point[1] + direction[1] * clear)
+            if not TOUCHING_PX < clear <= DOOR_GAP_FACTOR * s.thickness or not _swing_ink(
+                fine, point, face, s.thickness
+            ):
+                continue
+            ends[i] = (point[0] + direction[0] * distance, point[1] + direction[1] * distance)
+            (x1, y1), (x2, y2) = sorted((point, face))
+            openings.append(Opening("door", x1, y1, x2, y2, s.thickness))
+        (x1, y1), (x2, y2) = ends
+        out.append(_ordered(replace(s, x1=x1, y1=y1, x2=x2, y2=y2)))
+    return out, openings
+
+
+def _inside(point: tuple[float, float], seg: Segment) -> bool:
+    return 0 < seg.along(*point) < seg.length
 
 
 def _snap_junctions(segs: list[Segment]) -> list[Segment]:
@@ -384,7 +476,11 @@ def _snap_junctions(segs: list[Segment]) -> list[Segment]:
             # Slide along our own line to where it crosses the other centre-line.
             op0, op1 = other.offset(s.x1, s.y1), other.offset(s.x2, s.y2)
             denom = op0 - op1
-            ends.append(point if abs(denom) < 1e-9 else s.at(s.length * op0 / denom))
+            crossing = point if abs(denom) < 1e-9 else s.at(s.length * op0 / denom)
+            # Past the other wall's far face this end is a real stub, often the jamb a door hangs from.
+            ends.append(
+                point if math.dist(point, crossing) > other.thickness / 2 + 3 and _inside(crossing, s) else crossing
+            )
         (x1, y1), (x2, y2) = ends
         out.append(_ordered(replace(s, x1=x1, y1=y1, x2=x2, y2=y2)))
     return out
@@ -403,6 +499,8 @@ def detect_walls(binary: Gray, fine: Gray) -> WallDetection:
     segs = [_straighten(s) for s in axis + _diagonal_walls(wall_ink, axis_ink, thickness)]
     segs = _merge_collinear(segs)
     segs, openings = _bridge_gaps(segs, fine, BRIDGE_FRACTION * max(binary.shape))
+    segs, side_doors = _close_doors_at_walls(segs, fine)
+    openings = sorted([*openings, *side_doors], key=lambda o: (o.y1, o.x1))
     segs = _snap_junctions(segs)
     segs = [s for s in segs if s.length >= 1.5 * thickness]
     return WallDetection(sorted(segs, key=lambda s: (s.y1, s.x1, s.y2, s.x2)), openings, thickness, mask)

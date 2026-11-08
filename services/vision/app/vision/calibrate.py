@@ -3,16 +3,20 @@
 import statistics
 from dataclasses import dataclass, field
 
+import numpy as np
 from aec_contracts import CalibrationSource
 
 from app.ocr.base import OcrWord
 from app.ocr.parsing import parse_dimension
 
+from .decode import Gray
 from .walls import Segment
 
 MAX_WALL_DISTANCE_PX = 120.0
 MIN_MM_PER_PX = 0.05
 MAX_MM_PER_PX = 500.0
+LINE_REACH_FACTOR, LINE_MIN_FACTOR = 1.6, 3.0  # in text heights
+LINE_CLEARANCE_PX = 5
 
 
 @dataclass(frozen=True)
@@ -22,6 +26,7 @@ class DimensionReading:
     x: float
     y: float
     span_px: float | None = None
+    height: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -46,12 +51,16 @@ def read_dimensions(words: list[OcrWord]) -> list[DimensionReading]:
                 text = f"{word.text} {nxt.text}"
                 value = parse_dimension(text)
                 if value is not None:
-                    out.append(DimensionReading(text[:80], value, (word.x + nxt.x + nxt.width) / 2, word.centre[1]))
+                    out.append(
+                        DimensionReading(
+                            text[:80], value, (word.x + nxt.x + nxt.width) / 2, word.centre[1], height=word.height
+                        )
+                    )
                     i += 2
                     continue
         value = parse_dimension(word.text)
         if value is not None:
-            out.append(DimensionReading(word.text[:80], value, *word.centre))
+            out.append(DimensionReading(word.text[:80], value, *word.centre, height=word.height))
         i += 1
     return out
 
@@ -72,15 +81,53 @@ def wall_span(wall: Segment, x: float, y: float, walls: list[Segment]) -> float:
     return min(s for s in stops if s >= t) - max(s for s in stops if s <= t)
 
 
-def estimate_scale(words: list[OcrWord], walls: list[Segment]) -> Calibration:
+def _line_run(
+    ink: np.ndarray, along: float, across: float, reach: float, min_length: float
+) -> tuple[float, float] | None:
+    """(distance from the text, length) of the nearest thin horizontal line running past `along`."""
+    x, y = round(along), round(across)
+    if not 0 <= x < ink.shape[1]:
+        return None
+    best: tuple[float, float] | None = None
+    for r in range(
+        max(LINE_CLEARANCE_PX, y - round(reach)), min(ink.shape[0] - LINE_CLEARANCE_PX, y + round(reach) + 1)
+    ):
+        # Thin means clear ink above and below; that rules out wall faces and the text itself.
+        if ink[r - LINE_CLEARANCE_PX, x] or ink[r + LINE_CLEARANCE_PX, x]:
+            continue
+        row = ink[r - 1 : r + 2].any(axis=0)  # a line can straddle rows after deskew
+        if not row[x]:
+            continue
+        gaps = np.flatnonzero(~row)
+        left = int(gaps[gaps < x].max()) + 1 if (gaps < x).any() else 0
+        right = int(gaps[gaps > x].min()) if (gaps > x).any() else ink.shape[1]
+        if right - left >= min_length and (best is None or abs(r - y) < best[0]):
+            best = (float(abs(r - y)), float(right - left))
+    return best
+
+
+def dimension_line_span(fine: Gray, dim: DimensionReading) -> float | None:
+    """The drawn dimension line beside the number is what the number actually measures."""
+    if dim.height <= 0:
+        return None
+    reach, min_length = LINE_REACH_FACTOR * dim.height, LINE_MIN_FACTOR * dim.height
+    binary = fine > 0
+    runs = [_line_run(binary, dim.x, dim.y, reach, min_length), _line_run(binary.T, dim.y, dim.x, reach, min_length)]
+    found = [r for r in runs if r is not None]
+    return min(found)[1] if found else None
+
+
+def estimate_scale(words: list[OcrWord], walls: list[Segment], fine: Gray | None = None) -> Calibration:
     readings = []
     ratios = []
     for dim in read_dimensions(words):
-        wall = min(walls, key=lambda w: w.distance(dim.x, dim.y), default=None)
-        if wall is None or wall.distance(dim.x, dim.y) > MAX_WALL_DISTANCE_PX:
-            readings.append(dim)
-            continue
-        span = wall_span(wall, dim.x, dim.y, walls)
+        span = dimension_line_span(fine, dim) if fine is not None else None
+        if span is None:
+            wall = min(walls, key=lambda w: w.distance(dim.x, dim.y), default=None)
+            if wall is None or wall.distance(dim.x, dim.y) > MAX_WALL_DISTANCE_PX:
+                readings.append(dim)
+                continue
+            span = wall_span(wall, dim.x, dim.y, walls)
         if span <= 0:
             readings.append(dim)
             continue

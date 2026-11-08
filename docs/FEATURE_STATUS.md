@@ -117,3 +117,16 @@ Everything numeric is deterministic. Nothing here is `VERIFIED`. "TESTED (e2e)" 
 | Interior: furniture proposal, lighting, 5 themes | TESTED (e2e) | Furniture is drawn over the plan, not saved to the model |
 | Layout suggestions (more space, another bedroom, parking), preview and apply | TESTED (e2e) | Goals are matched by rules; other phrasing gets a help message |
 | Structural suggestions with previewable fixes | TESTED (e2e) | Advisory; no load or soil data |
+
+## Plan reader accuracy (2026-11-09)
+
+Three AI-generated plans of rising difficulty, compared with hand counts of what each image actually shows. These are clean test images, so they say nothing yet about scans or real drawings.
+
+| Measure | Before fixes | After fixes |
+|---|---|---|
+| Rooms found (31 actual) | 17 | 27 |
+| Bedrooms typed correctly (7 actual) | 4 | 7 |
+| Plans with a working scale (3) | 2 | 3 |
+| Doors, simple and medium plans (16 actual) | 12 | 16 |
+
+Known limits: on the 16-room villa, doors are over-counted (24 detected, 18 actual), because bathroom fixtures can look like door swings, and the corridor still merges with two neighbouring rooms. Garage and sliding doors drawn with parallel lines count as windows.
