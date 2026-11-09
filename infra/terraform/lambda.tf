@@ -9,7 +9,7 @@ resource "aws_lambda_function" "vision" {
 
   environment {
     variables = {
-      OCR_PROVIDER = "tesseract" # Textract needs a paid AWS plan; the image bundles Tesseract
+      OCR_PROVIDER = var.ocr_provider # the image bundles Tesseract; Textract needs a paid AWS plan
     }
   }
 

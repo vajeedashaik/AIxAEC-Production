@@ -25,32 +25,41 @@ resource "aws_security_group" "api" {
 }
 
 locals {
+  # Secrets live in SSM Parameter Store (SecureString) and reach the containers through the task's `secrets`,
+  # so they no longer appear in the task definition. They are still in the local Terraform state.
+  secret_names = ["INTERNAL_SERVICE_TOKEN", "DATABASE_URL", "WORKER_DATABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "CLERK_SECRET_KEY"]
+  secret_values = {
+    INTERNAL_SERVICE_TOKEN    = var.internal_service_token
+    DATABASE_URL              = var.database_url
+    WORKER_DATABASE_URL       = var.worker_database_url
+    SUPABASE_SERVICE_ROLE_KEY = var.supabase_service_role_key
+    CLERK_SECRET_KEY          = var.clerk_secret_key
+  }
+  secret_arns    = { for n in local.secret_names : n => aws_ssm_parameter.secret[n].arn }
+  common_secrets = { INTERNAL_SERVICE_TOKEN = local.secret_arns["INTERNAL_SERVICE_TOKEN"] }
+  api_secrets    = local.secret_arns
+
   common_env = {
-    ENVIRONMENT            = "production"
-    LOG_FORMAT             = "json"
-    INTERNAL_SERVICE_TOKEN = var.internal_service_token # shortcut: secrets in the task definition, use Secrets Manager beyond a short-lived demo
-    AWS_REGION             = var.region
-    S3_BUCKET              = aws_s3_bucket.files.bucket
+    ENVIRONMENT = "production"
+    LOG_FORMAT  = "json"
+    AWS_REGION  = var.region
+    S3_BUCKET   = aws_s3_bucket.files.bucket
   }
 
   api_env = merge(local.common_env, {
-    DATABASE_URL              = var.database_url
-    WORKER_DATABASE_URL       = var.worker_database_url
-    SUPABASE_URL              = var.supabase_url
-    SUPABASE_SERVICE_ROLE_KEY = var.supabase_service_role_key
-    CLERK_ISSUER              = var.clerk_issuer
-    CLERK_SECRET_KEY          = var.clerk_secret_key
-    CLERK_AUTHORIZED_PARTIES  = jsonencode([var.web_origin])
-    CORS_ORIGINS              = jsonencode([var.web_origin])
-    GEOMETRY_URL              = "http://127.0.0.1:8002"
-    LANGUAGE_URL              = "http://127.0.0.1:8003"
-    BLOB_BACKEND              = "hybrid"
-    QUEUE_BACKEND             = "sqs"
-    VISION_MODE               = "lambda"
-    NOTIFIER                  = "sns"
-    SQS_QUEUE_URL             = aws_sqs_queue.jobs.url
-    SNS_TOPIC_ARN             = aws_sns_topic.alerts.arn
-    VISION_LAMBDA_NAME        = aws_lambda_function.vision.function_name
+    SUPABASE_URL             = var.supabase_url
+    CLERK_ISSUER             = var.clerk_issuer
+    CLERK_AUTHORIZED_PARTIES = jsonencode([var.web_origin])
+    CORS_ORIGINS             = jsonencode([var.web_origin])
+    GEOMETRY_URL             = "http://127.0.0.1:8002"
+    LANGUAGE_URL             = "http://127.0.0.1:8003"
+    BLOB_BACKEND             = "hybrid"
+    QUEUE_BACKEND            = "sqs"
+    VISION_MODE              = "lambda"
+    NOTIFIER                 = "sns"
+    SQS_QUEUE_URL            = aws_sqs_queue.jobs.url
+    SNS_TOPIC_ARN            = aws_sns_topic.alerts.arn
+    VISION_LAMBDA_NAME       = aws_lambda_function.vision.function_name
   })
 
   # Hybrid parsing tries the rules first. Without LLM_MODEL there is no LLM and the rules answer alone.
@@ -64,11 +73,19 @@ locals {
   )
 
   containers = {
-    api      = { image = "api", env = local.api_env, command = null, port = 8000 }
-    worker   = { image = "api", env = local.api_env, command = ["python", "-m", "app.worker"], port = null }
-    geometry = { image = "geometry", env = local.common_env, command = null, port = null }
-    language = { image = "language", env = local.language_env, command = null, port = null }
+    api      = { image = "api", env = local.api_env, secrets = local.api_secrets, command = null, port = 8000 }
+    worker   = { image = "api", env = local.api_env, secrets = local.api_secrets, command = ["python", "-m", "app.worker"], port = null }
+    geometry = { image = "geometry", env = local.common_env, secrets = local.common_secrets, command = null, port = null }
+    language = { image = "language", env = local.language_env, secrets = local.common_secrets, command = null, port = null }
   }
+}
+
+resource "aws_ssm_parameter" "secret" {
+  for_each = toset(local.secret_names)
+
+  name  = "/${local.name}/${each.key}"
+  type  = "SecureString" # standard tier, default aws/ssm key: free
+  value = local.secret_values[each.key]
 }
 
 resource "aws_ecs_task_definition" "app" {
@@ -88,6 +105,7 @@ resource "aws_ecs_task_definition" "app" {
         essential   = true
         stopTimeout = 120 # the Fargate maximum, so the worker can finish a job after SIGTERM
         environment = [for key, value in c.env : { name = key, value = value }]
+        secrets     = [for key, arn in c.secrets : { name = key, valueFrom = arn }]
         logConfiguration = {
           logDriver = "awslogs"
           options = {

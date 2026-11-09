@@ -30,7 +30,7 @@ try {
     $result.stages | ForEach-Object { Write-Host ("  {0,-18} {1}" -f $_.name, $_.status) }
     $ocr = $result.stages | Where-Object { $_.name -eq "ocr" }
     Write-Host "OCR provider: $($ocr.detail.provider), words: $($ocr.detail.words)"
-    if ($result.status -ne "COMPLETED" -or $ocr.detail.provider -notin @("textract", "tesseract")) { throw "Smoke test failed." }
+    if ($result.status -ne "COMPLETED" -or $ocr.detail.provider -notin @("textract", "tesseract", "rekognition")) { throw "Smoke test failed." }
     Write-Host "Smoke test passed."
 } finally {
     aws s3 rm "s3://$bucket/$prefix" --recursive --region $region --only-show-errors

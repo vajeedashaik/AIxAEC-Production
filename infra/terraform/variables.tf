@@ -31,6 +31,17 @@ variable "web_origin" {
   default     = "http://localhost:3000"
 }
 
+variable "ocr_provider" {
+  description = "OCR for floor-plan labels: tesseract (free, bundled), rekognition (works on the Free Plan), or textract (needs a paid plan)."
+  type        = string
+  default     = "tesseract"
+
+  validation {
+    condition     = contains(["tesseract", "rekognition", "textract"], var.ocr_provider)
+    error_message = "ocr_provider must be tesseract, rekognition or textract."
+  }
+}
+
 variable "stt_provider" {
   description = "Speech-to-text for voice commands: whisper (free, runs in the language container) or transcribe (needs an AWS plan that allows it; the Free Plan returns SubscriptionRequiredException)."
   type        = string

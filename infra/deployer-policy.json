@@ -4,7 +4,13 @@
     {
       "Sid": "DeployServices",
       "Effect": "Allow",
-      "Action": ["ecs:*", "sns:*", "budgets:*", "ce:GetCostAndUsage", "freetier:GetAccountPlanState"],
+      "Action": ["ecs:*", "sns:*", "ssm:*", "budgets:*", "ce:GetCostAndUsage", "freetier:GetAccountPlanState"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "PollyAndRekognition",
+      "Effect": "Allow",
+      "Action": ["polly:SynthesizeSpeech", "polly:DescribeVoices", "rekognition:DetectLabels", "rekognition:DetectText"],
       "Resource": "*"
     },
     {

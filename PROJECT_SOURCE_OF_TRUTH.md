@@ -1,7 +1,7 @@
 # AEC AI Platform: Project Source of Truth
 
 > **Single reference for the whole project:** what it is, why it exists, how it is built, what has been proven, what has not, and the full plan.
-> **Last verified:** 2026-11-09, against the working tree on branch `aws-profile` (base commit `a1de848`, plus uncommitted AWS work), live AWS read-only queries and GitHub Actions.
+> **Last verified:** 2026-11-10, against the working tree on branch `main` (base commit `bd0fcec`, plus uncommitted AWS work: Rekognition OCR, SSM secrets, script fixes, two new docs), live AWS read-only queries and offline test runs. Section 17 holds the AWS detail.
 > **Use it for:** presentations, reports, reviews and onboarding. Section 28 maps each section to typical slides and report chapters, and section 29 is a numbers cheat sheet.
 >
 > **How conflicts are settled:** running code and measured results win over documents. Where an older document disagrees, the disagreement is listed in section 27.
@@ -52,9 +52,9 @@
 | AEC means | Architecture, Engineering and Construction |
 | What it does | Reads a floor-plan image or PDF into a structured, versioned Building Model, then lets a user edit that model by typing, speaking or clicking. A deterministic geometry engine applies every change, and each change is a new immutable version with undo and redo. It also produces quantities, cost estimates, indicative code compliance, interior proposals, layout options and structural advice. |
 | Core idea | **The AI never moves a wall.** A language model only turns words into a structured command. Deterministic code checks and performs the change. |
-| Status | Working end-to-end product on the local and hosted-Supabase stack (P0–P7 plus Building Intelligence complete and tested). AWS profile (P8) is coded and tested offline; real AWS deployment is **not finished**. |
+| Status | Working end-to-end product on the local and hosted-Supabase stack (P0–P7 plus Building Intelligence complete and tested). AWS profile (P8) is coded, tested offline and was deployed to real AWS twice (see section 17); the full upload flow on AWS has not been run. |
 | Default stack (free) | Next.js web app, 4 FastAPI services, Clerk auth, Supabase Postgres and Storage, OmniRoute free LLM gateway, Tesseract OCR, faster-whisper speech, Docker Compose |
-| Optional AWS profile | Env-switched. 9 services planned to run for real: S3, SQS, Lambda, ECR, ECS Fargate, Textract, Transcribe, SNS, CloudWatch. Bedrock (the 10th) is coded but off, because the account's Free Plan refuses it. |
+| Optional AWS profile | Env-switched. 9 services used: S3, SQS, Lambda, ECR, ECS Fargate, SNS, CloudWatch, Rekognition and SSM Parameter Store (8 seen working on AWS, SQS partly). Textract, Transcribe and Bedrock are blocked by the Free Plan and replaced by Tesseract/Rekognition, Whisper and the rules parser. Deployed and destroyed twice; nothing is running. |
 | Size | About 8,300 lines of backend Python, 7,200 lines of product TypeScript and TSX, about 4,900 lines of Python tests and 2,300 lines of web and e2e tests |
 | Automated tests (run 2026-11-09) | **1,234 passing**: contracts 154, vision 129, geometry 237, language 299, API 193, web 222. Plus 13 Playwright e2e tests defined. |
 | CI | GitHub Actions. Latest 3 runs on `main` passed (contracts, 4 services, web, migrations). The e2e job is manual and has been skipped. |
@@ -142,7 +142,7 @@ This repository (`AIxAEC`) is a **from-scratch rebuild** of an earlier project i
 | Database | RDS PostgreSQL | Supabase Postgres |
 | Storage | S3 | Supabase Storage (S3 for artifacts in the AWS profile) |
 | Queue | SQS and Lambda | Postgres `SKIP LOCKED` job table (SQS wake-up in the AWS profile) |
-| OCR | Google Vision or Tesseract | Tesseract (Textract in the AWS profile) |
+| OCR | Google Vision or Tesseract | Tesseract (Rekognition coded for the AWS profile; Textract blocked) |
 | Speech | Google Speech or stub | faster-whisper (Transcribe in the AWS profile) |
 | LLM | Claude, OpenAI, Gemini | OmniRoute free-tier gateway (Bedrock coded for the AWS profile) |
 | Viewer styling | Aurora, glass, gradients | "Precision instrument" design system |
@@ -161,6 +161,9 @@ This repository (`AIxAEC`) is a **from-scratch rebuild** of an earlier project i
 | 2026-11-08 | **Building Intelligence** added: 75 files, +13,148 lines (`aa85389` "Complete MVP"). Owner decisions: NBC India, INR. Hosted Supabase project activated. Pushed to GitHub; CI repaired | Git log, GitHub Actions |
 | 2026-11-09 (early) | Vision accuracy pass on 3 AI-generated plans (`eee4aea`). About 150 real-browser edge cases, 12 fixes (`a1de848`) | Git log, `docs/FEATURE_STATUS.md` |
 | 2026-11-09 | "No AWS" rule replaced by an env-switched AWS profile (P8) for the faculty review. Code and Terraform written. ECR repositories created on real AWS | `docs/AWS_MIGRATION_PLAN.md`, live AWS query |
+| 2026-11-09 | Two deploy/destroy runs on real AWS. Free Plan blocks Textract, Transcribe, Bedrock, Comprehend and Translate; Tesseract, Whisper and the rules parser stand in | Section 17 |
+| 2026-11-09 | Rekognition added as an OCR provider (replaces blocked Textract); SSM Parameter Store added for the 5 secrets; Polly checked and **not used** (no feature needs speech output); ALB with HTTPS **dropped** | Section 17.3 |
+| 2026-11-10 | Third deploy: `build-push` login fixed (PowerShell 5.1 pipe broke `docker login`), `smoke.ps1` now accepts `rekognition`. Rekognition OCR (2 words) and SSM secrets seen working on AWS | Section 17.7, `docs/AWS_DEMO_RUNBOOK.md` |
 
 **Git state today:** `main` has 30 commits, level with `origin/main` (`vajeedashaik/AIxAEC-Production`). Branch `aws-profile` holds **uncommitted** work: 31 modified tracked files and 52 untracked files. Seven worktrees are registered (`C:\dev\aec\p*` plus the main folder). The owner stages, commits and pushes personally.
 
@@ -300,7 +303,7 @@ AIxAEC/
 ├─ e2e/                         Playwright suite (7 spec files, 13 tests) and fixtures
 ├─ infra/                       Terraform (12 files), PowerShell scripts, deployer IAM policy
 ├─ phases/                      the build plan: P0–P7, aws/A1–A10, shared/, STATUS.md
-├─ docs/                        ARCHITECTURE, FEATURE_STATUS, RUNBOOK, SECURITY, DEMO_SCRIPT, TECH_STACK, AWS_MIGRATION_PLAN
+├─ docs/                        ARCHITECTURE, FEATURE_STATUS, RUNBOOK, SECURITY, DEMO_SCRIPT, TECH_STACK, AWS_MIGRATION_PLAN, AWS_DEMO_RUNBOOK, AWS_FACULTY_SUMMARY
 └─ tasks/plan.md                Building Intelligence plan
 ```
 
@@ -993,18 +996,26 @@ Additive, not a rewrite. Use existing seams (`BlobStore`, `OCRService`, `SpeechS
 
 | # | Service | Job | Status |
 |---|---|---|---|
-| 1 | S3 | Vision artifacts; temporary hand-off files | TESTED (moto); never run on AWS |
-| 2 | SQS + DLQ | Wakes workers; visibility 360 s, DLQ after 3 receives | TESTED (moto + real Postgres); never run on AWS |
-| 3 | Lambda | Runs the vision pipeline from a container; 3008 MB, 300 s | TESTED (moto, fake Lambda, image built and run locally); never run on AWS |
-| 4 | ECR | Stores images | **4 repositories exist on AWS, 0 images** |
-| 5 | ECS Fargate | One task, 4 containers (api, worker, geometry, language), 1 vCPU, 3 GB | IMPLEMENTED; never applied |
-| 6 | Textract | OCR via `DetectDocumentText` | TESTED (Stubber); accuracy vs Tesseract unknown |
-| 7 | Transcribe | Batch speech-to-text, `en-IN`, through S3 `tmp/` | TESTED (Stubber) |
-| 8 | Bedrock | Converse API for parsing | TESTED (Stubber), **switched off** |
-| 9 | SNS | "Job finished or failed" email and alarms | TESTED (moto, mocks); never run on AWS |
-| 10 | CloudWatch | Log groups (7 days), dashboard, 3 alarms, saved query | IMPLEMENTED; never applied |
+Labels: **SEEN** = observed running on real AWS (2026-11-09, two deploy/destroy runs). **TESTED** = offline stubs only. **BLOCKED** = refused by the Free Plan (`SubscriptionRequiredException`). Nothing is VERIFIED, because no human has checked the full upload flow on AWS.
 
-**Say "9 AWS services", not 10.** Bedrock returns `Operation not allowed` on the Free Plan, so `bedrock_model_id` is empty and commands use the rules parser. Clerk and Supabase remain in use, so describe the system as: *AWS for compute, queueing, AI and monitoring, with Clerk for auth and Supabase for data.*
+| # | Service | Job | Status |
+|---|---|---|---|
+| 1 | S3 | Vision artifacts; temporary hand-off files | **SEEN** (smoke test) |
+| 2 | SQS + DLQ | Wakes workers; visibility 360 s, DLQ after 3 receives | **PARTLY SEEN**: message accepted and queue drained; the worker's receipt is not proven in logs |
+| 3 | Lambda | Vision pipeline from a container (Debian image, Tesseract); 3008 MB, 300 s | **SEEN**: 8/8 stages |
+| 4 | ECR | Stores images | **SEEN** |
+| 5 | ECS Fargate | One task, 4 containers, 1 vCPU, 3 GB | **SEEN**: API `readyz` ok, worker started |
+| 6 | Rekognition | OCR via `DetectText` (`OCR_PROVIDER=rekognition`, Terraform `ocr_provider`), replaces blocked Textract | **SEEN** in the deployed Lambda on 2026-11-10 (smoke test: provider `rekognition`, 2 words). Provider code **TESTED** (Stubber). Test plan was tiny: accuracy vs Tesseract and the 100-words-per-image limit are untested on a real plan |
+| 7 | SNS | "Job finished or failed" email and alarms | **SEEN**: manual test mail arrived. The app's own notification not yet triggered |
+| 8 | CloudWatch | Log groups (7 days), dashboard, 3 alarms, saved query | **SEEN**: dashboard and 3 alarms exist |
+| 9 | SSM Parameter Store | Holds 5 secrets as SecureString under `/aec-demo/`, injected through ECS `secrets` | **SEEN** on 2026-11-10: 5 parameters exist, task definition lists them as `secrets` with none in plain env, service ran 1/1 healthy. Values are still in the local Terraform state |
+| - | Textract | OCR via `DetectDocumentText` | **BLOCKED** (Free Plan). Code TESTED (Stubber). Tesseract is used instead |
+| - | Transcribe | Batch speech-to-text through S3 `tmp/` | **BLOCKED**. Code TESTED (Stubber). Whisper is the default (`stt_provider`); Whisper on Fargate is untested |
+| - | Bedrock | Converse API for parsing | **BLOCKED**. Code TESTED (Stubber), off. The rules parser answers |
+
+Also refused on this account: Comprehend and Translate. Polly works (direct call returned audio) but is **not used**: no feature needs speech output.
+
+**Say "9 AWS services used: 8 seen working on AWS and SQS partly proven; 3 more are blocked by the Free Plan and replaced by free substitutes".** The 8 seen: S3, Lambda, ECR, Fargate, SNS (manual mail only), CloudWatch, Rekognition, SSM. Clerk and Supabase remain in use, so describe the system as: *AWS for compute, queueing, OCR, notification and monitoring, with Clerk for auth and Supabase for data.* The ALB with HTTPS was considered and dropped.
 
 ### 17.4 AWS architecture
 
@@ -1019,7 +1030,7 @@ ECS Fargate: one task, four containers sharing localhost
    │         SQS ──(3 failures)──► DLQ ──► alarm
    │            │ worker claims the job in Postgres, copies source to S3 tmp/
    │            ▼
-   │         Lambda (vision image from ECR) ──► Textract
+   │         Lambda (vision image from ECR) ──► Tesseract (or Rekognition)
    │            │ result JSON and artifacts in S3; returns only the key
    ▼            ▼
    SNS (email)  S3 (artifacts; tmp/ expires after 1 day)
@@ -1039,7 +1050,7 @@ ECS Fargate: one task, four containers sharing localhost
 | D7 | Transcribe is asynchronous | Simplest SDK path; slower than Whisper |
 | D8 | Bedrock via `converse`, optional | No `response_format`, so JSON is prompt-only |
 | D9 | Terraform, local state | Clear plan and destroy for a live demo |
-| D10 | Secrets as Terraform sensitive variables | Known limitation of a short-lived demo |
+| D10 | Secrets in SSM Parameter Store (SecureString) | Free, keeps them out of the task definition. Values are still in the local Terraform state |
 | D11 | Region `eu-west-1` | Same region as hosted Supabase |
 
 Lambda is called with automatic retries **off** and a read timeout of 330 s, longer than the function's 300 s, or a slow job would run twice.
@@ -1050,20 +1061,26 @@ Terraform in `infra/terraform/`: `s3`, `sqs`, `sns`, `lambda`, `ecr`, `ecs`, `ia
 
 Least-privilege IAM: execution role, task role (scoped to the bucket, queue, topic and function) and Lambda role (only `tmp/` hand-off files and Textract). CloudWatch alarms: DLQ has messages, Lambda errors, no running task.
 
-### 17.7 Current real AWS state (queried 2026-11-09)
+### 17.7 Current real AWS state (2026-11-10)
 
 | Item | State |
 |---|---|
 | Account, user | Owner's account, IAM user `aec-dev`, AWS Free Plan |
-| Inline policy `aec-demo-deploy` | Applied (per plan) |
-| Budget `aec-demo-monthly` | **Exists, $10** |
-| ECR `aec-demo/{api,geometry,language,vision-lambda}` | **Exist, each with 0 images** |
-| Terraform state | Holds only those 4 repositories |
-| Local images tagged `20261109-191729` | `api` and `vision-lambda` were built; nothing reached ECR, and `image.auto.tfvars` was not written, so `build-push.ps1` did not finish |
-| ECS, Lambda, SQS, SNS, CloudWatch for `aec-demo` in `eu-west-1` | **None** |
-| Left over from the predecessor | Lambda `aec-processing` and SQS `aec-processing` plus DLQ in `ap-south-1`; S3 `aec-floorplans-vajeeda-dev`; dashboard `aec-review`. No RDS instance in `ap-south-1`. |
+| Deploys | Three `build-push` / `deploy` / `smoke` runs in `eu-west-1`. The first two were destroyed |
+| Running now | The last read-only check (2026-11-10) found the ECS service **DRAINING with 0 tasks** and the CloudWatch alarms and SNS subscription already gone, so a destroy was in progress. SQS queues and the SNS topic still existed at that moment. **Confirm with `aws ecs list-clusters --region eu-west-1` and `destroy.ps1`'s leftover list** |
+| IAM policy `aec-demo-deploy` | Applied by the owner, including `ssm:*` (SSM parameters were created) |
+| Budget `aec-demo-monthly` | Exists, $10 (alerts only, it does not stop spending) |
+| Seen on the third deploy | Smoke test: Lambda ran with Rekognition OCR (2 words); 5 SSM parameters; ECS service ACTIVE 1/1; no API errors in logs; owner received multiple SNS mails, but their type (alarm, confirmation or job finished) was not confirmed |
+| Not exercised | Full web upload through SQS, worker, Lambda and the app's own "job finished" SNS email (the worker log showed only "worker started", so no job had reached it); Whisper first-use model download on Fargate |
+| Not re-queried | Leftovers from the predecessor in `ap-south-1` (Lambda and SQS `aec-processing`, S3 `aec-floorplans-vajeeda-dev`, dashboard `aec-review`) |
 
-**Never claim the system ran on AWS until `deploy.ps1` and `smoke.ps1` have actually run.** Textract, Transcribe, Lambda and Fargate are untested on this account and may hit the same Free Plan restriction as Bedrock.
+**Never claim a service works on AWS unless it ran there.** Offline tests (2026-11-09, working tree): api 193 passed / 1 skipped, vision 130 / 1, language 299 / 1 (1 deselected). They use moto and Stubber and prove the code, not the services.
+
+**Progress (owner's scale):** about 8 of 10. The remaining points are the manual end-to-end upload (SQS receipt, app SNS mail), Whisper on Fargate, and the three Free-Plan-blocked services. Nothing is VERIFIED.
+
+**Cost:** Fargate (1 vCPU, 3 GB) is the main cost, billed per hour while up (roughly $0.06/hour from memory, unchecked), plus a small hourly public-IP charge; the other services are negligible at demo volume. Deploy, test, destroy: staying deployed only adds idle hours. Procedure: `docs/AWS_DEMO_RUNBOOK.md`.
+
+**Known script fixes:** `build-push.ps1` pipes the ECR token through `cmd /c` because PowerShell 5.1 made ECR answer 400. `smoke.ps1` accepts `textract`, `tesseract` and `rekognition`.
 
 ### 17.8 Definition of done (AWS)
 
@@ -1094,7 +1111,7 @@ With defaults, all existing tests pass. With the profile on, one uploaded plan g
 - Rate limiter is in memory and per process; behind a proxy, anonymous traffic shares one bucket.
 - A chunked language upload is capped only after spooling (internal service).
 - No render timeout for hostile vector-heavy PDFs.
-- AWS demo: plain HTTP, secrets in the task definition, local Terraform state.
+- AWS demo: plain HTTP, secrets in SSM but also in the local Terraform state, local state.
 - Supabase advisors have not been run. Expected finding: only `rls_enabled_no_policy`, by design.
 - No external penetration test. The `/security-review` was a manual review.
 
@@ -1215,7 +1232,7 @@ Nothing is `VERIFIED`. "e2e" means exercised by Playwright against the real stac
 | AWS | A1 S3, A2 SQS, A3 Textract, A4 Lambda, A5 Transcribe, A7 SNS | TESTED offline only |
 | AWS | A6 Bedrock | TESTED offline, off on AWS |
 | AWS | A8 Fargate and Terraform, A9 CloudWatch | IMPLEMENTED |
-| AWS | A10 Deploy and demo | **IN_PROGRESS**: ECR repositories created, images not pushed |
+| AWS | A10 Deploy and demo | **IN_PROGRESS**: deployed and destroyed twice; end-to-end upload not yet run |
 
 ---
 
@@ -1539,7 +1556,7 @@ Where older documents are out of date. This file reflects the corrected position
 
 | Document | Says | Actual |
 |---|---|---|
-| `docs/AWS_MIGRATION_PLAN.md`, `phases/STATUS.md` | Nothing applied on AWS; A10 NOT_STARTED | 4 ECR repositories created, 0 images |
+| `docs/AWS_MIGRATION_PLAN.md`, `phases/STATUS.md` | Nothing applied on AWS; A10 NOT_STARTED (status block and "9 services" text are stale) | Deployed three times, A10 IN_PROGRESS, 8 services in design |
 | `docs/AWS_MIGRATION_PLAN.md` §10 | Region still open | Decided (`eu-west-1`) |
 | `README.md`, AWS plan | "10" AWS services | 9 will run; Bedrock off |
 | `docs/ARCHITECTURE.md` §2, `docs/SECURITY.md`, `docs/TECH_STACK.md` | No AWS; zero cloud lock | AWS profile exists; only `phases/shared/ARCHITECTURE.md` was updated |
@@ -1601,7 +1618,7 @@ Screenshots: `apps/web/qa/p7/` (preview ghost, clarification, history, complianc
 ### Writing rules for reports
 
 - Say "tested", never "verified" or "production-ready".
-- Say "9 AWS services" and only after deployment "running on AWS".
+- Say "9 AWS services, 8 seen working and SQS partly" (section 17.3); never say "running on AWS" unless it is deployed right now.
 - Say "indicative, based on published summaries of NBC India 2016".
 - Say accuracy figures are from clean, AI-generated plans.
 - Do not invent market data, user studies or literature citations. None exist in this repository, so a literature review must be researched separately.

@@ -15,6 +15,7 @@ from moto import mock_aws
 from app.lambda_handler import handler
 from app.ocr import textract
 from app.ocr.factory import get_ocr
+from app.ocr.rekognition import RekognitionOCR
 from app.ocr.textract import TextractOCR
 
 BUCKET = "aec-test"
@@ -54,6 +55,21 @@ def test_oversized_png_falls_back_to_jpeg(monkeypatch: pytest.MonkeyPatch) -> No
 
 def test_factory_builds_it_without_touching_the_network() -> None:
     assert get_ocr("textract").name == "textract"
+
+
+def test_rekognition_words_are_converted_to_pixels_and_lines_ignored() -> None:
+    def det(kind: str, text: str) -> dict[str, Any]:
+        box = {"Left": 0.25, "Top": 0.5, "Width": 0.1, "Height": 0.05}
+        return {"Type": kind, "DetectedText": text, "Confidence": 90.0, "Geometry": {"BoundingBox": box}}
+
+    client = boto3.client("rekognition", region_name="ap-south-1")
+    with Stubber(client) as stub:
+        stub.add_response("detect_text", {"TextDetections": [det("LINE", "KITCHEN 3600"), det("WORD", "KITCHEN")]},
+                          {"Image": {"Bytes": ANY}})
+        words = RekognitionOCR(client).recognize(IMAGE)
+    assert [(w.text, w.x, w.y, w.width, w.height) for w in words] == [("KITCHEN", 100.0, 100.0, 40.0, 10.0)]
+    assert words[0].confidence == pytest.approx(0.9)
+    assert get_ocr("rekognition").name == "rekognition"
 
 
 @pytest.fixture

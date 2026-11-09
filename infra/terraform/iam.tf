@@ -31,6 +31,20 @@ resource "aws_iam_role_policy_attachment" "execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# ECS reads the secrets at container start, using the execution role.
+resource "aws_iam_role_policy" "execution_secrets" {
+  name = "read-secrets"
+  role = aws_iam_role.execution.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["ssm:GetParameters"]
+      Resource = [for p in aws_ssm_parameter.secret : p.arn]
+    }]
+  })
+}
+
 # The application containers.
 data "aws_iam_policy_document" "task" {
   statement {
@@ -108,7 +122,7 @@ data "aws_iam_policy_document" "lambda" {
 
   statement {
     sid       = "Ocr"
-    actions   = ["textract:DetectDocumentText"]
+    actions   = ["textract:DetectDocumentText", "rekognition:DetectText"]
     resources = ["*"]
   }
 

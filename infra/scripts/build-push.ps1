@@ -9,7 +9,8 @@ $registry = Get-Output registry
 $region = $registry.Split(".")[3]
 $tag = Get-Date -Format "yyyyMMdd-HHmmss"
 
-aws ecr get-login-password --region $region | docker login --username AWS --password-stdin $registry
+# cmd does the pipe: PowerShell 5.1 re-encodes the token and ECR answers 400 Bad Request.
+cmd /c "aws ecr get-login-password --region $region | docker login --username AWS --password-stdin $registry"
 if ($LASTEXITCODE -ne 0) { throw "docker login failed" }
 
 $images = @{
