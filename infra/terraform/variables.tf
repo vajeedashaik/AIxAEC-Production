@@ -31,6 +31,17 @@ variable "web_origin" {
   default     = "http://localhost:3000"
 }
 
+variable "stt_provider" {
+  description = "Speech-to-text for voice commands: whisper (free, runs in the language container) or transcribe (needs an AWS plan that allows it; the Free Plan returns SubscriptionRequiredException)."
+  type        = string
+  default     = "whisper"
+
+  validation {
+    condition     = contains(["whisper", "transcribe"], var.stt_provider)
+    error_message = "stt_provider must be whisper or transcribe."
+  }
+}
+
 variable "bedrock_model_id" {
   description = "Optional. A Bedrock model or inference profile ID enabled in this account and region. Empty means no LLM: the offline rules parser handles commands."
   type        = string

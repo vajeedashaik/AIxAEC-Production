@@ -58,7 +58,7 @@ locals {
     local.common_env,
     {
       COMMAND_PARSER = "hybrid"
-      STT_PROVIDER   = "transcribe"
+      STT_PROVIDER   = var.stt_provider
     },
     var.bedrock_model_id == "" ? {} : { LLM_PROVIDER = "bedrock", LLM_MODEL = var.bedrock_model_id },
   )
