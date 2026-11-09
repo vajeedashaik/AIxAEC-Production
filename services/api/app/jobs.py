@@ -105,6 +105,7 @@ def fail_job(c: Container, claim: Claim, message: str, stages: list[StageReport]
         floorplan.status = "FAILED"
         floorplan.warnings = merge_warnings(floorplan.warnings, warnings or [])
         session.commit()
+        c.notifier.job_finished(claim.job_id, floorplan.original_filename, "FAILED")
 
 
 def _classify_rooms(c: Container, model: FloorPlanModel) -> None:
@@ -158,6 +159,7 @@ def _complete(c: Container, project_id: UUID, claim: Claim, result: AnalyzeResul
         floorplan.status = "COMPLETED"
         floorplan.warnings = merge_warnings(floorplan.warnings, result.warnings)
         session.commit()
+        c.notifier.job_finished(claim.job_id, floorplan.original_filename, "COMPLETED")
 
 
 def _run(c: Container, claim: Claim) -> None:

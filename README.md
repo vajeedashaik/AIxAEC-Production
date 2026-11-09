@@ -2,7 +2,7 @@
 
 Upload a floor plan (PNG / JPG / PDF). Computer vision turns it into a **typed, versioned Building Model**: walls, rooms, doors, windows, columns, stairs and dimensions. Edit it by typing, speaking or clicking ("move the wall between the kitchen and the living room 300 mm left"). Language models only *interpret* text into a structured command; a **deterministic geometry engine** validates and applies every change, and each change becomes a new immutable version with undo/redo.
 
-Free stack only: Clerk (auth), Supabase (Postgres + Storage), OmniRoute (free LLMs), Tesseract, faster-whisper, local Docker. No AWS, GCP or Azure.
+Default stack (free): Clerk (auth), Supabase (Postgres + Storage), OmniRoute (free LLMs), Tesseract, faster-whisper, local Docker. An optional AWS profile (S3, SQS, Lambda, ECR, ECS Fargate, Textract, Transcribe, Bedrock, SNS, CloudWatch) is switched on by env vars: see [docs/AWS_MIGRATION_PLAN.md](docs/AWS_MIGRATION_PLAN.md).
 
 ## Architecture
 

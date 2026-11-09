@@ -14,6 +14,7 @@ dependencies = [
     "numpy>=2.5.4",
     "av>=19.0.2",
     "openai>=2,<3",
+    "boto3>=1.40",
 ]
 
 [dependency-groups]
@@ -22,6 +23,7 @@ dev = [
     "ruff>=0.8",
     "mypy>=1.13",
     "respx>=0.23.1",
+    "moto[s3]>=5",
 ]
 
 [tool.uv]
@@ -52,6 +54,10 @@ split-on-trailing-comma = false
 python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["boto3.*", "botocore.*", "moto.*"]
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "faster_whisper.*"

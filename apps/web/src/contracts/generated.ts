@@ -1447,7 +1447,7 @@ export interface QuestionRequest {
 export interface TranscribeResult {
   duration_ms: number;
   language: string;
-  provider: "whisper" | "stub";
+  provider: "whisper" | "stub" | "transcribe";
   text: string;
 }
 /**

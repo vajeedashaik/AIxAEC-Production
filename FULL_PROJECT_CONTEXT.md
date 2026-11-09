@@ -1,5 +1,7 @@
 # AEC AI Platform — Full Project Context
 
+> **Archive.** This file describes the predecessor codebase (`CSPM`) and is kept because phase prompts cite its section numbers. For the current project, see [PROJECT_SOURCE_OF_TRUTH.md](PROJECT_SOURCE_OF_TRUTH.md).
+
 > One-file, code-verified reference for the whole repository (folder name: `CSPM`; product name: **AEC AI Platform**).
 > Generated 2026-11-01 from a full read of the source tree, not just the existing docs. Where the older docs disagree with the code, **the code wins** and the drift is listed in §21.
 >

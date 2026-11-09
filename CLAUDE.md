@@ -5,12 +5,13 @@ Upload a floor plan → computer vision builds a typed, versioned Building Model
 ## Read before working
 1. `phases/README.md`, then your phase prompt `phases/P<n>-*.md`
 2. `phases/shared/ARCHITECTURE.md` · `CONTRACTS.md` · `OWNERSHIP.md` · `TOOLING.md`
-3. `FULL_PROJECT_CONTEXT.md` is the reference spec of the original product. Its AWS/GCP/Azure parts are **dropped**.
+3. `FULL_PROJECT_CONTEXT.md` is the reference spec of the original product. Its GCP/Azure parts are **dropped**. AWS comes back only through the AWS profile below.
+4. AWS work: `docs/AWS_MIGRATION_PLAN.md`, then your prompt in `phases/aws/`.
 
 ## Hard rules
 - **Write only inside the paths your phase owns** (OWNERSHIP.md). Anything else goes into your HANDOFF file as a request.
 - **Contracts (`packages/contracts`, `apps/web/src/contracts`) are frozen** for P1–P6. Log gaps per CONTRACTS.md §12.
-- **No AWS, GCP or Azure.** Stack: Clerk (auth), Supabase (Postgres + Storage), OmniRoute (free LLMs), Tesseract, faster-whisper, local Docker.
+- **Default stack stays free:** Clerk (auth), Supabase (Postgres + Storage), OmniRoute (free LLMs), Tesseract, faster-whisper, local Docker. **AWS is allowed through the AWS profile only:** every AWS feature sits behind an env switch that defaults to the free stack, and infrastructure lives in `infra/`. No GCP or Azure.
 - The LLM never edits geometry. Its output is untrusted. Don't guess on ambiguity, return a clarification. Never treat px as mm.
 - Never `git add -A` / `git commit -a`. Stage your own paths. Never run repo-wide formatters. Don't push unless asked.
 - Don't install project-level skills or plugins (`.claude/**` is P0/P7-owned). Use `-g` for anything extra.

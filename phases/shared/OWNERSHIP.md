@@ -36,6 +36,7 @@ P7 Integration, E2E & Hardening   (alone, last)
 | `apps/web/src/app/(dev)/**` (component playgrounds) | **P6** | read-only |
 | **everything else under `apps/web/**`**: `package.json`, `package-lock.json`, `next.config.ts`, `src/app/**` (other routes and layouts), `src/components/**` (including `components/ui`), `src/features/{projects,dashboard,upload,marketing,settings}/**`, `src/styles/**`, `src/app/globals.css`, `DESIGN.md` | **P5** | read-only |
 | `docs/**` (except `docs/design/references`) | **P7** | phases write only their own `HANDOFF.md` |
+| `infra/**`, `phases/aws/**`, `services/api/app/aws/**`, `services/api/app/ports.py`, `services/vision/app/lambda_handler.py`, `services/vision/app/ocr/textract.py`, `services/vision/Dockerfile.lambda`, `services/language/app/speech_transcribe.py`, `services/language/app/llm_bedrock.py`, the `NEXT_PUBLIC_ARTIFACT_ORIGIN` line in `apps/web/next.config.ts`, and the small wiring edits listed in `docs/AWS_MIGRATION_PLAN.md` | **P8** (AWS profile, runs after P7, alone) | read-only |
 
 ### Each phase's handoff file (the only "shared-style" file each phase writes)
 

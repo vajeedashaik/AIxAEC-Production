@@ -6,6 +6,7 @@ from aec_contracts import ParseResult, PlanBrief
 
 from .config import Settings
 from .llm import LlmClient, LlmParser
+from .llm_bedrock import BedrockLlmClient
 from .rules import UNKNOWN_DETAIL, parse_rules
 
 
@@ -38,9 +39,11 @@ class HybridParser:
 
 def build_llm_client(settings: Settings) -> LlmClient | None:
     """None when the LLM is off: unconfigured, or COMMAND_PARSER=rules (which means fully offline)."""
-    if settings.command_parser == "rules" or not (settings.llm_model and settings.llm_api_key):
+    if settings.command_parser == "rules" or not settings.llm_model:
         return None
-    return LlmClient(settings)
+    if settings.llm_provider == "bedrock":
+        return BedrockLlmClient(settings)
+    return LlmClient(settings) if settings.llm_api_key else None
 
 
 def build_parser(settings: Settings, client: LlmClient | None) -> CommandParser:
@@ -49,5 +52,5 @@ def build_parser(settings: Settings, client: LlmClient | None) -> CommandParser:
     llm = LlmParser(client) if client else None
     if settings.command_parser == "hybrid":
         return HybridParser(llm)
-    assert llm is not None  # Settings refuses COMMAND_PARSER=llm without LLM_MODEL and LLM_API_KEY
+    assert llm is not None  # Settings refuses COMMAND_PARSER=llm without a usable LLM configuration
     return llm

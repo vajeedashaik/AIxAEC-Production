@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     log_format: Literal["json", "text"] = "json"
     internal_service_token: SecretStr = SecretStr(DEFAULT_INTERNAL_TOKEN)
-    ocr_provider: Literal["auto", "stub", "tesseract"] = "auto"
+    ocr_provider: Literal["auto", "stub", "tesseract", "textract"] = "auto"
     tesseract_cmd: str | None = None
     object_detector: Literal["heuristic", "none", "yolo"] = "heuristic"
     yolo_weights_path: str | None = None

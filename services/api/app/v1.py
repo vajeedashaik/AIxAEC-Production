@@ -141,6 +141,7 @@ def upload_floorplan(project_id: UUID, file: Annotated[UploadFile, File()], user
     floorplan_id = uuid4()
     key = f"{project_id}/{floorplan_id}/source.{upload.extension}"
     c.blobs.put(SOURCE_BUCKET, key, upload.data, upload.content_type)
+    job_id = None
     try:
         get_project(session, user.id, project_id, lock=True)  # serialises quota and next version
         _check_floorplan_quota(c, session, project_id)
@@ -152,12 +153,14 @@ def upload_floorplan(project_id: UUID, file: Annotated[UploadFile, File()], user
         session.add(row)
         session.flush()
         if process:
-            enqueue(session, row, c.settings.processing_stale_seconds)
+            job_id = enqueue(session, row, c.settings.processing_stale_seconds).id
         session.commit()
     except Exception:
         session.rollback()
         _delete_blobs(c, SOURCE_BUCKET, f"{project_id}/{floorplan_id}/")
         raise
+    if job_id is not None:
+        c.queue.publish(job_id)
     return floorplan_dtos(c, session, [row])[0]
 
 
@@ -181,6 +184,7 @@ def process_floorplan(floorplan_id: UUID, user: CurrentUser, c: Ctx, session: Db
     floorplan = get_floorplan(session, user.id, floorplan_id, lock=True)
     job = enqueue(session, floorplan, c.settings.processing_stale_seconds)
     session.commit()
+    c.queue.publish(job.id)
     return job_dto(job)
 
 

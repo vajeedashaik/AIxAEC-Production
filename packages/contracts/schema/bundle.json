@@ -5768,7 +5768,8 @@
         "provider": {
           "enum": [
             "whisper",
-            "stub"
+            "stub",
+            "transcribe"
           ],
           "title": "Provider",
           "type": "string"

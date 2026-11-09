@@ -17,7 +17,8 @@ const clerkHost = (() => {
 const api = origin(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
 // Signed Storage URLs: hosted Supabase, or local `supabase start` whenever the API itself is local.
 const localStack = dev || /^http:\/\/(localhost|127\.0\.0\.1)(:|$)/.test(api);
-const storage = ["https://*.supabase.co", localStack && "http://127.0.0.1:54321 http://localhost:54321"].filter(Boolean).join(" ");
+// NEXT_PUBLIC_ARTIFACT_ORIGIN: the S3 bucket's origin when the AWS profile stores artifacts there (infra/README.md).
+const storage = ["https://*.supabase.co", localStack && "http://127.0.0.1:54321 http://localhost:54321", origin(process.env.NEXT_PUBLIC_ARTIFACT_ORIGIN)].filter(Boolean).join(" ");
 
 // shortcut: 'unsafe-inline' scripts because nonces force dynamic rendering (cacheComponents/PPR); move to nonces if PPR goes.
 const csp = [

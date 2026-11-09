@@ -1,0 +1,29 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DeployServices",
+      "Effect": "Allow",
+      "Action": ["ecs:*", "sns:*", "budgets:*", "ce:GetCostAndUsage", "freetier:GetAccountPlanState"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ChooseABedrockModel",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:ListFoundationModels",
+        "bedrock:ListInferenceProfiles",
+        "bedrock:GetFoundationModelAvailability",
+        "bedrock:ListFoundationModelAgreementOffers",
+        "bedrock:CreateFoundationModelAgreement"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "TestOneModelCall",
+      "Effect": "Allow",
+      "Action": "bedrock:InvokeModel",
+      "Resource": ["arn:aws:bedrock:*::foundation-model/amazon.nova-2-lite-v1:0", "arn:aws:bedrock:*:*:inference-profile/eu.amazon.nova-2-lite-v1:0", "arn:aws:bedrock:*:*:inference-profile/global.amazon.nova-2-lite-v1:0"]
+    }
+  ]
+}

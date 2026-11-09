@@ -22,7 +22,7 @@ A user signs in, creates a project and uploads a floor plan (PNG / JPG / PDF). A
 | Explicit job states | `PENDING / PROCESSING / COMPLETED / FAILED`, and the jobs table is the source of truth. |
 | Providers behind interfaces | OCR, STT, LLM, storage and object detection sit behind small interfaces with an offline default, so a missing key degrades and never crashes. |
 | Honest status | `NOT_STARTED / IN_PROGRESS / IMPLEMENTED / TESTED / VERIFIED`. Only a human-run real check earns `VERIFIED`. |
-| Zero cloud-vendor lock | **No AWS, GCP or Azure service of any kind.** Free tiers or self-hosted only. |
+| Free by default, no cloud lock-in | The default profile uses free tiers or self-hosted services only. AWS is an optional profile behind env switches (`docs/AWS_MIGRATION_PLAN.md`). No GCP or Azure. |
 
 ## 3. System diagram
 

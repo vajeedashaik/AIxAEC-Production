@@ -112,4 +112,8 @@ class StubSpeech:
 
 
 def build_speech(settings: Settings) -> SpeechService:
+    if settings.stt_provider == "transcribe":
+        from .speech_transcribe import TranscribeSpeech  # imports this module's helpers
+
+        return TranscribeSpeech(settings)
     return StubSpeech() if settings.stt_provider == "stub" else WhisperSpeech(settings)

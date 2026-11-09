@@ -40,4 +40,4 @@ class ClassifyRoomsResult(Strict): results: list[RoomClassification]   # same or
 
 class TranscribeResult(Strict):
     text: str = Field(max_length=500); language: str; duration_ms: int
-    provider: Literal["whisper", "stub"]
+    provider: Literal["whisper", "stub", "transcribe"]
