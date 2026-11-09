@@ -5,14 +5,19 @@ from dataclasses import dataclass, field
 from aec_contracts import Insights
 from sqlalchemy.orm import Session, sessionmaker
 
+from .aws.lambda_vision import LambdaVisionClient
+from .aws.s3 import RoutedBlobStore, S3BlobStore
+from .aws.sns import SnsNotifier
+from .aws.sqs import SqsQueue
 from .clerk import ClerkVerifier
 from .clients.geometry import GeometryClient
 from .clients.language import LanguageClient
 from .clients.vision import VisionClient
 from .config import Settings
 from .db import make_session_factory
+from .ports import NoNotifier, Notifier, PollingQueue, VisionAnalyzer, WorkQueue
 from .ratelimit import RateLimiter
-from .storage import BlobStore, SupabaseBlobStore
+from .storage import ARTIFACT_BUCKET, BlobStore, SupabaseBlobStore
 
 
 @dataclass
@@ -20,25 +25,37 @@ class Container:
     settings: Settings
     session_factory: sessionmaker[Session]
     blobs: BlobStore
-    vision: VisionClient
+    vision: VisionAnalyzer
     geometry: GeometryClient
     language: LanguageClient
     verifier: ClerkVerifier
     limiter: RateLimiter
+    queue: WorkQueue
+    notifier: Notifier
     insights_cache: dict[tuple[object, int], Insights] = field(default_factory=dict)
+
+
+def _build_blobs(settings: Settings) -> BlobStore:
+    supabase = SupabaseBlobStore(settings)
+    return RoutedBlobStore(supabase, {ARTIFACT_BUCKET: S3BlobStore(settings)}) if settings.blob_backend == "hybrid" \
+        else supabase
 
 
 def build_container(settings: Settings, database_url: str | None = None,
                     blobs: BlobStore | None = None,
                     session_factory: sessionmaker[Session] | None = None) -> Container:
     token = settings.internal_service_token.get_secret_value()
+    vision: VisionAnalyzer = LambdaVisionClient(settings) if settings.vision_mode == "lambda" \
+        else VisionClient("vision", settings.vision_url, token, timeout=180)
     return Container(
         settings=settings,
         session_factory=session_factory or make_session_factory(database_url or settings.database_url),
-        blobs=blobs or SupabaseBlobStore(settings),
-        vision=VisionClient("vision", settings.vision_url, token, timeout=180),
+        blobs=blobs or _build_blobs(settings),
+        vision=vision,
         geometry=GeometryClient("geometry", settings.geometry_url, token, timeout=30),
         language=LanguageClient("language", settings.language_url, token, timeout=30),
         verifier=ClerkVerifier(settings),
         limiter=RateLimiter(settings.rate_limit_read_per_minute, settings.rate_limit_write_per_minute),
+        queue=SqsQueue(settings) if settings.queue_backend == "sqs" else PollingQueue(),
+        notifier=SnsNotifier(settings) if settings.notifier == "sns" else NoNotifier(),
     )

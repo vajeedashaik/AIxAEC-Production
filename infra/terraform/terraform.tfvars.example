@@ -1,0 +1,15 @@
+# Copy to terraform.tfvars (gitignored). Database, Supabase and Clerk values are the ones in services/api/.env.
+alert_email      = "you@example.com"
+api_ingress_cidr = "203.0.113.7/32" # your public IP
+bedrock_model_id = "" # optional: a Bedrock model ID such as eu.amazon.nova-2-lite-v1:0. Empty = rules parser only
+
+database_url        = "postgresql+psycopg://...pooler.supabase.com:6543/postgres"
+worker_database_url = "postgresql+psycopg://...pooler.supabase.com:5432/postgres"
+
+supabase_url              = "https://YOUR-PROJECT.supabase.co"
+supabase_service_role_key = ""
+
+clerk_issuer     = "https://your-app.clerk.accounts.dev"
+clerk_secret_key = ""
+
+internal_service_token = "at-least-32-random-characters-go-here"

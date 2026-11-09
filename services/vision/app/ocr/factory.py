@@ -5,6 +5,7 @@ import shutil
 from .base import OCRService
 from .stub import StubOCR
 from .tesseract import TesseractOCR
+from .textract import TextractOCR
 
 
 def tesseract_available(cmd: str | None) -> bool:
@@ -12,6 +13,8 @@ def tesseract_available(cmd: str | None) -> bool:
 
 
 def get_ocr(provider: str, tesseract_cmd: str | None = None) -> OCRService:
+    if provider == "textract":
+        return TextractOCR()
     if provider == "stub" or (provider == "auto" and not tesseract_available(tesseract_cmd)):
         return StubOCR()
     return TesseractOCR(tesseract_cmd)

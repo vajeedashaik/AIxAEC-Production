@@ -27,7 +27,11 @@ def run_once(c: Container) -> bool:
 def run_forever(c: Container, stop: threading.Event) -> None:
     while not stop.is_set():
         try:
-            if not run_once(c):
+            handle = c.queue.receive()  # long-polls on SQS, returns at once in polling mode
+            found = run_once(c)  # runs even without a message: it's the backstop for lost messages and stale jobs
+            if handle is not None:  # not reached if run_once raised, so the message returns and can reach the DLQ
+                c.queue.ack(handle)
+            if not found:
                 stop.wait(c.settings.worker_poll_seconds)
         except Exception:
             log.exception("worker loop error")  # usually the database being away; keep polling

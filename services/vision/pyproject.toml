@@ -15,10 +15,16 @@ dependencies = [
     "pymupdf>=1.24",
     "pillow>=10",
     "pytesseract>=0.3.13",
+    "boto3>=1.40",
 ]
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.8", "mypy>=1.13"]
+dev = [
+    "pytest>=8",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "moto[s3]>=5",
+]
 
 [tool.uv]
 package = false
@@ -43,3 +49,7 @@ split-on-trailing-comma = false
 python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["boto3.*", "botocore.*", "moto.*"]
+ignore_missing_imports = true

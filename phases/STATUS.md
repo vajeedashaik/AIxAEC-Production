@@ -74,3 +74,21 @@ Nothing is VERIFIED (a human check on the real stack is still to do). Details: [
 | Docs (`docs/ARCHITECTURE.md`, `RUNBOOK.md`, `FEATURE_STATUS.md`, `DEMO_SCRIPT.md`, `SECURITY.md`), README | IMPLEMENTED | |
 
 Suites on `main`: contracts 154, vision 113 (+1 skipped), geometry 200, api 151 (+1 skipped), language 276 (+1 skipped), web 209, e2e 10 (final run 10/10, 3.3 min). Vision and the workspace vitest file are timing-sensitive under heavy load (OneDrive sync + the running stack); the workspace file now sets a 15 s per-test timeout.
+
+
+## P8 AWS profile (2026-11-09)
+
+Prompts: `phases/aws/`. Plan: `docs/AWS_MIGRATION_PLAN.md`. Every feature is behind an env switch that defaults to the free stack.
+
+| Prompt | Status | Notes |
+|---|---|---|
+| A1 S3 artifacts | TESTED | moto. Never run on real AWS. |
+| A2 SQS wake-up | TESTED | moto and a real-Postgres route test. Never run on real AWS. |
+| A3 Textract | TESTED | Stubber validates the request and response shape. Label quality against Tesseract unknown. |
+| A4 Lambda + ECR | TESTED | Handler and client tested with moto and a fake Lambda. `Dockerfile.lambda` builds (2.27 GB) and the pipeline ran inside it with the stub OCR. Never run on real Lambda. |
+| A5 Transcribe | TESTED | Stubber. Adds `transcribe` to `TranscribeResult.provider` (contract, schema, TS regenerated). |
+| A6 Bedrock | TESTED, SKIPPED ON AWS | Stubber only. The AWS Free Plan returns `Operation not allowed`, so `bedrock_model_id` is empty and the AWS stack uses the offline rules parser. Becomes usable after upgrading the account plan. |
+| A7 SNS | TESTED | moto, mocks and a real-Postgres route test. Never run on real AWS. |
+| A8 Fargate + Terraform | IMPLEMENTED | `terraform validate` and a read-only `plan` pass (41 resources). Never applied. Scripts parse but have not run. |
+| A9 CloudWatch | IMPLEMENTED | Terraform only. Never applied. |
+| A10 Deploy and demo | NOT_STARTED | Needs an AWS account and spends money. |

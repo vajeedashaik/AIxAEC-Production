@@ -119,14 +119,18 @@ def first_json(text: str, opener: str) -> Any:
 
 class LlmClient:
     def __init__(self, settings: Settings) -> None:
-        assert settings.llm_model and settings.llm_api_key
+        assert settings.llm_model
         self.model = settings.llm_model
         self.timeout = settings.llm_timeout_seconds
-        self._client = OpenAI(base_url=settings.llm_base_url, api_key=settings.llm_api_key.get_secret_value(),
-                              timeout=self.timeout, max_retries=0)  # call_with_retry owns retries
+        self._client = self._connect(settings)
         self._lock = threading.Lock()
         self._failures = 0
         self._open_until = 0.0
+
+    def _connect(self, settings: Settings) -> Any:
+        assert settings.llm_api_key
+        return OpenAI(base_url=settings.llm_base_url, api_key=settings.llm_api_key.get_secret_value(),
+                      timeout=self.timeout, max_retries=0)  # call_with_retry owns retries
 
     def _record(self, ok: bool) -> None:
         with self._lock:

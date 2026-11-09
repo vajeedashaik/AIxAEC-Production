@@ -28,6 +28,8 @@ P7  Integration, E2E & hardening ───────── alone, last
 
 **Shared, read by every session:** [ARCHITECTURE](shared/ARCHITECTURE.md) · [CONTRACTS](shared/CONTRACTS.md) · [OWNERSHIP](shared/OWNERSHIP.md) · [TOOLING](shared/TOOLING.md)
 
+**After P7:** the optional AWS profile (P8) has its own prompts in [aws/](aws/README.md).
+
 ## How to run the sessions
 
 1. Do the **human setup** in [TOOLING.md §4](shared/TOOLING.md) (Clerk app, Supabase or Docker, OmniRoute keys, `/mcp` auth).

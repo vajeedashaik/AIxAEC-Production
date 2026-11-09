@@ -41,6 +41,31 @@ class Settings(BaseSettings):
     worker_poll_seconds: float = 2
     rate_limit_read_per_minute: int = 300
     rate_limit_write_per_minute: int = 90
+    # AWS profile (docs/AWS_MIGRATION_PLAN.md): the defaults are the free stack
+    blob_backend: Literal["supabase", "hybrid"] = "supabase"
+    queue_backend: Literal["postgres", "sqs"] = "postgres"
+    vision_mode: Literal["http", "lambda"] = "http"
+    notifier: Literal["none", "sns"] = "none"
+    aws_region: str | None = None
+    s3_bucket: str | None = None
+    sqs_queue_url: str | None = None
+    sns_topic_arn: str | None = None
+    vision_lambda_name: str | None = None
+
+    @model_validator(mode="after")
+    def _aws_switches(self) -> Self:
+        hybrid, sqs, lambda_vision, sns = (self.blob_backend == "hybrid", self.queue_backend == "sqs",
+                                           self.vision_mode == "lambda", self.notifier == "sns")
+        missing = [name for name, needed, value in (
+            ("AWS_REGION", hybrid or sqs or lambda_vision or sns, self.aws_region),
+            ("S3_BUCKET", hybrid or lambda_vision, self.s3_bucket),
+            ("SQS_QUEUE_URL", sqs, self.sqs_queue_url),
+            ("SNS_TOPIC_ARN", sns, self.sns_topic_arn),
+            ("VISION_LAMBDA_NAME", lambda_vision, self.vision_lambda_name),
+        ) if needed and not value]
+        if missing:
+            raise ValueError(f"The AWS switches need: {', '.join(missing)}")
+        return self
 
     @model_validator(mode="after")
     def _production_guards(self) -> Self:
